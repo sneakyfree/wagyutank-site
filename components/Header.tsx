@@ -11,7 +11,7 @@ export default function Header() {
           <span className="mark">W</span>
           <span>WagyuTank</span>
         </Link>
-        <nav className="row hide-sm" style={{ gap: 20, marginLeft: 12 }}>
+        <nav className="nav-desktop" style={{ marginLeft: 14 }}>
           <Link href="/browse" className="nav-link">Browse</Link>
           <Link href="/browse?product_type=semen" className="nav-link">Semen</Link>
           <Link href="/browse?product_type=embryo" className="nav-link">Embryos</Link>
@@ -31,6 +31,14 @@ export default function Header() {
           <Link href="/login" className="btn btn-ghost">Sign in</Link>
         )}
       </div>
+      {/* Mobile nav strip — scrollable, only shows below 860px */}
+      <nav className="nav-mobile">
+        <Link href="/browse" className="nav-link">Browse</Link>
+        <Link href="/browse?product_type=semen" className="nav-link">Semen</Link>
+        <Link href="/browse?product_type=embryo" className="nav-link">Embryos</Link>
+        <Link href="/browse?product_type=clone_rights" className="nav-link">Cloning</Link>
+        <Link href="/history" className="nav-link">Breed History</Link>
+      </nav>
     </header>
   );
 }
