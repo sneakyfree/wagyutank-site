@@ -142,6 +142,11 @@ export const api = {
     return res.text();
   },
 
+  // Wagyu News
+  news: (params: Record<string, any> = {}) => req(`/api/news?${new URLSearchParams(clean(params))}`),
+  newsRegions: () => req("/api/news/regions"),
+  newsGoUrl: (id: number) => `${API_BASE}/api/news/${id}/go`,
+
   // storefront + content
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
   breedHistory: () => req("/api/content/breed-history"),

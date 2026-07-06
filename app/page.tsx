@@ -15,11 +15,13 @@ export default function Home() {
   const [roundup, setRoundup] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [news, setNews] = useState<any[]>([]);
   useEffect(() => {
     Promise.all([api.browse({ limit: 8 }), api.foundation(), api.roundup({ limit: 8 })])
       .then(([ls, fs, rs]) => { setListings(ls); setFoundation(fs.slice(0, 10)); setRoundup(rs); })
       .catch(() => {})
       .finally(() => setLoading(false));
+    api.news({ limit: 6 }).then(setNews).catch(() => {});
   }, []);
 
   return (
@@ -96,6 +98,33 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {news.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="section-head">
+              <h2><span className="roundup-pill pill">📰 The Wagyu Wire</span></h2>
+              <div className="spacer" />
+              <Link href="/news" className="nav-link">All news →</Link>
+            </div>
+            <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
+              Global Wagyu headlines — including Japanese reporting translated into English, found nowhere else.
+            </p>
+            <div className="stack" style={{ gap: 10 }}>
+              {news.map((a) => (
+                <a key={a.id} href={api.newsGoUrl(a.id)} target="_blank" rel="noopener noreferrer" className="card card-pad news-item">
+                  <div className="row wrap" style={{ gap: 8, marginBottom: 4 }}>
+                    <span className="news-region">{({ US: "🇺🇸", AU: "🇦🇺", JP: "🇯🇵", EU: "🇪🇺", SA: "🌎" } as any)[a.region] || "🌍"} {a.region}</span>
+                    {a.is_translated && <span className="pill roundup-pill" style={{ fontSize: "0.62rem" }}>🌐 Translated</span>}
+                    <span className="faint" style={{ fontSize: "0.74rem" }}>{a.source_name}</span>
+                  </div>
+                  <div className="news-title" style={{ fontSize: "0.96rem" }}>{a.title}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {roundup.length > 0 && (
         <section className="section">
