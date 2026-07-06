@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, money } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
-const TABS = ["Overview", "Analytics", "Users", "Roundup", "Ads", "AI & Compute", "Settings"];
+const TABS = ["Overview", "Analytics", "Users", "Campaigns", "Roundup", "Ads", "AI & Compute", "Settings", "Audit"];
 
 function Bars({ data, color = "var(--gold)" }: { data: any[]; color?: string }) {
   if (!data?.length) return null;
@@ -55,8 +55,82 @@ export default function AdminPage() {
       {tab === "Users" && <Users />}
       {tab === "Roundup" && <Roundup />}
       {tab === "Ads" && <Ads />}
+      {tab === "Campaigns" && <Campaigns />}
       {tab === "AI & Compute" && <AICompute />}
       {tab === "Settings" && <SettingsTab />}
+      {tab === "Audit" && <Audit />}
+    </div>
+  );
+}
+
+function Campaigns() {
+  const [d, setD] = useState<any>(null);
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [segment, setSegment] = useState("all");
+  const [msg, setMsg] = useState("");
+  function load() { api.adminCampaigns().then(setD).catch(() => {}); }
+  useEffect(() => { load(); }, []);
+  async function test() {
+    setMsg("");
+    try { const r = await api.adminCampaignTest(subject, body); setMsg(r.ok ? `Test sent to ${r.sent_to}` : "Test failed (no mail key?)"); } catch (e: any) { setMsg(e.message); }
+  }
+  async function send() {
+    if (!confirm(`Send "${subject}" to the ${segment} segment? This emails real people.`)) return;
+    setMsg("Sending…");
+    try { const r = await api.adminCampaignSend(subject, body, segment); setMsg(`Sent to ${r.sent}/${r.recipients} recipients.`); setSubject(""); setBody(""); load(); }
+    catch (e: any) { setMsg(e.message); }
+  }
+  if (!d) return <div className="muted">Loading…</div>;
+  return (
+    <div className="stack" style={{ gap: 20 }}>
+      <div className="card card-pad" style={{ maxWidth: 680 }}>
+        <div className="row"><h2 style={{ fontSize: "1.2rem", margin: 0 }}>New campaign</h2><div className="spacer" />
+          <span className="faint" style={{ fontSize: "0.82rem" }}>{d.opted_in} opted-in recipients</span></div>
+        <div className="field"><label>Subject</label><input className="input" value={subject} onChange={(e) => setSubject(e.target.value)} /></div>
+        <div className="field"><label>Body (HTML allowed)</label><textarea className="input" rows={7} value={body} onChange={(e) => setBody(e.target.value)} placeholder="<p>Hi from WagyuTank…</p>" /></div>
+        <div className="row" style={{ gap: 10 }}>
+          <select className="select" style={{ width: "auto" }} value={segment} onChange={(e) => setSegment(e.target.value)}>
+            <option value="all">Everyone opted-in</option><option value="sellers">Sellers only</option><option value="buyers">Non-sellers only</option>
+          </select>
+          <div className="spacer" />
+          <button className="btn" onClick={test} disabled={!subject || !body}>Send test to me</button>
+          <button className="btn btn-gold" onClick={send} disabled={!subject || !body}>Send campaign</button>
+        </div>
+        {msg && <p className="help gold" style={{ marginTop: 8 }}>{msg}</p>}
+        <p className="help">Every email includes a one-click unsubscribe link (CAN-SPAM/GDPR compliant). Essential account emails are never affected.</p>
+      </div>
+      <div>
+        <h3 style={{ fontSize: "1rem" }}>Past campaigns</h3>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <thead><tr><th>Subject</th><th>Segment</th><th>Sent</th><th>Status</th></tr></thead>
+          <tbody>{d.campaigns.map((c: any) => <tr key={c.id}><td>{c.subject}</td><td>{c.segment}</td><td>{c.sent}/{c.recipients}</td><td><span className="pill pill-dim">{c.status}</span></td></tr>)}</tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+}
+
+function Audit() {
+  const [rows, setRows] = useState<any[]>([]);
+  useEffect(() => { api.adminAudit().then(setRows).catch(() => {}); }, []);
+  return (
+    <div className="admin-table-wrap">
+      <table className="admin-table">
+        <thead><tr><th>When</th><th>Admin</th><th>Action</th><th>Target</th><th>Detail</th></tr></thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.id}>
+              <td style={{ whiteSpace: "nowrap" }}>{new Date(r.created_at).toLocaleString()}</td>
+              <td>{r.admin_email}</td>
+              <td><span className="pill pill-dim">{r.action}</span></td>
+              <td>{r.target_type ? `${r.target_type} #${r.target_id}` : "—"}</td>
+              <td className="faint" style={{ fontSize: "0.78rem" }}>{r.detail ? JSON.stringify(r.detail) : ""}</td>
+            </tr>
+          ))}
+          {!rows.length && <tr><td colSpan={5} className="faint">No admin actions logged yet.</td></tr>}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -330,6 +404,10 @@ function SettingsTab() {
       <div className="card card-pad">
         <div className="row"><div><strong>Daily Roundup crawler</strong><p className="faint" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>Auto-aggregates web listings each morning.</p></div>
           <div className="spacer" /><button className={`pill ${s.aggregator_enabled ? "pill-green" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => put({ aggregator_enabled: !s.aggregator_enabled })}>{s.aggregator_enabled ? "ON" : "OFF"}</button></div>
+      </div>
+      <div className="card card-pad">
+        <div className="row"><div><strong>Require 2FA for all admins</strong><p className="faint" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>Admins without 2FA lose panel access until they enable it. You must have 2FA on yourself to turn this on.</p></div>
+          <div className="spacer" /><button className={`pill ${s.require_admin_2fa ? "pill-green" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => put({ require_admin_2fa: !s.require_admin_2fa }).catch((e: any) => alert(e.message))}>{s.require_admin_2fa ? "REQUIRED" : "OPTIONAL"}</button></div>
       </div>
       <div className="card card-pad">
         <div className="field"><label>Platform fee (basis points) — {(s.platform_fee_bps / 100).toFixed(2)}% of sale</label>

@@ -128,6 +128,10 @@ export const api = {
   adminRoundupRun: () => req("/api/admin/roundup/run", { method: "POST" }),
   adminAds: (status?: string) => req(`/api/admin/ads${status ? `?status=${status}` : ""}`),
   adminAdAction: (id: number, action: string) => req(`/api/admin/ads/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
+  adminAudit: () => req("/api/admin/audit"),
+  adminCampaigns: () => req("/api/admin/campaigns"),
+  adminCampaignTest: (subject: string, body_html: string) => req("/api/admin/campaign/test", { method: "POST", body: JSON.stringify({ subject, body_html }) }),
+  adminCampaignSend: (subject: string, body_html: string, segment: string) => req("/api/admin/campaign/send", { method: "POST", body: JSON.stringify({ subject, body_html, segment }) }),
   adminEmailList: async () => {
     const t = typeof window !== "undefined" ? localStorage.getItem("wt_token") : null;
     const res = await fetch(`${API_BASE}/api/admin/email-list.csv`, { headers: t ? { Authorization: `Bearer ${t}` } : {} });
