@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { api, PRODUCT_LABEL } from "../../lib/api";
+import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
 import RoundupCard from "../../components/RoundupCard";
 
 function RoundupInner() {
@@ -12,12 +12,14 @@ function RoundupInner() {
   const [loading, setLoading] = useState(true);
 
   const product = sp.get("product_type") || "";
+  const region = sp.get("region") || "";
+  const css = sp.get("css") || "";
   const sort = sp.get("sort") || "recent";
 
   useEffect(() => { api.roundupStats().then(setStats).catch(() => {}); }, []);
   useEffect(() => {
     setLoading(true);
-    api.roundup({ product_type: product, sort, limit: 60 })
+    api.roundup({ product_type: product, region, css, sort, limit: 60 })
       .then(setRows).catch(() => setRows([])).finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sp.toString()]);
@@ -39,23 +41,40 @@ function RoundupInner() {
           without hunting across a dozen sites. <strong className="gold">These are not WagyuTank
           listings.</strong> Each one links straight back to the original seller's page; we simply
           point the way. Sellers pay nothing and can remove their listing anytime.
-          {stats && <span className="faint"> Currently tracking {stats.active} listings across {stats.sources} sources.</span>}
+          {stats && <span className="faint"> Currently tracking {stats.active} listings across {stats.sources} sources
+            {stats.countries?.length ? ` in ${stats.countries.length} countries` : ""}
+            {stats.css_export_eligible ? `, ${stats.css_export_eligible} export-eligible` : ""}.</span>}
         </p>
       </div>
 
-      <div className="row wrap" style={{ gap: 8, margin: "20px 0" }}>
-        <button className={`pill ${product === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", "")}>All</button>
+      <div className="row wrap" style={{ gap: 8, margin: "20px 0 10px" }}>
+        <button className={`pill ${product === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", "")}>All products</button>
         {["semen", "embryo", "clone_rights"].map((p) => (
           <button key={p} className={`pill ${product === p ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", p)}>
             {PRODUCT_LABEL[p]}
           </button>
         ))}
         <div className="spacer" />
+        <select className="select" style={{ width: "auto" }} value={css} onChange={(e) => setParam("css", e.target.value)}>
+          <option value="">Any export status</option>
+          <option value="css">✈ CSS export-eligible</option>
+          <option value="domestic">Domestic only</option>
+        </select>
         <select className="select" style={{ width: "auto" }} value={sort} onChange={(e) => setParam("sort", e.target.value)}>
           <option value="recent">Most recent</option>
           <option value="price_asc">Price ↑</option>
           <option value="price_desc">Price ↓</option>
         </select>
+      </div>
+      <div className="row wrap" style={{ gap: 8, marginBottom: 20 }}>
+        <span className="faint" style={{ fontSize: "0.82rem", alignSelf: "center" }}>🌍 Region:</span>
+        <button className={`pill ${region === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("region", "")}>Worldwide</button>
+        {WORLD_REGIONS.map((r) => (
+          <button key={r.code} className={`pill ${region === r.code ? "" : "pill-dim"}`} style={{ cursor: "pointer" }}
+            onClick={() => setParam("region", r.code)}>
+            {r.flag} {r.label}{stats?.regions?.[r.code] ? ` (${stats.regions[r.code]})` : ""}
+          </button>
+        ))}
       </div>
 
       {loading ? (

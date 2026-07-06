@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { PRODUCT_GLYPH, PRODUCT_LABEL, money } from "../lib/api";
+import ExportInfo from "./ExportInfo";
 
 export default function ListingCard({ l }: { l: any }) {
   const isAuction = l.sale_type === "auction";
@@ -32,6 +33,11 @@ export default function ListingCard({ l }: { l: any }) {
           <div className="spacer" />
           <div className="faint" style={{ fontSize: "0.78rem", textAlign: "right" }}>{l.quantity_display}</div>
         </div>
+        {(l.css_status && l.css_status !== "unknown") || (l.export_eligibility && l.export_eligibility.length) ? (
+          <div style={{ marginTop: 8 }}>
+            <ExportInfo css={l.css_status} regions={l.export_eligibility} compact />
+          </div>
+        ) : null}
       </div>
     </Link>
   );

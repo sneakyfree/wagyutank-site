@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api, PRODUCT_GLYPH, PRODUCT_LABEL, money } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import Checkout from "../../components/Checkout";
+import ExportInfo from "../../components/ExportInfo";
 
 function ListingDetail() {
   const id = useSearchParams().get("id") || "";
@@ -132,13 +133,14 @@ function ListingDetail() {
                 )}
               </div>
               <div style={{ flex: "1 1 300px" }}>
+                <h2 style={{ fontSize: "1.2rem" }}>Export eligibility</h2>
+                <div className="card card-pad" style={{ marginBottom: 16 }}>
+                  <ExportInfo css={l.css_status} regions={l.export_eligibility} />
+                </div>
                 <h2 style={{ fontSize: "1.2rem" }}>Storage & shipping</h2>
                 <div className="kv"><span className="k">Who ships</span><span>Storage facility, on seller's release</span></div>
                 <div className="kv"><span className="k">Shipping cost</span><span>{l.who_pays_shipping === "buyer" ? "Buyer pays at cost" : l.who_pays_shipping}</span></div>
-                {l.export_eligibility?.length ? (
-                  <div className="kv"><span className="k">Export-eligible</span><span>{l.export_eligibility.join(", ")}</span></div>
-                ) : null}
-                <p className="help">Frozen genetics stay in the facility's tank and ship tank-to-tank or in an IATA dry shipper. Buyer confirms a receiving account at checkout.</p>
+                <p className="help">Frozen genetics stay in the facility's tank and ship tank-to-tank or in an IATA dry shipper. Buyer confirms a receiving account at checkout. Only CSS-collected semen (and embryos made from it) can be exported; destination protocols vary by country.</p>
               </div>
             </div>
           </div>

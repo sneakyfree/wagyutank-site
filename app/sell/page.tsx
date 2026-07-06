@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { api, PRODUCT_LABEL, money } from "../../lib/api";
+import { api, PRODUCT_LABEL, money, EXPORT_REGIONS } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
 const PRODUCTS = [
@@ -30,7 +30,7 @@ export default function Sell() {
     start_price: "", no_reserve: false, quantity_available: 1,
     quantity_visibility: "in_stock_only", semen_type: "conventional",
     exclusive: false, rights_count: 1, lab_production_cost: "",
-    export_eligibility: [] as string[],
+    export_eligibility: [] as string[], css_status: "unknown",
   });
   const [facilityQuery, setFacilityQuery] = useState("");
   const [facilities, setFacilities] = useState<any[]>([]);
@@ -123,6 +123,7 @@ export default function Sell() {
         quantity_available: Number(form.quantity_available) || 1,
         quantity_visibility: form.quantity_visibility,
         export_eligibility: form.export_eligibility,
+        css_status: form.css_status,
         storage_facility_id: facility?.id,
       };
       if (isEmbryo) { payload.sire_reg = animal?.registration_no; payload.dam_reg = dam?.registration_no; }
@@ -356,12 +357,27 @@ export default function Sell() {
           {facility && <p className="help">Stored at <strong className="gold">{facility.name}</strong> — {facility.city}, {facility.state}.</p>}
 
           {!isClone && (
-            <div className="field"><label>Export-eligible destinations (optional)</label>
-              <div className="row wrap" style={{ gap: 8 }}>
-                {["AUS", "EU", "CAN", "US"].map((c) => (
-                  <button key={c} className={`pill ${form.export_eligibility.includes(c) ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => toggleExport(c)}>{c}</button>
-                ))}
+            <div className="card card-pad" style={{ marginTop: 8 }}>
+              <label style={{ fontWeight: 700, display: "block", marginBottom: 8 }}>✈ Export eligibility</label>
+              <div className="field">
+                <label>Is it CSS-collected? (Certified Semen Services — required to export)</label>
+                <select className="select" value={form.css_status} onChange={(e) => setForm({ ...form, css_status: e.target.value })}>
+                  <option value="unknown">Not sure / not stated</option>
+                  <option value="css">Yes — CSS-collected (export-eligible)</option>
+                  <option value="domestic">No — domestic only (non-CSS)</option>
+                </select>
+                <p className="help">Only CSS semen — and embryos made from CSS semen — can be exported. Non-CSS is domestic-only.</p>
               </div>
+              {form.css_status === "css" && (
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Cleared for export to (optional)</label>
+                  <div className="row wrap" style={{ gap: 8 }}>
+                    {EXPORT_REGIONS.map((r) => (
+                      <button key={r.code} type="button" className={`pill ${form.export_eligibility.includes(r.code) ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => toggleExport(r.code)}>{r.flag} {r.code}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

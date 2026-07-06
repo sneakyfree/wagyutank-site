@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { api, PRODUCT_GLYPH, PRODUCT_LABEL, money } from "../lib/api";
+import { api, PRODUCT_LABEL, money, countryFlag } from "../lib/api";
+import ExportInfo from "./ExportInfo";
 
 export default function RoundupCard({ l }: { l: any }) {
   const [flagged, setFlagged] = useState(false);
@@ -16,6 +17,7 @@ export default function RoundupCard({ l }: { l: any }) {
         <div className="row wrap" style={{ gap: 6, marginBottom: 8 }}>
           <span className="pill pill-dim">{PRODUCT_LABEL[l.product_type]}</span>
           <span className="pill roundup-pill">📡 Web listing</span>
+          {l.country && <span title={l.country} style={{ fontSize: "0.95rem" }}>{countryFlag(l.country)}</span>}
         </div>
         <div className="lc-title">{l.animal_name || l.title}</div>
         <p className="faint" style={{ fontSize: "0.82rem", margin: "4px 0 10px", lineHeight: 1.5 }}>
@@ -29,6 +31,7 @@ export default function RoundupCard({ l }: { l: any }) {
             </div>
           ) : <span className="faint" style={{ fontSize: "0.82rem" }}>Contact for price</span>}
           <div className="spacer" />
+          <ExportInfo css={l.css_status} regions={l.export_regions} compact />
         </div>
         <div className="divider" style={{ margin: "12px 0 10px" }} />
         <div className="faint" style={{ fontSize: "0.74rem", marginBottom: 8 }}>

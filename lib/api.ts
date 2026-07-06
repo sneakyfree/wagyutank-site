@@ -118,6 +118,41 @@ export const PRODUCT_LABEL: Record<string, string> = {
   clone_rights: "Cloning Rights",
 };
 
+// ---- Export eligibility + international helpers ----
+export const EXPORT_REGIONS = [
+  { code: "EU", label: "European Union", flag: "🇪🇺" },
+  { code: "AUS", label: "Australia", flag: "🇦🇺" },
+  { code: "CAN", label: "Canada", flag: "🇨🇦" },
+  { code: "MEX", label: "Mexico", flag: "🇲🇽" },
+  { code: "BR", label: "Brazil / S. America", flag: "🇧🇷" },
+  { code: "UK", label: "United Kingdom", flag: "🇬🇧" },
+  { code: "CN", label: "China / Asia", flag: "🇨🇳" },
+  { code: "NZ", label: "New Zealand", flag: "🇳🇿" },
+  { code: "JP", label: "Japan", flag: "🇯🇵" },
+];
+
+export const WORLD_REGIONS = [
+  { code: "NA", label: "North America", flag: "🌎" },
+  { code: "SA", label: "South America", flag: "🌎" },
+  { code: "CAM", label: "Central America", flag: "🌎" },
+  { code: "EU", label: "Europe", flag: "🇪🇺" },
+  { code: "AU", label: "Australia / Oceania", flag: "🇦🇺" },
+  { code: "AS", label: "Asia", flag: "🌏" },
+];
+
+export function countryFlag(cc?: string | null): string {
+  if (!cc || cc.length !== 2) return "";
+  const A = 0x1f1e6;
+  const up = cc.toUpperCase();
+  return String.fromCodePoint(A + up.charCodeAt(0) - 65) + String.fromCodePoint(A + up.charCodeAt(1) - 65);
+}
+
+export function cssLabel(status?: string): { text: string; cls: string } {
+  if (status === "css") return { text: "CSS — export-eligible", cls: "pill-green" };
+  if (status === "domestic") return { text: "Domestic only (non-CSS)", cls: "pill-red" };
+  return { text: "Export status not stated", cls: "pill-dim" };
+}
+
 export function money(n: number | null | undefined, ccy = "USD"): string {
   if (n === null || n === undefined) return "—";
   try {
