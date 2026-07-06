@@ -14,7 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     Promise.all([api.browse({ limit: 8 }), api.foundation()])
-      .then(([ls, fs]) => { setListings(ls); setFoundation(fs.slice(0, 6)); })
+      .then(([ls, fs]) => { setListings(ls); setFoundation(fs.slice(0, 10)); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -107,20 +107,29 @@ export default function Home() {
           <div className="section-head">
             <h2>The foundation bulls</h2>
             <div className="spacer" />
-            <Link href="/history" className="nav-link">Breed history →</Link>
+            <Link href="/foundation" className="nav-link">View all foundation animals →</Link>
           </div>
           <p className="muted" style={{ maxWidth: "60ch", marginTop: -10, marginBottom: 20 }}>
             Every full-blood Wagyu in the West descends from a handful of animals that left Japan before the 1997 export ban. They're all here.
           </p>
-          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}>
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))" }}>
             {foundation.map((a) => (
-              <Link key={a.id} href={`/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card card-pad">
-                <div className="row" style={{ gap: 6, marginBottom: 8 }}>
-                  <span className="pill">{a.bloodline}</span>
+              <Link key={a.id} href={`/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card">
+                <div className="lc-media" style={{ aspectRatio: "1/1" }}>
+                  {a.photo_url ? (
+                    <img src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <span className="glyph">🐂</span>
+                  )}
                 </div>
-                <div style={{ fontWeight: 700 }}>{a.name}</div>
-                <div className="faint" style={{ fontSize: "0.8rem", marginTop: 4 }}>
-                  {a.au_progeny ? `${a.au_progeny.toLocaleString()} AU progeny` : a.breed}
+                <div className="lc-body">
+                  <div className="row" style={{ gap: 6, marginBottom: 6 }}>
+                    <span className="pill pill-dim" style={{ fontSize: "0.65rem" }}>{a.bloodline}</span>
+                  </div>
+                  <div style={{ fontWeight: 700 }}>{a.name}</div>
+                  <div className="faint" style={{ fontSize: "0.8rem", marginTop: 3 }}>
+                    {a.au_progeny ? `${a.au_progeny.toLocaleString()} AU progeny` : a.breed}
+                  </div>
                 </div>
               </Link>
             ))}

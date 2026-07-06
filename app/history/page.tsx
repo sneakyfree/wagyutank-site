@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { api } from "../../lib/api";
 
 function renderMarkdown(md: string): string {
@@ -32,6 +33,13 @@ export default function History() {
         {md === null ? <p className="muted">Loading…</p> : (
           <div dangerouslySetInnerHTML={{ __html: renderMarkdown(md) }} />
         )}
+        <div className="adslot" style={{ textAlign: "left", marginTop: 30 }}>
+          <strong className="gold">Meet the founders</strong>
+          <p className="muted" style={{ marginTop: 6 }}>
+            Browse every foundation bull and cow — full histories, bloodlines, and photos.
+          </p>
+          <Link href="/foundation" className="btn btn-gold" style={{ marginTop: 8 }}>View the foundation animals →</Link>
+        </div>
       </div>
     </div>
   );
