@@ -106,6 +106,7 @@ export const api = {
   // The Roundup (aggregated public listings from around the web)
   roundup: (params: Record<string, any> = {}) => req(`/api/roundup?${new URLSearchParams(clean(params))}`),
   roundupStats: () => req("/api/roundup/stats"),
+  priceIndex: () => req("/api/roundup/index"),
   roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
   roundupFlag: (id: number) => req(`/api/roundup/${id}/flag`, { method: "POST" }),
 

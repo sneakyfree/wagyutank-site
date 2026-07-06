@@ -1,15 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useAuth } from "../lib/auth";
+import Logo from "./Logo";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
   return (
     <header className="hdr">
       <div className="container hdr-inner">
-        <Link href="/" className="logo">
-          <span className="mark">W</span>
-          <span>WagyuTank</span>
+        <Link href="/" className="logo" aria-label="WagyuTank home">
+          <Logo size={34} />
         </Link>
         <nav className="nav-desktop" style={{ marginLeft: 14 }}>
           <Link href="/browse" className="nav-link">Browse</Link>

@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import { AuthProvider } from "../lib/auth";
 import Header from "../components/Header";
 import Tracker from "../components/Tracker";
+import PriceTicker from "../components/PriceTicker";
 
 export const metadata: Metadata = {
-  title: "WagyuTank — The Marketplace for Frozen Wagyu Genetics",
+  title: "WagyuTank — The Global Marketplace & Knowledge Hub for Wagyu Genetics",
   description:
-    "Buy and sell frozen Wagyu genetics — semen, embryos, and cloning rights. List in under a minute. Free.",
+    "Buy and sell frozen Wagyu genetics — semen, embryos, and cloning rights — and explore the world's deepest Wagyu breed history, price index, and news. Free to list.",
+  icons: { icon: [{ url: "/favicon.svg", type: "image/svg+xml" }] },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Tracker />
           <Header />
+          <PriceTicker />
           <main>{children}</main>
           <footer className="footer">
             <div className="container row wrap">

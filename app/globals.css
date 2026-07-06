@@ -193,6 +193,40 @@ input, select, textarea, button { font: inherit; }
   background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
 }
 
+/* Price Index ticker */
+.ticker { display: flex; align-items: stretch; text-decoration: none; background: linear-gradient(180deg, #12100c, #0c0a08); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
+.ticker-badge { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 14px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em; color: #0c0a08; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); white-space: nowrap; }
+.ticker-track { flex: 1 1 auto; overflow: hidden; position: relative; }
+.ticker-run { display: inline-flex; align-items: center; gap: 0; white-space: nowrap; padding: 9px 0; animation: ticker-scroll 60s linear infinite; }
+.ticker:hover .ticker-run { animation-play-state: paused; }
+@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.tk-item { font-size: 0.82rem; color: var(--text-dim); padding: 0 20px; border-right: 1px solid var(--border-soft); }
+.tk-item b { color: var(--text); font-weight: 700; margin-right: 5px; }
+.tk-market b { color: var(--gold); }
+.tk-unit { color: var(--text-faint); font-size: 0.72rem; }
+.tk-up { color: #6fbf85; font-weight: 700; }
+.tk-down { color: #e0685c; font-weight: 700; }
+.tk-flat { color: var(--text-faint); }
+@media (prefers-reduced-motion: reduce) { .ticker-run { animation: none; } }
+
+/* Brand logo */
+.wt-logo { display: inline-flex; align-items: center; gap: 10px; }
+.wt-wordmark { font-weight: 800; font-size: 1.18rem; letter-spacing: 0.02em; line-height: 1; white-space: nowrap; }
+.wt-wordmark b { color: var(--text); font-weight: 800; }
+.wt-tank { color: var(--gold); font-weight: 800;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+@media (max-width: 520px) { .wt-wordmark { font-size: 1.02rem; } }
+
+/* Marbling texture accent — a subtle luxe backdrop for hero / section headers */
+.marble-bg { position: relative; }
+.marble-bg::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(217,164,65,0.10), transparent 42%),
+    radial-gradient(circle at 82% 12%, rgba(217,164,65,0.08), transparent 40%),
+    radial-gradient(circle at 68% 88%, rgba(181,71,47,0.07), transparent 45%);
+}
+
 /* Admin control panel */
 .admin-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
 .admin-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 640px; }
