@@ -7,13 +7,16 @@ import { useAuth } from "../../lib/auth";
 export default function Register() {
   const { register } = useAuth();
   const router = useRouter();
-  const [form, setForm] = useState({ display_name: "", email: "", password: "", handle: "" });
+  const [form, setForm] = useState({ display_name: "", email: "", password: "", handle: "", phone: "", recovery_email: "", marketing_opt_in: true });
   const [err, setErr] = useState("");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setErr("");
     try {
-      await register({ ...form, handle: form.handle || undefined });
+      await register({
+        ...form, handle: form.handle || undefined,
+        phone: form.phone || undefined, recovery_email: form.recovery_email || undefined,
+      });
       router.push("/dashboard");
     } catch (e: any) { setErr(e.message); }
   }
@@ -30,6 +33,14 @@ export default function Register() {
         </div>
         <div className="field"><label>Email</label><input className="input" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
         <div className="field"><label>Password</label><input className="input" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} /></div>
+        <div className="row" style={{ gap: 10 }}>
+          <div className="field" style={{ flex: 1 }}><label>Phone (optional)</label><input className="input" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="for account recovery" /></div>
+          <div className="field" style={{ flex: 1 }}><label>Recovery email (optional)</label><input className="input" type="email" value={form.recovery_email} onChange={(e) => setForm({ ...form, recovery_email: e.target.value })} /></div>
+        </div>
+        <label className="row" style={{ gap: 8, fontSize: "0.85rem", cursor: "pointer" }}>
+          <input type="checkbox" checked={form.marketing_opt_in} onChange={(e) => setForm({ ...form, marketing_opt_in: e.target.checked })} />
+          <span className="muted">Email me marketplace news and buyer leads. Unsubscribe anytime.</span>
+        </label>
         {err && <p className="help" style={{ color: "var(--red)" }}>{err}</p>}
         <button className="btn btn-gold btn-block btn-lg" type="submit">Create account</button>
       </form>

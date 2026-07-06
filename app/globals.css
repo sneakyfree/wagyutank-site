@@ -193,6 +193,18 @@ input, select, textarea, button { font: inherit; }
   background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
 }
 
+/* Admin control panel */
+.admin-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 640px; }
+.admin-table th { text-align: left; padding: 10px 12px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); border-bottom: 1px solid var(--border); }
+.admin-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.admin-table tr:last-child td { border-bottom: none; }
+.mini-btn { font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface, transparent); color: var(--text-dim); cursor: pointer; white-space: nowrap; }
+.mini-btn:hover { border-color: var(--gold); color: var(--text); }
+.mini-btn.danger:hover { border-color: var(--red, #c0574e); color: #c0574e; }
+.mini-btn:disabled { opacity: 0.4; cursor: default; }
+.pill-green { background: rgba(78,165,100,0.15); color: #6fbf85; border-color: rgba(78,165,100,0.35); }
+
 /* Freshness dots (Roundup staleness) */
 .fresh-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
 .fresh-green { background: #4ea564; box-shadow: 0 0 6px rgba(78,165,100,0.5); }

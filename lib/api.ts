@@ -101,6 +101,24 @@ export const api = {
   adGoUrl: (id: number) => `${API_BASE}/api/ads/${id}/go`,
   submitAd: (payload: any) => req("/api/ads/submit", { method: "POST", body: JSON.stringify(payload) }),
 
+  // Admin control panel (require_admin)
+  adminOverview: () => req("/api/admin/overview"),
+  adminUsers: (params: Record<string, any> = {}) => req(`/api/admin/users?${new URLSearchParams(clean(params))}`),
+  adminUserAction: (id: number, action: string) => req(`/api/admin/users/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
+  adminSettings: () => req("/api/admin/settings"),
+  adminPutSettings: (updates: any) => req("/api/admin/settings", { method: "PUT", body: JSON.stringify(updates) }),
+  adminAiTest: (prompt?: string) => req("/api/admin/ai/test", { method: "POST", body: JSON.stringify(prompt ? { prompt } : {}) }),
+  adminRoundup: (flagged = false) => req(`/api/admin/roundup?flagged=${flagged}`),
+  adminRoundupAction: (id: number, action: string) => req(`/api/admin/roundup/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
+  adminRoundupRun: () => req("/api/admin/roundup/run", { method: "POST" }),
+  adminAds: (status?: string) => req(`/api/admin/ads${status ? `?status=${status}` : ""}`),
+  adminAdAction: (id: number, action: string) => req(`/api/admin/ads/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
+  adminEmailList: async () => {
+    const t = typeof window !== "undefined" ? localStorage.getItem("wt_token") : null;
+    const res = await fetch(`${API_BASE}/api/admin/email-list.csv`, { headers: t ? { Authorization: `Bearer ${t}` } : {} });
+    return res.text();
+  },
+
   // storefront + content
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
   breedHistory: () => req("/api/content/breed-history"),

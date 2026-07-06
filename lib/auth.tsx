@@ -8,6 +8,7 @@ type User = {
   handle: string | null;
   email: string;
   is_seller: boolean;
+  role?: string;
   seller_rating: number;
   seller_rating_count: number;
 };
