@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import AdSlot from "../../components/AdSlot";
 
@@ -19,6 +19,9 @@ export default function Advertise() {
   });
   const [done, setDone] = useState<string>("");
   const [err, setErr] = useState("");
+  const [freeLaunch, setFreeLaunch] = useState(true);
+
+  useEffect(() => { api.adsPricing().then((p: any) => setFreeLaunch(!!p.free_launch)).catch(() => {}); }, []);
 
   function set(k: string, v: string) { setForm({ ...form, [k]: v }); }
 
@@ -42,19 +45,34 @@ export default function Advertise() {
         monthly pricing, real click and impression reporting, and you can change or cancel anytime.
       </p>
 
+      {freeLaunch && (
+        <div className="roundup-banner" style={{ maxWidth: "68ch", borderColor: "var(--gold)" }}>
+          <strong className="gold">🎉 Advertising is free during our launch.</strong>
+          <span className="muted"> We're building the audience — get your ad in front of buyers now at
+            no charge and lock in an early spot. Paid tiers (below) kick in later; you'll be grandfathered
+            in at a founder's rate.</span>
+        </div>
+      )}
+
       <div style={{ margin: "26px 0 10px" }}>
         <span className="ad-tag">A live example — this is a feed placement</span>
         <div style={{ maxWidth: 340, marginTop: 8 }}><AdSlot placement="feed" /></div>
       </div>
 
       <h2 style={{ fontSize: "1.5rem", marginTop: 30 }}>Placements & pricing</h2>
-      <p className="faint" style={{ fontSize: "0.85rem" }}>Introductory pricing — flat monthly, no per-click fees.</p>
+      <p className="faint" style={{ fontSize: "0.85rem" }}>
+        {freeLaunch ? "Free during launch — the prices below are what tiers will cost once we exit launch." : "Flat monthly, no per-click fees."}
+      </p>
       <div className="tier-grid">
         {TIERS.map((t) => (
           <div key={t.key} className={`tier-card ${t.featured ? "tier-featured" : ""}`}>
             {t.featured && <span className="pill" style={{ marginBottom: 8, display: "inline-block" }}>Most popular</span>}
             <div style={{ fontWeight: 700, fontSize: "1.2rem" }}>{t.name}</div>
-            <div className="tier-price">{t.price}<span className="faint" style={{ fontSize: "0.9rem", fontWeight: 500 }}>{t.per}</span></div>
+            {freeLaunch ? (
+              <div className="tier-price">Free <span className="faint" style={{ fontSize: "0.9rem", fontWeight: 500, textDecoration: "line-through" }}>{t.price}{t.per}</span></div>
+            ) : (
+              <div className="tier-price">{t.price}<span className="faint" style={{ fontSize: "0.9rem", fontWeight: 500 }}>{t.per}</span></div>
+            )}
             <ul>{t.perks.map((p) => <li key={p}>{p}</li>)}</ul>
             <button className={`btn ${t.featured ? "btn-gold" : ""} btn-block`} style={{ marginTop: 16 }}
               onClick={() => { set("tier", t.key); document.getElementById("ad-form")?.scrollIntoView({ behavior: "smooth" }); }}>

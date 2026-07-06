@@ -96,6 +96,7 @@ export const api = {
 
   // Ads / advertisers
   ads: (placement: string) => req(`/api/ads?placement=${placement}`),
+  adsPricing: () => req("/api/ads/pricing"),
   adImpression: (id: number) => req(`/api/ads/${id}/impression`, { method: "POST" }).catch(() => {}),
   adGoUrl: (id: number) => `${API_BASE}/api/ads/${id}/go`,
   submitAd: (payload: any) => req("/api/ads/submit", { method: "POST", body: JSON.stringify(payload) }),
