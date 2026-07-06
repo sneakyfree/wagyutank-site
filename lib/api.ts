@@ -38,6 +38,21 @@ export const api = {
     return res.json();
   },
   me: () => req("/api/auth/me"),
+  twofaVerify: (challenge: string, code: string) => req("/api/auth/2fa/verify", { method: "POST", body: JSON.stringify({ challenge, code }) }),
+  twofaSetup: () => req("/api/auth/2fa/setup", { method: "POST" }),
+  twofaEnable: (code: string) => req("/api/auth/2fa/enable", { method: "POST", body: JSON.stringify({ code }) }),
+  twofaDisable: (code: string) => req("/api/auth/2fa/disable", { method: "POST", body: JSON.stringify({ code }) }),
+  forgotPassword: (email: string) => req("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }),
+  resetPassword: (token: string, new_password: string) => req("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ token, new_password }) }),
+  adminAnalytics: () => req("/api/admin/analytics"),
+  track: (type: string, meta?: any) => {
+    try {
+      const sid = (() => { let s = localStorage.getItem("wt_sid"); if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("wt_sid", s); } return s; })();
+      const body = JSON.stringify({ type, session_id: sid, path: location.pathname, referrer: document.referrer && !document.referrer.includes(location.host) ? document.referrer : undefined, meta });
+      navigator.sendBeacon?.(`${API_BASE}/api/events`, new Blob([body], { type: "application/json" })) ||
+        fetch(`${API_BASE}/api/events`, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
+    } catch {}
+  },
   becomeSeller: () => req("/api/users/me/become-seller", { method: "POST" }),
   updateMe: (body: any) => req("/api/users/me", { method: "PATCH", body: JSON.stringify(body) }),
 

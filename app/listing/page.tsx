@@ -17,7 +17,7 @@ function ListingDetail() {
   const [checkout, setCheckout] = useState<{ secret: string | null; label: string } | null>(null);
 
   function load() { if (id) api.listing(id).then(setL).catch(() => setL(false as any)); }
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
+  useEffect(() => { load(); if (id) api.track("listing_view", { id }); /* eslint-disable-next-line */ }, [id]);
 
   if (l === false) return <div className="container section">Listing not found.</div>;
   if (!l) return <div className="container section">Loading…</div>;

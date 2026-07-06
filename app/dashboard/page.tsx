@@ -4,6 +4,7 @@ import Link from "next/link";
 import { api, money, PRODUCT_LABEL } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import Checkout from "../../components/Checkout";
+import TwoFactorSetup from "../../components/TwoFactorSetup";
 
 export default function Dashboard() {
   const { user, loading, refresh } = useAuth();
@@ -92,6 +93,9 @@ export default function Dashboard() {
       ) : (
         <div className="adslot">No listings yet. <Link href="/sell" className="gold">Create your first →</Link></div>
       )}
+
+      <div className="section-head" style={{ marginTop: 32 }}><h2>Security</h2></div>
+      <TwoFactorSetup />
 
       {checkout && (
         <Checkout clientSecret={checkout.secret} amountLabel={checkout.label}

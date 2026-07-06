@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, money } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
-const TABS = ["Overview", "Users", "Roundup", "Ads", "AI & Compute", "Settings"];
+const TABS = ["Overview", "Analytics", "Users", "Roundup", "Ads", "AI & Compute", "Settings"];
 
 function Bars({ data, color = "var(--gold)" }: { data: any[]; color?: string }) {
   if (!data?.length) return null;
@@ -51,6 +51,7 @@ export default function AdminPage() {
         ))}
       </div>
       {tab === "Overview" && <Overview />}
+      {tab === "Analytics" && <Analytics />}
       {tab === "Users" && <Users />}
       {tab === "Roundup" && <Roundup />}
       {tab === "Ads" && <Ads />}
@@ -86,6 +87,44 @@ function Overview() {
         ))}
       </div>
       {d.roundup.flagged > 0 && <div className="adslot">⚠ {d.roundup.flagged} Roundup listing(s) flagged for review · {d.ads.pending} ad(s) pending approval</div>}
+    </div>
+  );
+}
+
+function Analytics() {
+  const [d, setD] = useState<any>(null);
+  useEffect(() => { api.adminAnalytics().then(setD).catch(() => {}); }, []);
+  if (!d) return <div className="muted">Loading analytics…</div>;
+  const maxF = Math.max(1, ...d.funnel.map((f: any) => f.n));
+  return (
+    <div className="stack" style={{ gap: 24 }}>
+      {!d.has_data && <div className="adslot">No traffic events yet — the tracker just went live, so this fills in as visitors arrive.</div>}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 16 }}>
+        <div className="card card-pad"><div className="faint" style={{ fontSize: "0.78rem", marginBottom: 6 }}>Unique visitors (30d)</div><Bars data={d.charts.visitors} color="var(--gold)" /></div>
+        <div className="card card-pad"><div className="faint" style={{ fontSize: "0.78rem", marginBottom: 6 }}>Page views (30d)</div><Bars data={d.charts.page_views} color="#6d9995" /></div>
+      </div>
+      <div className="card card-pad">
+        <div className="faint" style={{ fontSize: "0.78rem", marginBottom: 12 }}>Funnel (30 days)</div>
+        <div className="stack" style={{ gap: 8 }}>
+          {d.funnel.map((f: any) => (
+            <div key={f.step} className="row" style={{ gap: 10, alignItems: "center" }}>
+              <span style={{ width: 84, fontSize: "0.82rem" }}>{f.step}</span>
+              <div style={{ flex: 1, background: "var(--border)", borderRadius: 6, height: 22, overflow: "hidden" }}>
+                <div style={{ width: `${(f.n / maxF) * 100}%`, background: "var(--gold)", height: "100%", minWidth: f.n ? 3 : 0 }} />
+              </div>
+              <span style={{ width: 44, textAlign: "right", fontWeight: 700 }}>{f.n}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 16 }}>
+        <div className="card card-pad"><div className="faint" style={{ fontSize: "0.78rem", marginBottom: 8 }}>Top pages</div>
+          {d.top_pages.length ? d.top_pages.map((p: any) => <div key={p.path} className="kv"><span className="k" style={{ fontSize: "0.8rem" }}>{p.path}</span><span>{p.views}</span></div>) : <span className="faint">—</span>}</div>
+        <div className="card card-pad"><div className="faint" style={{ fontSize: "0.78rem", marginBottom: 8 }}>Top searches</div>
+          {d.top_searches.length ? d.top_searches.map((x: any) => <div key={x.q} className="kv"><span className="k" style={{ fontSize: "0.8rem" }}>{x.q}</span><span>{x.n}</span></div>) : <span className="faint">—</span>}</div>
+        <div className="card card-pad"><div className="faint" style={{ fontSize: "0.78rem", marginBottom: 8 }}>Referrers</div>
+          {d.referrers.length ? d.referrers.map((r: any) => <div key={r.ref} className="kv"><span className="k" style={{ fontSize: "0.8rem" }}>{(r.ref || "").slice(0, 30)}</span><span>{r.n}</span></div>) : <span className="faint">—</span>}</div>
+      </div>
     </div>
   );
 }

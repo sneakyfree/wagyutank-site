@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { AuthProvider } from "../lib/auth";
 import Header from "../components/Header";
+import Tracker from "../components/Tracker";
 
 export const metadata: Metadata = {
   title: "WagyuTank — The Marketplace for Frozen Wagyu Genetics",
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <AuthProvider>
+          <Tracker />
           <Header />
           <main>{children}</main>
           <footer className="footer">

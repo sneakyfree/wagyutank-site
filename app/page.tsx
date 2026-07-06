@@ -34,7 +34,7 @@ export default function Home() {
           <form
             className="searchbar"
             style={{ marginTop: 26 }}
-            onSubmit={(e) => { e.preventDefault(); router.push(`/browse?q=${encodeURIComponent(q)}`); }}
+            onSubmit={(e) => { e.preventDefault(); if (q.trim()) api.track("search", { q: q.trim().toLowerCase() }); router.push(`/browse?q=${encodeURIComponent(q)}`); }}
           >
             <input
               placeholder="Search Michifuku, Tajima, Itoshigenami…"

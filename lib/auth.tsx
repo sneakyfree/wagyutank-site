@@ -16,7 +16,8 @@ type User = {
 type AuthCtx = {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
+  verify2fa: (challenge: string, code: string) => Promise<void>;
   register: (body: any) => Promise<void>;
   logout: () => void;
   refresh: () => Promise<void>;
@@ -51,7 +52,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthCtx = {
     user,
     loading,
-    login: async (email, password) => persist(await api.login(email, password)),
+    login: async (email, password) => {
+      const res = await api.login(email, password);
+      if (res.access_token) persist(res);
+      return res; // may be { twofa_required, challenge }
+    },
+    verify2fa: async (challenge, code) => persist(await api.twofaVerify(challenge, code)),
     register: async (body) => persist(await api.register(body)),
     logout: () => { localStorage.removeItem("wt_token"); setUser(null); },
     refresh,
