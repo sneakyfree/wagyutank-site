@@ -94,10 +94,35 @@ export const api = {
   roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
   roundupFlag: (id: number) => req(`/api/roundup/${id}/flag`, { method: "POST" }),
 
+  // Ads / advertisers
+  ads: (placement: string) => req(`/api/ads?placement=${placement}`),
+  adImpression: (id: number) => req(`/api/ads/${id}/impression`, { method: "POST" }).catch(() => {}),
+  adGoUrl: (id: number) => `${API_BASE}/api/ads/${id}/go`,
+  submitAd: (payload: any) => req("/api/ads/submit", { method: "POST", body: JSON.stringify(payload) }),
+
   // storefront + content
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
   breedHistory: () => req("/api/content/breed-history"),
 };
+
+// Freshness signal for a Roundup listing — source-updated date if known, else our own index date.
+export function freshness(l: any): { label: string; cls: string; title: string } | null {
+  const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+  if (l?.source_updated_at) {
+    const d = new Date(l.source_updated_at);
+    const months = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 30.4);
+    const cls = months < 3 ? "fresh-green" : months < 12 ? "fresh-amber" : "fresh-red";
+    const src = { shopify: "the seller's store", "page-header": "the source page", stated: "the ad itself" }[
+      l.source_date_type as string] || "the source";
+    return { label: `Updated ${fmt(d)}`, cls, title: `Source last updated ${d.toLocaleDateString()} (per ${src})` };
+  }
+  if (l?.first_seen_at) {
+    const d = new Date(l.first_seen_at);
+    return { label: `Indexed ${fmt(d)}`, cls: "fresh-neutral",
+      title: "The source doesn't publish its own update date — this is when WagyuTank first indexed it (still confirmed live)." };
+  }
+  return null;
+}
 
 function clean(p: Record<string, any>): Record<string, string> {
   const out: Record<string, string> = {};

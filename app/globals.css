@@ -193,6 +193,42 @@ input, select, textarea, button { font: inherit; }
   background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
 }
 
+/* Freshness dots (Roundup staleness) */
+.fresh-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.fresh-green { background: #4ea564; box-shadow: 0 0 6px rgba(78,165,100,0.5); }
+.fresh-amber { background: #d9a441; box-shadow: 0 0 6px rgba(217,164,65,0.5); }
+.fresh-red { background: #c0574e; }
+.fresh-neutral { background: var(--text-faint); }
+select.fresh-green, select.fresh-amber { }
+
+/* Advertising */
+.ad-tag { font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+.ad-card { display: block; text-decoration: none; border: 1px solid var(--gold-dim, var(--border)); background: linear-gradient(180deg, rgba(217,164,65,0.05), transparent); }
+.ad-card:hover { border-color: var(--gold); }
+.ad-card-media { aspect-ratio: 16/9; overflow: hidden; background: var(--surface-2, #1a1a1a); }
+.ad-card-media img { width: 100%; height: 100%; object-fit: cover; }
+.ad-banner {
+  display: flex; align-items: center; gap: 18px; text-decoration: none;
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(217,164,65,0.08), transparent);
+}
+.ad-banner:hover { border-color: var(--gold); }
+.ad-banner-img { width: 88px; height: 88px; object-fit: cover; border-radius: 8px; flex: 0 0 auto; }
+.ad-banner-body { flex: 1 1 auto; min-width: 0; }
+.ad-banner-headline { font-size: 1.15rem; font-weight: 700; margin-top: 4px; }
+.ad-banner-text { color: var(--text-dim); font-size: 0.88rem; margin: 4px 0 0; }
+.ad-banner-cta { flex: 0 0 auto; white-space: nowrap; }
+@media (max-width: 640px) { .ad-banner { flex-direction: column; text-align: center; } .ad-banner-cta { width: 100%; } }
+
+/* Advertiser tiers */
+.tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+.tier-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+.tier-card.tier-featured { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+.tier-price { font-size: 1.9rem; font-weight: 800; color: var(--gold); }
+.tier-card ul { list-style: none; padding: 0; margin: 14px 0 0; }
+.tier-card li { padding: 5px 0 5px 22px; position: relative; color: var(--text-dim); font-size: 0.9rem; }
+.tier-card li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); }
+
 /* Ad slot (house ads) */
 .adslot {
   border: 1px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center;

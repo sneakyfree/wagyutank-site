@@ -3,6 +3,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
 import RoundupCard from "../../components/RoundupCard";
+import AdSlot from "../../components/AdSlot";
 
 function RoundupInner() {
   const sp = useSearchParams();
@@ -76,6 +77,8 @@ function RoundupInner() {
           </button>
         ))}
       </div>
+
+      <div style={{ marginBottom: 20 }}><AdSlot placement="banner" /></div>
 
       {loading ? (
         <div className="grid listings-grid">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="card roundup-card"><div className="lc-body"><div className="skeleton" style={{ width: "70%" }} /></div></div>)}</div>

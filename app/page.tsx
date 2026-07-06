@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { api } from "../lib/api";
 import ListingCard from "../components/ListingCard";
 import RoundupCard from "../components/RoundupCard";
+import AdSlot from "../components/AdSlot";
 
 export default function Home() {
   const router = useRouter();
@@ -115,11 +116,7 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <div className="adslot">
-            <strong className="gold">WagyuTank</strong> — the effortless way to sell frozen genetics.
-            Type a registration number, and we write the ad for you.{" "}
-            <Link href="/sell" className="gold">Start selling →</Link>
-          </div>
+          <AdSlot placement="banner" />
         </div>
       </section>
 

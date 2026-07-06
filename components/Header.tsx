@@ -18,6 +18,7 @@ export default function Header() {
           <Link href="/browse?product_type=clone_rights" className="nav-link">Cloning</Link>
           <Link href="/roundup" className="nav-link">Roundup</Link>
           <Link href="/history" className="nav-link">Breed History</Link>
+          <Link href="/advertise" className="nav-link">Advertise</Link>
         </nav>
         <div className="spacer" />
         <Link href="/sell" className="btn btn-gold">+ Sell</Link>
@@ -40,6 +41,7 @@ export default function Header() {
         <Link href="/browse?product_type=clone_rights" className="nav-link">Cloning</Link>
         <Link href="/roundup" className="nav-link">Roundup</Link>
         <Link href="/history" className="nav-link">Breed History</Link>
+        <Link href="/advertise" className="nav-link">Advertise</Link>
       </nav>
     </header>
   );

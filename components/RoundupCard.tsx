@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { api, PRODUCT_LABEL, money, countryFlag } from "../lib/api";
+import { api, PRODUCT_LABEL, money, countryFlag, freshness } from "../lib/api";
 import ExportInfo from "./ExportInfo";
 
 export default function RoundupCard({ l }: { l: any }) {
@@ -33,7 +33,13 @@ export default function RoundupCard({ l }: { l: any }) {
           <div className="spacer" />
           <ExportInfo css={l.css_status} regions={l.export_regions} compact />
         </div>
-        <div className="divider" style={{ margin: "12px 0 10px" }} />
+        {(() => { const f = freshness(l); return f ? (
+          <div className="row" style={{ gap: 6, marginTop: 10 }}>
+            <span className={`fresh-dot ${f.cls}`} title={f.title} />
+            <span className="faint" style={{ fontSize: "0.74rem" }} title={f.title}>{f.label}</span>
+          </div>
+        ) : null; })()}
+        <div className="divider" style={{ margin: "10px 0" }} />
         <div className="faint" style={{ fontSize: "0.74rem", marginBottom: 8 }}>
           Listed on <strong style={{ color: "var(--text-dim)" }}>{l.source_site}</strong>
           {l.seller_name ? ` · ${l.seller_name}` : ""} · not a WagyuTank seller
