@@ -180,6 +180,19 @@ input, select, textarea, button { font: inherit; }
 .step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
 .step-dot.active { background: var(--gold); }
 
+/* The Roundup (aggregated off-site listings) */
+.roundup-card { border-style: dashed; border-color: var(--border); background: linear-gradient(180deg, rgba(217,164,65,0.03), transparent); }
+.roundup-pill { background: rgba(109,153,149,0.14); color: #7fb4ad; border-color: rgba(109,153,149,0.3); }
+.roundup-flag {
+  display: block; width: 100%; margin-top: 8px; background: none; border: none;
+  font-size: 0.72rem; color: var(--text-faint); cursor: pointer; text-align: center;
+}
+.roundup-flag:hover { color: var(--text-dim); text-decoration: underline; }
+.roundup-banner {
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
+}
+
 /* Ad slot (house ads) */
 .adslot {
   border: 1px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center;

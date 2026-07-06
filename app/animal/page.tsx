@@ -4,16 +4,19 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { api } from "../../lib/api";
 import ListingCard from "../../components/ListingCard";
+import RoundupCard from "../../components/RoundupCard";
 
 function AnimalView() {
   const reg = useSearchParams().get("reg") || "";
   const [a, setA] = useState<any>(null);
   const [offers, setOffers] = useState<any[]>([]);
+  const [webOffers, setWebOffers] = useState<any[]>([]);
 
   useEffect(() => {
     if (!reg) { setA(false as any); return; }
     api.animal(reg).then(setA).catch(() => setA(false as any));
     api.animalOffers(reg).then(setOffers).catch(() => {});
+    api.roundup({ animal: reg, limit: 12 }).then(setWebOffers).catch(() => {});
   }, [reg]);
 
   if (a === false) return <div className="container section">Animal not found.</div>;
@@ -85,6 +88,18 @@ function AnimalView() {
           <div className="adslot">No live offers for {a.name} right now. <Link href="/sell" className="gold">Be the first to list →</Link></div>
         )}
       </div>
+
+      {webOffers.length > 0 && (
+        <div className="section" style={{ paddingTop: 8 }}>
+          <div className="section-head">
+            <h2><span className="roundup-pill pill">📡 Also around the web</span></h2>
+          </div>
+          <p className="muted" style={{ marginTop: -10, marginBottom: 18, fontSize: "0.92rem" }}>
+            {a.name} genetics found for sale on other sites — links go to the original listing.
+          </p>
+          <div className="grid listings-grid">{webOffers.map((l) => <RoundupCard key={l.id} l={l} />)}</div>
+        </div>
+      )}
     </div>
   );
 }

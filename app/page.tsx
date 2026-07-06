@@ -4,17 +4,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../lib/api";
 import ListingCard from "../components/ListingCard";
+import RoundupCard from "../components/RoundupCard";
 
 export default function Home() {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [listings, setListings] = useState<any[]>([]);
   const [foundation, setFoundation] = useState<any[]>([]);
+  const [roundup, setRoundup] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([api.browse({ limit: 8 }), api.foundation()])
-      .then(([ls, fs]) => { setListings(ls); setFoundation(fs.slice(0, 10)); })
+    Promise.all([api.browse({ limit: 8 }), api.foundation(), api.roundup({ limit: 8 })])
+      .then(([ls, fs, rs]) => { setListings(ls); setFoundation(fs.slice(0, 10)); setRoundup(rs); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -91,6 +93,25 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {roundup.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="section-head">
+              <h2><span className="roundup-pill pill">📡 The Roundup</span></h2>
+              <div className="spacer" />
+              <Link href="/roundup" className="nav-link">All web listings →</Link>
+            </div>
+            <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
+              Wagyu genetics for sale from across the web, gathered in one place. Not WagyuTank
+              sellers — each links back to the original listing.
+            </p>
+            <div className="grid listings-grid">
+              {roundup.map((l) => <RoundupCard key={l.id} l={l} />)}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section">
         <div className="container">

@@ -88,6 +88,12 @@ export const api = {
     return res.json();
   },
 
+  // The Roundup (aggregated public listings from around the web)
+  roundup: (params: Record<string, any> = {}) => req(`/api/roundup?${new URLSearchParams(clean(params))}`),
+  roundupStats: () => req("/api/roundup/stats"),
+  roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
+  roundupFlag: (id: number) => req(`/api/roundup/${id}/flag`, { method: "POST" }),
+
   // storefront + content
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
   breedHistory: () => req("/api/content/breed-history"),
