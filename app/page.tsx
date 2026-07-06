@@ -24,11 +24,13 @@ export default function Home() {
 
   return (
     <>
-      <section className="hero">
+      <section className="hero marble-bg">
         <div className="container">
-          <h1>The world's marketplace for frozen Wagyu genetics.</h1>
+          <span className="hero-eyebrow">🥩 THE GLOBAL WAGYU CROSSROADS</span>
+          <h1>The world's marketplace <span className="gold">&amp;</span> knowledge hub for Wagyu genetics.</h1>
           <p className="sub" style={{ marginTop: 14 }}>
-            Semen, embryos, and cloning rights — from foundation bloodlines to today's top sires.
+            Buy and sell semen, embryos, and cloning rights — and explore the deepest breed history,
+            a live price index, and bloodlines traced to the original foundation sires.
             List in under a minute. Free.
           </p>
           <form

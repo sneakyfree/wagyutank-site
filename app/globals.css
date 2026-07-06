@@ -193,6 +193,22 @@ input, select, textarea, button { font: inherit; }
   background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
 }
 
+/* Hero warmth */
+.hero.marble-bg > .container { position: relative; z-index: 1; }
+.hero-eyebrow { display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 14px; padding: 5px 12px; border: 1px solid rgba(217,164,65,0.3); border-radius: 999px; background: var(--gold-soft); }
+
+/* Discussion / comments */
+.cmt { display: flex; gap: 12px; }
+.cmt-avatar { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.9rem; }
+.cmt-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cmt-author { font-weight: 700; color: var(--gold); font-size: 0.86rem; }
+.cmt-text { margin: 4px 0 6px; line-height: 1.55; color: var(--text-dim); font-size: 0.93rem; }
+.cmt-actions { display: flex; gap: 14px; }
+.cmt-link { background: none; border: none; color: var(--text-faint); font-size: 0.78rem; cursor: pointer; padding: 0; }
+.cmt-link:hover { color: var(--gold); }
+.cmt-thread { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.cmt-replies { margin: 14px 0 0 22px; padding-left: 20px; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
+
 /* Price Index ticker */
 .ticker { display: flex; align-items: stretch; text-decoration: none; background: linear-gradient(180deg, #12100c, #0c0a08); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
 .ticker-badge { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 14px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em; color: #0c0a08; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); white-space: nowrap; }

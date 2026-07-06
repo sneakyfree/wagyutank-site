@@ -63,6 +63,9 @@ export const api = {
     req(`/api/animals/foundation${bloodline ? `?bloodline=${encodeURIComponent(bloodline)}` : ""}`),
   animal: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}`),
   animalOffers: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/offers`),
+  animalComments: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/comments`),
+  postComment: (reg: string, body: string, parent_id?: number) => req(`/api/animals/${encodeURIComponent(reg)}/comments`, { method: "POST", body: JSON.stringify({ body, parent_id: parent_id ?? null }) }),
+  likeComment: (id: number) => req(`/api/comments/${id}/like`, { method: "POST" }),
 
   // facilities
   facilities: (q?: string) => req(`/api/facilities${q ? `?q=${encodeURIComponent(q)}` : ""}`),

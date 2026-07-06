@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api } from "../../lib/api";
 import ListingCard from "../../components/ListingCard";
 import RoundupCard from "../../components/RoundupCard";
+import Discussion from "../../components/Discussion";
 
 function AnimalView() {
   const reg = useSearchParams().get("reg") || "";
@@ -100,6 +101,8 @@ function AnimalView() {
           <div className="grid listings-grid">{webOffers.map((l) => <RoundupCard key={l.id} l={l} />)}</div>
         </div>
       )}
+
+      <Discussion reg={a.registration_no || reg} name={a.name} />
     </div>
   );
 }
