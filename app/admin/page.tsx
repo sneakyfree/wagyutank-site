@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, money } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
-const TABS = ["Overview", "Analytics", "Users", "Campaigns", "Roundup", "Ads", "AI & Compute", "Settings", "Audit"];
+const TABS = ["Overview", "Health", "Analytics", "Users", "Campaigns", "Roundup", "Ads", "AI & Compute", "Settings", "Audit"];
 
 function Bars({ data, color = "var(--gold)" }: { data: any[]; color?: string }) {
   if (!data?.length) return null;
@@ -51,6 +51,7 @@ export default function AdminPage() {
         ))}
       </div>
       {tab === "Overview" && <Overview />}
+      {tab === "Health" && <Health />}
       {tab === "Analytics" && <Analytics />}
       {tab === "Users" && <Users />}
       {tab === "Roundup" && <Roundup />}
@@ -173,6 +174,86 @@ function Overview() {
         ))}
       </div>
       {d.roundup.flagged > 0 && <div className="adslot">⚠ {d.roundup.flagged} Roundup listing(s) flagged for review · {d.ads.pending} ad(s) pending approval</div>}
+    </div>
+  );
+}
+
+function ago(iso: string | null): string {
+  if (!iso) return "never";
+  const s = (Date.now() - new Date(iso + "Z").getTime()) / 1000;
+  if (s < 3600) return `${Math.max(1, Math.floor(s / 60))}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+const DOT: Record<string, string> = { healthy: "#4ea564", stale: "#d9a441", down: "#c0574e", unknown: "#7d7362" };
+
+function Health() {
+  const [d, setD] = useState<any>(null);
+  const [filter, setFilter] = useState("");
+  function load() { api.adminHealth().then(setD).catch(() => setD(false)); }
+  useEffect(() => { load(); const t = setInterval(load, 60000); return () => clearInterval(t); }, []);
+  if (d === false) return <div className="muted">Health data unavailable.</div>;
+  if (!d) return <div className="muted">Loading system health…</div>;
+  const s = d.summary;
+  const sources = d.sources.filter((x: any) => !filter || x.type === filter);
+
+  return (
+    <div className="stack" style={{ gap: 22 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 12 }}>
+        <Kpi label="Spider jobs" value={`${s.jobs_healthy}/${s.jobs_total}`} sub="healthy" />
+        <Kpi label="Jobs stale/down" value={s.jobs_stale} sub={s.jobs_stale ? "⚠ needs attention" : "all current"} />
+        <Kpi label="Sources tracked" value={s.sources_total} sub="individual spiders" />
+        <Kpi label="Never contributed" value={s.sources_never_contributed} sub="check these" />
+      </div>
+
+      <div>
+        <h2 style={{ fontSize: "1.2rem" }}>Daily gathering machines</h2>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <thead><tr><th></th><th>Job</th><th>Schedule</th><th>Last run</th><th>Last contributed</th><th>Last result</th></tr></thead>
+          <tbody>
+            {d.jobs.map((j: any) => (
+              <tr key={j.key}>
+                <td><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: DOT[j.status] }} title={j.status} /></td>
+                <td><div style={{ fontWeight: 600 }}>{j.label}</div><div className="faint" style={{ fontSize: "0.72rem" }}>{j.detail}</div></td>
+                <td className="faint">{j.cadence}</td>
+                <td className={j.status === "down" ? "" : ""} style={{ color: j.status === "down" ? "#c0574e" : undefined }}>{ago(j.last_run)}</td>
+                <td>{ago(j.last_contributed)}</td>
+                <td>{j.last_error ? <span style={{ color: "#c0574e" }}>⚠ {j.last_error.slice(0, 40)}</span>
+                  : j.last_added != null ? <span className="faint">+{j.last_added}{j.last_seen ? ` / ${j.last_seen} seen` : ""}</span> : "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+        <p className="help">🟢 healthy · 🟡 overdue · 🔴 down (way past schedule) · ⚫ hasn't run yet. Auto-refreshes each minute.</p>
+      </div>
+
+      <div>
+        <div className="row" style={{ alignItems: "baseline" }}>
+          <h2 style={{ fontSize: "1.2rem" }}>Individual spiders ({d.sources.length})</h2>
+          <div className="spacer" />
+          <select className="select" style={{ width: "auto" }} value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="">All types</option><option value="news_feed">News feeds</option>
+            <option value="engine">Engines</option><option value="roundup_source">Roundup sources</option>
+          </select>
+        </div>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <thead><tr><th></th><th>Spider</th><th>Type</th><th>Last crawled</th><th>Last contributed</th><th>Last yield</th><th>Success</th></tr></thead>
+          <tbody>
+            {sources.map((x: any) => (
+              <tr key={x.key}>
+                <td><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: x.never_contributed ? "#c0574e" : (x.run_hours_ago > 48 ? "#d9a441" : "#4ea564") }} /></td>
+                <td style={{ fontSize: "0.82rem" }}>{x.label}</td>
+                <td className="faint" style={{ fontSize: "0.72rem" }}>{x.type.replace("_", " ")}</td>
+                <td className="faint">{ago(x.last_run)}</td>
+                <td className={x.never_contributed ? "" : "faint"} style={{ color: x.never_contributed ? "#c0574e" : undefined }}>{x.never_contributed ? "never" : ago(x.last_contributed)}</td>
+                <td>{x.last_count}</td>
+                <td className="faint">{x.ok_runs}/{x.runs}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table></div>
+        <p className="help">A spider that's crawled recently but "never contributed" (🔴) may have a dead source or changed format — worth checking. Small-market feeds legitimately contribute rarely.</p>
+      </div>
     </div>
   );
 }

@@ -45,6 +45,7 @@ export const api = {
   forgotPassword: (email: string) => req("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }),
   resetPassword: (token: string, new_password: string) => req("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ token, new_password }) }),
   adminAnalytics: () => req("/api/admin/analytics"),
+  adminHealth: () => req("/api/admin/health"),
   track: (type: string, meta?: any) => {
     try {
       const sid = (() => { let s = localStorage.getItem("wt_sid"); if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("wt_sid", s); } return s; })();
