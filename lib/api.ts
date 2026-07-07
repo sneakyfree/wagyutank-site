@@ -111,7 +111,12 @@ export const api = {
   roundupStats: () => req("/api/roundup/stats"),
   priceIndex: () => req("/api/roundup/index"),
   market: () => req("/api/market"),
+  marketTicker: () => req("/api/market/ticker"),
   sales: () => req("/api/sales"),
+  saleEvents: (params: Record<string, any> = {}) => req(`/api/sale-events?${new URLSearchParams(clean(params))}`),
+  saleEventStats: () => req("/api/sale-events/stats"),
+  saleEventChart: (series: string) => req(`/api/sale-events/chart?series=${series}`),
+  saleTicker: () => req("/api/sale-events/ticker"),
   roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
   roundupFlag: (id: number) => req(`/api/roundup/${id}/flag`, { method: "POST" }),
 

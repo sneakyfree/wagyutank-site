@@ -4,7 +4,7 @@ import { AuthProvider } from "../lib/auth";
 import { LangProvider } from "../lib/i18n";
 import Header from "../components/Header";
 import Tracker from "../components/Tracker";
-import PriceTicker from "../components/PriceTicker";
+import Tickers from "../components/Tickers";
 
 const DESC =
   "Buy and sell frozen Wagyu genetics — semen, embryos, and cloning rights — and explore the world's deepest Wagyu breed history, a live genetics price index, translated global news, and market data. Free to list.";
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LangProvider>
           <Tracker />
           <Header />
-          <PriceTicker />
+          <Tickers />
           <main>{children}</main>
           <footer className="footer">
             <div className="container row wrap">

@@ -280,6 +280,10 @@ input, select, textarea, button { font: inherit; }
 .cmt-thread { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .cmt-replies { margin: 14px 0 0 22px; padding-left: 20px; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
 
+/* Ticker stack (3 bands) */
+.ticker-stack .ticker { border-top: none; }
+.ticker-stack .ticker:first-child { border-top: 1px solid var(--border); }
+
 /* Price Index ticker */
 .ticker { display: flex; align-items: stretch; text-decoration: none; background: linear-gradient(180deg, #12100c, #0c0a08); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
 .ticker-badge { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 14px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em; color: #0c0a08; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); white-space: nowrap; }
