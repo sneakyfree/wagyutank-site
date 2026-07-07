@@ -55,6 +55,7 @@ export default function SaleReports() {
   const [events, setEvents] = useState<any[]>([]);
   const [elite, setElite] = useState<any>(null);
   const [matsusaka, setMatsusaka] = useState<any>(null);
+  const [global, setGlobal] = useState<any>(null);
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [continent, setContinent] = useState("");
   const [sort, setSort] = useState("recent");
@@ -64,6 +65,7 @@ export default function SaleReports() {
     fetch(`${API}/api/sale-events/stats`).then((r) => r.json()).then(setStats).catch(() => {});
     fetch(`${API}/api/sale-events/chart?series=elite`).then((r) => r.json()).then(setElite).catch(() => {});
     fetch(`${API}/api/sale-events/chart?series=matsusaka`).then((r) => r.json()).then(setMatsusaka).catch(() => {});
+    fetch(`${API}/api/sale-events/chart?series=global`).then((r) => r.json()).then(setGlobal).catch(() => {});
     fetch(`${API}/api/upcoming-sales`).then((r) => r.json()).then(setUpcoming).catch(() => {});
   }, []);
   useEffect(() => {
@@ -85,6 +87,15 @@ export default function SaleReports() {
     if (!matsusaka?.points) return [];
     return [{ label: "Champion cow (¥)", color: "#c0574e", pts: matsusaka.points.filter((p: any) => p.champion).map((p: any) => ({ x: p.year, y: p.champion })) }];
   }, [matsusaka]);
+
+  const globalSeries = useMemo(() => {
+    if (!global?.points) return [];
+    const mk = (key: string, label: string, color: string) => ({
+      label, color, pts: global.points.filter((p: any) => p[key] != null).map((p: any) => ({ x: p.year, y: p[key] })),
+    });
+    return [mk("female", "Females", "#d9a441"), mk("bull", "Bulls", "#6d9995"),
+      mk("embryo", "Embryos", "#c86b4e"), mk("semen", "Semen", "#7fb4ad")].filter((s) => s.pts.length > 1);
+  }, [global]);
 
   return (
     <div className="container section">
@@ -123,6 +134,12 @@ export default function SaleReports() {
           <LineChart series={eliteSeries} />
         </div>
       )}
+      {globalSeries.length > 0 && (
+        <div className="card card-pad" style={{ marginTop: 16 }}>
+          <h2 style={{ fontSize: "1.15rem", marginTop: 0 }}>Global genetics averages by year <span className="faint" style={{ fontWeight: 400, fontSize: "0.85rem" }}>(USD-normalized, all regions ex-Japan)</span></h2>
+          <LineChart series={globalSeries} />
+        </div>
+      )}
       {matSeries[0]?.pts.length > 1 && (
         <div className="card card-pad" style={{ marginTop: 16 }}>
           <h2 style={{ fontSize: "1.15rem", marginTop: 0 }}>Matsusaka champion cow — auction price by year <span className="faint" style={{ fontWeight: 400, fontSize: "0.85rem" }}>(¥, millions)</span></h2>
@@ -153,7 +170,8 @@ export default function SaleReports() {
           <tbody>
             {events.map((e) => (
               <tr key={e.id}>
-                <td><div style={{ fontWeight: 600 }}>{COUNTRY_FLAG[e.country] || "🌍"} {e.sale_name}</div>
+                <td><div style={{ fontWeight: 600 }}>{COUNTRY_FLAG[e.country] || "🌍"} {e.sale_name}
+                  {e.notes?.includes("Auto-detected") && <span className="pill pill-dim" style={{ marginLeft: 6, fontSize: "0.58rem" }}>📡 auto</span>}</div>
                   {e.venue && <div className="faint" style={{ fontSize: "0.72rem" }}>{e.venue}</div>}</td>
                 <td style={{ whiteSpace: "nowrap" }}>{e.date || e.year}</td>
                 <td>{money(e.top_price, e.currency)}{e.top_price_item && <div className="faint" style={{ fontSize: "0.68rem", maxWidth: 160 }}>{e.top_price_item}</div>}</td>
