@@ -55,13 +55,16 @@ export default function SaleReports() {
   const [events, setEvents] = useState<any[]>([]);
   const [elite, setElite] = useState<any>(null);
   const [matsusaka, setMatsusaka] = useState<any>(null);
+  const [upcoming, setUpcoming] = useState<any[]>([]);
   const [continent, setContinent] = useState("");
   const [sort, setSort] = useState("recent");
+  const API = process.env.NEXT_PUBLIC_API_BASE;
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/sale-events/stats`).then((r) => r.json()).then(setStats).catch(() => {});
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/sale-events/chart?series=elite`).then((r) => r.json()).then(setElite).catch(() => {});
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/sale-events/chart?series=matsusaka`).then((r) => r.json()).then(setMatsusaka).catch(() => {});
+    fetch(`${API}/api/sale-events/stats`).then((r) => r.json()).then(setStats).catch(() => {});
+    fetch(`${API}/api/sale-events/chart?series=elite`).then((r) => r.json()).then(setElite).catch(() => {});
+    fetch(`${API}/api/sale-events/chart?series=matsusaka`).then((r) => r.json()).then(setMatsusaka).catch(() => {});
+    fetch(`${API}/api/upcoming-sales`).then((r) => r.json()).then(setUpcoming).catch(() => {});
   }, []);
   useEffect(() => {
     const p = new URLSearchParams({ sort });
@@ -95,6 +98,23 @@ export default function SaleReports() {
           {stats && <span className="faint"> {stats.total} sales recorded, {stats.year_min}–{stats.year_max}, across {Object.keys(stats.by_continent || {}).length} continents. A growing record — we add sales as we verify them.</span>}
         </p>
       </div>
+
+      {/* Upcoming sales calendar */}
+      {upcoming.length > 0 && (
+        <div className="card card-pad" style={{ marginTop: 24 }}>
+          <h2 style={{ fontSize: "1.15rem", marginTop: 0 }}>📅 Upcoming Wagyu sales</h2>
+          <div className="upcoming-grid">
+            {upcoming.slice(0, 12).map((u) => (
+              <a key={u.id} href={u.url || "#"} target="_blank" rel="noopener noreferrer" className="upcoming-item">
+                <div className="upcoming-date">{COUNTRY_FLAG[({ Australia: "AU", USA: "US", UK: "GB", Germany: "DE", Canada: "CA", Brazil: "BR", Japan: "JP" } as any)[u.country]] || "🌍"} {u.date}</div>
+                <div className="upcoming-name">{u.sale_name}</div>
+                <div className="faint" style={{ fontSize: "0.72rem" }}>{[u.venue, u.host].filter(Boolean)[0]}</div>
+              </a>
+            ))}
+          </div>
+          {upcoming.length > 12 && <p className="faint" style={{ fontSize: "0.78rem", marginTop: 10 }}>+ {upcoming.length - 12} more scheduled through 2027.</p>}
+        </div>
+      )}
 
       {/* Charts */}
       {eliteSeries.length > 0 && (

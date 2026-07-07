@@ -39,11 +39,21 @@ function SaleCard({ s, rank }: { s: any; rank?: number }) {
   );
 }
 
+const WINDOWS = [{ k: "", l: "All-time" }, { k: "decade", l: "This decade" }, { k: "year", l: "This year" }];
+
 export default function Sales() {
   const [d, setD] = useState<any>(null);
-  useEffect(() => { api.sales().then(setD).catch(() => setD(false)); }, []);
+  const [win, setWin] = useState("");
+  useEffect(() => { api.sales(win).then(setD).catch(() => setD(false)); }, [win]);
   if (d === false) return <div className="container section">Sales data unavailable.</div>;
   if (!d) return <div className="container section">Loading the record books…</div>;
+  const windowChips = (
+    <div className="row wrap" style={{ gap: 8, margin: "18px 0 0" }}>
+      {WINDOWS.map((w) => (
+        <button key={w.k} className={`pill ${win === w.k ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setWin(w.k)}>{w.l}</button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="container section">
@@ -56,10 +66,11 @@ export default function Sales() {
           figure is sourced.</strong>
         </p>
       </div>
+      {windowChips}
 
       {/* Record leaderboard */}
       <div className="section" style={{ paddingTop: 22, paddingBottom: 0 }}>
-        <h2 style={{ fontSize: "1.3rem" }}>🥇 The all-time records</h2>
+        <h2 style={{ fontSize: "1.3rem" }}>🥇 {win === "year" ? "This year's" : win === "decade" ? "This decade's" : "The all-time"} records</h2>
         <div className="sale-grid">
           {d.records.map((s: any, i: number) => <SaleCard key={s.id} s={s} rank={i + 1} />)}
         </div>

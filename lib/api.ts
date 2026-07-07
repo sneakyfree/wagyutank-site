@@ -112,7 +112,7 @@ export const api = {
   priceIndex: () => req("/api/roundup/index"),
   market: () => req("/api/market"),
   marketTicker: () => req("/api/market/ticker"),
-  sales: () => req("/api/sales"),
+  sales: (window?: string) => req(`/api/sales${window ? `?window=${window}` : ""}`),
   saleEvents: (params: Record<string, any> = {}) => req(`/api/sale-events?${new URLSearchParams(clean(params))}`),
   saleEventStats: () => req("/api/sale-events/stats"),
   saleEventChart: (series: string) => req(`/api/sale-events/chart?series=${series}`),
@@ -154,7 +154,10 @@ export const api = {
   // Wagyu News
   news: (params: Record<string, any> = {}) => req(`/api/news?${new URLSearchParams(clean(params))}`),
   newsRegions: () => req("/api/news/regions"),
+  newsHighlights: () => req("/api/news/highlights"),
+  newsYears: () => req("/api/news/years"),
   newsGoUrl: (id: number) => `${API_BASE}/api/news/${id}/go`,
+  upcomingSales: (params: Record<string, any> = {}) => req(`/api/upcoming-sales?${new URLSearchParams(clean(params))}`),
 
   // storefront + social
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
