@@ -193,6 +193,17 @@ input, select, textarea, button { font: inherit; }
   background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
 }
 
+/* Notable sales — Hall of Records */
+.sale-badge { background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color: #0c0a08; font-weight: 800; border: none; }
+.sale-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+.sale-card { border: 1px solid var(--border); }
+.sale-card.sale-record { border-color: rgba(217,164,65,0.5); background: linear-gradient(180deg, rgba(217,164,65,0.05), transparent); }
+.sale-price { font-size: 1.7rem; font-weight: 800; color: var(--gold); letter-spacing: -0.01em; }
+.sale-headline { font-weight: 700; margin-top: 8px; line-height: 1.4; }
+.sale-meta { font-size: 0.78rem; margin-top: 8px; }
+.sale-src { display: inline-block; margin-top: 8px; font-size: 0.74rem; }
+.sale-src:hover { color: var(--gold); }
+
 /* Market data center */
 .mkt-index { display: block; text-decoration: none; margin-top: 22px; border: 1px solid var(--gold); background: linear-gradient(135deg, rgba(217,164,65,0.08), transparent); }
 .mkt-index:hover { background: linear-gradient(135deg, rgba(217,164,65,0.14), transparent); }

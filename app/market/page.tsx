@@ -70,6 +70,17 @@ export default function Market() {
         </Link>
       )}
 
+      <Link href="/sales" className="mkt-index card card-pad" style={{ marginTop: 14 }}>
+        <div className="row wrap" style={{ alignItems: "center", gap: 12 }}>
+          <div>
+            <div className="ad-tag">🏆 Hall of Records</div>
+            <div style={{ fontWeight: 700, marginTop: 2 }}>The biggest Wagyu sales ever — a $68,000 straw, a $400,000 heifer, a ¥50M cow</div>
+          </div>
+          <div className="spacer" />
+          <span className="faint" style={{ fontSize: "0.8rem" }}>See the record books →</span>
+        </div>
+      </Link>
+
       {d.categories.map((c: any) => (
         (d.data[c.key]?.length > 0) && (
           <div key={c.key} className="section" style={{ paddingTop: 18, paddingBottom: 0 }}>

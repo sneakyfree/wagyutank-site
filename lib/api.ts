@@ -111,6 +111,7 @@ export const api = {
   roundupStats: () => req("/api/roundup/stats"),
   priceIndex: () => req("/api/roundup/index"),
   market: () => req("/api/market"),
+  sales: () => req("/api/sales"),
   roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
   roundupFlag: (id: number) => req(`/api/roundup/${id}/flag`, { method: "POST" }),
 

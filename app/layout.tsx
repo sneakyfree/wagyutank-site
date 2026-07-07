@@ -31,6 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="spacer" />
               <div className="row wrap faint" style={{ gap: 18 }}>
                 <a href="/browse">Browse</a>
+                <a href="/news">News</a>
+                <a href="/market">Market</a>
+                <a href="/sales">Record Sales</a>
                 <a href="/history">Breed History</a>
                 <a href="/sell">Sell</a>
               </div>
