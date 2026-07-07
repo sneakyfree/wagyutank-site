@@ -149,7 +149,8 @@ export const api = {
 
   // storefront + content
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
-  breedHistory: () => req("/api/content/breed-history"),
+  breedHistory: (lang = "en") => req(`/api/content/breed-history?lang=${lang}`),
+  translate: (text: string, lang = "es") => req("/api/translate", { method: "POST", body: JSON.stringify({ text, lang }) }),
 };
 
 // Freshness signal for a Roundup listing — source-updated date if known, else our own index date.

@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../lib/api";
+import { useLang } from "../lib/i18n";
 import ListingCard from "../components/ListingCard";
 import RoundupCard from "../components/RoundupCard";
 import AdSlot from "../components/AdSlot";
 
 export default function Home() {
   const router = useRouter();
+  const { t } = useLang();
   const [q, setQ] = useState("");
   const [listings, setListings] = useState<any[]>([]);
   const [foundation, setFoundation] = useState<any[]>([]);
@@ -28,28 +30,24 @@ export default function Home() {
     <>
       <section className="hero marble-bg">
         <div className="container">
-          <span className="hero-eyebrow">🥩 THE GLOBAL WAGYU CROSSROADS</span>
-          <h1>The world's marketplace <span className="gold">&amp;</span> knowledge hub for Wagyu genetics.</h1>
-          <p className="sub" style={{ marginTop: 14 }}>
-            Buy and sell semen, embryos, and cloning rights — and explore the deepest breed history,
-            a live price index, and bloodlines traced to the original foundation sires.
-            List in under a minute. Free.
-          </p>
+          <span className="hero-eyebrow">{t("hero.eyebrow")}</span>
+          <h1>{t("hero.title")}</h1>
+          <p className="sub" style={{ marginTop: 14 }}>{t("hero.sub")}</p>
           <form
             className="searchbar"
             style={{ marginTop: 26 }}
             onSubmit={(e) => { e.preventDefault(); if (q.trim()) api.track("search", { q: q.trim().toLowerCase() }); router.push(`/browse?q=${encodeURIComponent(q)}`); }}
           >
             <input
-              placeholder="Search Michifuku, Tajima, Itoshigenami…"
+              placeholder={t("hero.search")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
-            <button className="btn btn-gold" type="submit">Search</button>
+            <button className="btn btn-gold" type="submit">{t("common.search")}</button>
           </form>
           <div className="row wrap" style={{ marginTop: 18, gap: 10 }}>
-            <Link href="/sell" className="btn btn-lg btn-gold">List your genetics →</Link>
-            <Link href="/history" className="btn btn-lg btn-ghost">Explore the breed history</Link>
+            <Link href="/sell" className="btn btn-lg btn-gold">{t("hero.list")}</Link>
+            <Link href="/history" className="btn btn-lg btn-ghost">{t("hero.explore")}</Link>
           </div>
         </div>
       </section>
@@ -103,12 +101,12 @@ export default function Home() {
         <section className="section">
           <div className="container">
             <div className="section-head">
-              <h2><span className="roundup-pill pill">📰 The Wagyu Wire</span></h2>
+              <h2><span className="roundup-pill pill">{t("home.wire")}</span></h2>
               <div className="spacer" />
-              <Link href="/news" className="nav-link">All news →</Link>
+              <Link href="/news" className="nav-link">{t("home.allnews")}</Link>
             </div>
             <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
-              Global Wagyu headlines — including Japanese reporting translated into English, found nowhere else.
+              {t("home.wire_sub")}
             </p>
             <div className="stack" style={{ gap: 10 }}>
               {news.map((a) => (
@@ -130,13 +128,12 @@ export default function Home() {
         <section className="section">
           <div className="container">
             <div className="section-head">
-              <h2><span className="roundup-pill pill">📡 The Roundup</span></h2>
+              <h2><span className="roundup-pill pill">{t("home.roundup")}</span></h2>
               <div className="spacer" />
-              <Link href="/roundup" className="nav-link">All web listings →</Link>
+              <Link href="/roundup" className="nav-link">{t("home.allweb")}</Link>
             </div>
             <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
-              Wagyu genetics for sale from across the web, gathered in one place. Not WagyuTank
-              sellers — each links back to the original listing.
+              {t("home.roundup_sub")}
             </p>
             <div className="grid listings-grid">
               {roundup.map((l) => <RoundupCard key={l.id} l={l} />)}

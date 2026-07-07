@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "../../lib/api";
+import { useLang } from "../../lib/i18n";
 
 function renderMarkdown(md: string): string {
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -25,8 +26,12 @@ function renderMarkdown(md: string): string {
 }
 
 export default function History() {
+  const { lang } = useLang();
   const [md, setMd] = useState<string | null>(null);
-  useEffect(() => { api.breedHistory().then((r) => setMd(r.markdown)).catch(() => setMd("")); }, []);
+  useEffect(() => {
+    setMd(null);
+    api.breedHistory(lang).then((r) => setMd(r.markdown)).catch(() => setMd(""));
+  }, [lang]);
   return (
     <div className="container section">
       <div className="prose">

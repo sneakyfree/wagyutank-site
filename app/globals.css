@@ -193,6 +193,12 @@ input, select, textarea, button { font: inherit; }
   background: linear-gradient(135deg, rgba(109,153,149,0.06), transparent); margin-bottom: 20px;
 }
 
+/* Language toggle */
+.lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-right: 4px; }
+.lang-toggle button { background: none; border: none; color: var(--text-faint); font-size: 0.72rem; font-weight: 700; padding: 5px 9px; cursor: pointer; }
+.lang-toggle button.on { background: var(--gold); color: #0c0a08; }
+.lang-toggle button:not(.on):hover { color: var(--text); }
+
 /* Wagyu News */
 .news-item { display: block; text-decoration: none; transition: border-color 0.15s; }
 .news-item:hover { border-color: var(--gold); }

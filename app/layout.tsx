@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { AuthProvider } from "../lib/auth";
+import { LangProvider } from "../lib/i18n";
 import Header from "../components/Header";
 import Tracker from "../components/Tracker";
 import PriceTicker from "../components/PriceTicker";
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <AuthProvider>
+          <LangProvider>
           <Tracker />
           <Header />
           <PriceTicker />
@@ -34,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </div>
           </footer>
+          </LangProvider>
         </AuthProvider>
       </body>
     </html>
