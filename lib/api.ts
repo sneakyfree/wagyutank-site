@@ -80,6 +80,8 @@ export const api = {
   bid: (id: number, amount: number) =>
     req(`/api/listings/${id}/bid`, { method: "POST", body: JSON.stringify({ amount }) }),
   feature: (id: number, days = 7) => req(`/api/listings/${id}/feature?days=${days}`, { method: "POST" }),
+  catalogOptIn: (id: number, opt_in: boolean) =>
+    req(`/api/listings/${id}/catalog`, { method: "POST", body: JSON.stringify({ opt_in }) }),
   adCopy: (body: any) => req("/api/listings/ai/ad-copy", { method: "POST", body: JSON.stringify(body) }),
 
   // search

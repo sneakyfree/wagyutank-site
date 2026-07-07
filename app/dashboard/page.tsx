@@ -37,6 +37,13 @@ export default function Dashboard() {
     finally { setOnboarding(false); }
   }
 
+  async function toggleCatalog(l: any) {
+    try {
+      const updated = await api.catalogOptIn(l.id, !l.catalog_opt_in);
+      setListings((ls) => ls.map((x) => (x.id === l.id ? updated : x)));
+    } catch (e: any) { setToast(e.message || "Couldn't update catalog status"); setTimeout(() => setToast(""), 3000); }
+  }
+
   async function featureListing(id: number, days: number) {
     try {
       const res = await api.featureIntent(id, days);
@@ -90,6 +97,11 @@ export default function Dashboard() {
                 <div className="faint" style={{ fontSize: "0.82rem" }}>{l.views} views · {l.quantity_display}</div>
               </Link>
               <div className="row" style={{ gap: 8 }}>
+                {l.product_type === "semen" && (
+                  <button className="btn" onClick={() => toggleCatalog(l)}>
+                    {l.catalog_opt_in ? "📕 In the Semen Catalog ✓" : "📕 Add to Semen Catalog"}
+                  </button>
+                )}
                 {!l.featured && <button className="btn" onClick={() => featureListing(l.id, 7)}>★ Feature — $19/wk</button>}
               </div>
             </div>

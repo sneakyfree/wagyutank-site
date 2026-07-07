@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { api, money } from "../lib/api";
 
@@ -9,14 +9,47 @@ function arrow(t: number | null | undefined) {
     : t < 0 ? <span className="tk-down">▼ {Math.abs(t)}%</span> : <span className="tk-flat">–</span>;
 }
 
+const SPEED_PX_S = 32;
+
+// JS-driven marquee: CSS keyframe animations freeze on some iOS Safari
+// configurations (compositing limits, Reduce Motion, sticky tap-hover), so
+// the scroll is driven by requestAnimationFrame instead.
 function Band({ badge, href, items, title, accent }: {
   badge: string; href: string; items: React.ReactNode[]; title: string; accent?: string;
 }) {
+  const runRef = useRef<HTMLDivElement>(null);
+  const paused = useRef(false);
+
+  useEffect(() => {
+    const run = runRef.current;
+    if (!run || !items.length) return;
+    let half = 0;
+    const measure = () => { half = run.scrollWidth / 2; };
+    measure();
+    window.addEventListener("resize", measure);
+    let offset = 0, last: number | null = null, raf = 0;
+    const step = (t: number) => {
+      if (last == null) last = t;
+      const dt = Math.min((t - last) / 1000, 0.1);
+      last = t;
+      if (!paused.current && half > 0) {
+        offset += SPEED_PX_S * dt;
+        if (offset >= half) offset -= half;
+        run.style.transform = `translate3d(${-offset}px,0,0)`;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", measure); };
+  }, [items.length]);
+
   if (!items.length) return null;
   return (
-    <Link href={href} className="ticker" title={title}>
+    <Link href={href} className="ticker" title={title}
+      onMouseEnter={() => { paused.current = true; }}
+      onMouseLeave={() => { paused.current = false; }}>
       <span className="ticker-badge" style={accent ? { background: accent } : undefined}>{badge}</span>
-      <div className="ticker-track"><div className="ticker-run">{items}{items}</div></div>
+      <div className="ticker-track"><div className="ticker-run" ref={runRef}>{items}{items}</div></div>
     </Link>
   );
 }

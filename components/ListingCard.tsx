@@ -14,7 +14,8 @@ export default function ListingCard({ l }: { l: any }) {
         ) : (
           <span className="glyph">{PRODUCT_GLYPH[l.product_type] || "🧬"}</span>
         )}
-        {l.featured && <span className="pill badge-featured">★ Featured</span>}
+        {l.is_sample ? <span className="pill pill-sample badge-featured">SAMPLE</span>
+          : l.featured && <span className="pill badge-featured">★ Featured</span>}
       </div>
       <div className="lc-body">
         <div className="row" style={{ gap: 6, marginBottom: 8 }}>

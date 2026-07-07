@@ -302,9 +302,7 @@ input, select, textarea, button { font: inherit; }
 .ticker { display: flex; align-items: stretch; text-decoration: none; background: linear-gradient(180deg, #12100c, #0c0a08); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
 .ticker-badge { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 14px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em; color: #0c0a08; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); white-space: nowrap; }
 .ticker-track { flex: 1 1 auto; overflow: hidden; position: relative; }
-.ticker-run { display: inline-flex; align-items: center; gap: 0; white-space: nowrap; padding: 9px 0; animation: ticker-scroll 60s linear infinite; }
-.ticker:hover .ticker-run { animation-play-state: paused; }
-@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker-run { display: inline-flex; align-items: center; gap: 0; white-space: nowrap; padding: 9px 0; will-change: transform; }
 .tk-item { font-size: 0.82rem; color: var(--text-dim); padding: 0 20px; border-right: 1px solid var(--border-soft); }
 .tk-item b { color: var(--text); font-weight: 700; margin-right: 5px; }
 .tk-market b { color: var(--gold); }
@@ -312,7 +310,11 @@ input, select, textarea, button { font: inherit; }
 .tk-up { color: #6fbf85; font-weight: 700; }
 .tk-down { color: #e0685c; font-weight: 700; }
 .tk-flat { color: var(--text-faint); }
-@media (prefers-reduced-motion: reduce) { .ticker-run { animation: none; } }
+
+/* Sample-listing treatment */
+.pill-sample { background: rgba(109, 153, 149, 0.18); border-color: #4d7570; color: #9ecfca; font-weight: 800; letter-spacing: 0.04em; }
+.sample-banner { margin-top: 12px; padding: 10px 14px; border: 1px dashed #4d7570; border-radius: var(--radius-sm); background: rgba(109, 153, 149, 0.08); color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
+.sample-banner b { color: #9ecfca; }
 
 /* Brand logo */
 .wt-logo { display: inline-flex; align-items: center; gap: 10px; }

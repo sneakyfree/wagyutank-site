@@ -73,11 +73,18 @@ function ListingDetail() {
               {/* Buy box */}
               <div style={{ flex: "1 1 340px", minWidth: 300 }}>
                 <div className="row" style={{ gap: 6, marginBottom: 10 }}>
+                  {l.is_sample && <span className="pill pill-sample">SAMPLE LISTING</span>}
                   <span className="pill pill-dim">{PRODUCT_LABEL[l.product_type]}</span>
                   {isAuction && <span className="pill pill-red">{l.no_reserve ? "No Reserve" : "Auction"}</span>}
                   {l.exclusive && <span className="pill">Exclusive</span>}
                   {l.featured && <span className="pill">★ Featured</span>}
                 </div>
+                {l.is_sample && (
+                  <div className="sample-banner">
+                    <b>This is a sample listing.</b> WagyuTank just launched — this ad shows what
+                    yours will look like. Listing is free and takes about a minute.
+                  </div>
+                )}
                 <h1 style={{ fontSize: "1.7rem" }}>{l.title}</h1>
                 {l.seller_handle && (
                   <div className="muted" style={{ fontSize: "0.9rem", marginTop: 4 }}>
@@ -104,7 +111,11 @@ function ListingDetail() {
 
                   <div className="faint" style={{ margin: "10px 0", fontSize: "0.88rem" }}>{l.quantity_display}</div>
 
-                  {isAuction ? (
+                  {l.is_sample ? (
+                    <Link href="/sell" className="btn btn-gold btn-block btn-lg" style={{ textAlign: "center" }}>
+                      Post your own listing — free
+                    </Link>
+                  ) : isAuction ? (
                     <div className="stack">
                       <div className="row">
                         <input className="input" placeholder="Your bid" value={bid} onChange={(e) => setBid(e.target.value)} inputMode="decimal" />
@@ -117,7 +128,7 @@ function ListingDetail() {
                       {user ? "Buy now" : "Sign in to buy"}
                     </button>
                   )}
-                  {!isAuction && <p className="help">Buyer covers card processing (shown at checkout). You pay the facility for shipping at cost.</p>}
+                  {!isAuction && !l.is_sample && <p className="help">Buyer covers card processing (shown at checkout). You pay the facility for shipping at cost.</p>}
                   <button className="btn btn-block" style={{ marginTop: 10 }} onClick={share}>↗ Share</button>
                   {err && <p className="help" style={{ color: "var(--red)" }}>{err}</p>}
                 </div>

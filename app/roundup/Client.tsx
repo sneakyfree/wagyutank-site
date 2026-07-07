@@ -3,12 +3,16 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
 import RoundupCard from "../../components/RoundupCard";
+import ListingCard from "../../components/ListingCard";
 import AdSlot from "../../components/AdSlot";
+
+type Row = { kind: "wt" | "web"; ts: string; l: any };
 
 function RoundupInner() {
   const sp = useSearchParams();
   const router = useRouter();
-  const [rows, setRows] = useState<any[]>([]);
+  const [webRows, setWebRows] = useState<any[]>([]);
+  const [wtRows, setWtRows] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -16,12 +20,18 @@ function RoundupInner() {
   const region = sp.get("region") || "";
   const css = sp.get("css") || "";
   const sort = sp.get("sort") || "recent";
+  const source = sp.get("source") || "";
 
   useEffect(() => { api.roundupStats().then(setStats).catch(() => {}); }, []);
   useEffect(() => {
     setLoading(true);
-    api.roundup({ product_type: product, region, css, sort, limit: 60 })
-      .then(setRows).catch(() => setRows([])).finally(() => setLoading(false));
+    Promise.all([
+      api.roundup({ product_type: product, region, css, sort, limit: 60 }).catch(() => []),
+      api.browse({ product_type: product, limit: 60 }).catch(() => []),
+    ]).then(([web, wt]) => {
+      setWebRows(web || []);
+      setWtRows(wt || []);
+    }).finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sp.toString()]);
 
@@ -31,24 +41,42 @@ function RoundupInner() {
     router.push(`/roundup?${p.toString()}`);
   }
 
+  // WagyuTank listings honor the css filter client-side; region/price-sort are
+  // web-listing concepts, so natives ride along under "Worldwide"/recent only.
+  let natives = wtRows;
+  if (css) natives = natives.filter((l) => l.css_status === css);
+  if (region || sort !== "recent") natives = [];
+  if (source === "web") natives = [];
+  const web = source === "wagyutank" ? [] : webRows;
+
+  const merged: Row[] = [
+    ...natives.map((l): Row => ({ kind: "wt", ts: l.created_at || "", l })),
+    ...web.map((l): Row => ({ kind: "web", ts: l.source_updated_at || l.first_seen_at || "", l })),
+  ];
+  if (sort === "recent") merged.sort((a, b) => (b.ts > a.ts ? 1 : b.ts < a.ts ? -1 : 0));
+
   return (
     <div className="container section">
       <span className="pill roundup-pill">📡 The Roundup</span>
-      <h1 style={{ fontSize: "2.2rem", marginTop: 12 }}>Wagyu genetics from across the web</h1>
+      <h1 style={{ fontSize: "2.2rem", marginTop: 12 }}>Every Wagyu genetics listing, one feed</h1>
       <div className="roundup-banner" style={{ maxWidth: "75ch", marginTop: 14 }}>
         <p className="muted" style={{ margin: 0, lineHeight: 1.7 }}>
-          The Roundup gathers frozen Wagyu semen, embryos, and cloning listings from public
-          sources all over the internet into one place — so buyers can find everything for sale
-          without hunting across a dozen sites. <strong className="gold">These are not WagyuTank
-          listings.</strong> Each one links straight back to the original seller's page; we simply
-          point the way. Sellers pay nothing and can remove their listing anytime.
-          {stats && <span className="faint"> Currently tracking {stats.active} listings across {stats.sources} sources
+          The Roundup brings the whole frozen-genetics market together: listings posted
+          <strong className="gold"> on WagyuTank</strong> plus semen, embryo, and cloning listings we
+          track from public sources <strong className="gold">across the web</strong> (marked 📡 — those
+          link straight back to the original seller's page; web sellers pay nothing and can remove a
+          listing anytime).
+          {stats && <span className="faint"> Currently tracking {stats.active} web listings across {stats.sources} sources
             {stats.countries?.length ? ` in ${stats.countries.length} countries` : ""}
             {stats.css_export_eligible ? `, ${stats.css_export_eligible} export-eligible` : ""}.</span>}
         </p>
       </div>
 
       <div className="row wrap" style={{ gap: 8, margin: "20px 0 10px" }}>
+        <button className={`pill ${source === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "")}>All sources</button>
+        <button className={`pill ${source === "wagyutank" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "wagyutank")}>🏷 On WagyuTank</button>
+        <button className={`pill ${source === "web" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "web")}>📡 Around the web</button>
+        <span style={{ width: 10 }} />
         <button className={`pill ${product === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", "")}>All products</button>
         {["semen", "embryo", "clone_rights"].map((p) => (
           <button key={p} className={`pill ${product === p ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", p)}>
@@ -82,10 +110,14 @@ function RoundupInner() {
 
       {loading ? (
         <div className="grid listings-grid">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="card roundup-card"><div className="lc-body"><div className="skeleton" style={{ width: "70%" }} /></div></div>)}</div>
-      ) : rows.length ? (
-        <div className="grid listings-grid">{rows.map((l) => <RoundupCard key={l.id} l={l} />)}</div>
+      ) : merged.length ? (
+        <div className="grid listings-grid">
+          {merged.map((r) => r.kind === "wt"
+            ? <ListingCard key={`wt${r.l.id}`} l={r.l} />
+            : <RoundupCard key={`web${r.l.id}`} l={r.l} />)}
+        </div>
       ) : (
-        <div className="adslot">No web listings tracked yet — the daily crawler is building the index.</div>
+        <div className="adslot">Nothing matches these filters yet — the daily crawler keeps adding web listings.</div>
       )}
     </div>
   );
