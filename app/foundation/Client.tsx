@@ -70,7 +70,9 @@ function FoundationGrid({ label, animals }: { label: string; animals: any[] }) {
       <div className="section-head"><h2>{label} <span className="faint" style={{ fontWeight: 400 }}>· {animals.length}</span></h2></div>
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(230px,1fr))" }}>
         {animals.map((a) => (
-          <Link key={a.id} href={`/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card">
+          <Link key={a.id} href={a.registration_no && /^[A-Za-z0-9._-]+$/.test(a.registration_no)
+            ? `/animal/${a.registration_no}/`
+            : `/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card">
             <div className="lc-media">
               {a.photo_url ? (
                 <img src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
