@@ -6,7 +6,7 @@ type Lang = "en" | "es";
 const STRINGS: Record<Lang, Record<string, string>> = {
   en: {
     "nav.browse": "Browse", "nav.semen": "Semen", "nav.embryos": "Embryos", "nav.cloning": "Cloning",
-    "nav.roundup": "Roundup", "nav.news": "News", "nav.history": "Breed History", "nav.advertise": "Advertise",
+    "nav.roundup": "Roundup", "nav.news": "News", "nav.market": "Market", "nav.history": "Breed History", "nav.advertise": "Advertise",
     "nav.sell": "+ Sell", "nav.signin": "Sign in", "nav.signout": "Sign out", "nav.admin": "⚙ Admin",
     "hero.eyebrow": "🥩 THE GLOBAL WAGYU CROSSROADS",
     "hero.title": "The world's marketplace & knowledge hub for Wagyu genetics.",
@@ -23,7 +23,7 @@ const STRINGS: Record<Lang, Record<string, string>> = {
   },
   es: {
     "nav.browse": "Explorar", "nav.semen": "Semen", "nav.embryos": "Embriones", "nav.cloning": "Clonación",
-    "nav.roundup": "Recopilación", "nav.news": "Noticias", "nav.history": "Historia de la Raza", "nav.advertise": "Anunciar",
+    "nav.roundup": "Recopilación", "nav.news": "Noticias", "nav.market": "Mercado", "nav.history": "Historia de la Raza", "nav.advertise": "Anunciar",
     "nav.sell": "+ Vender", "nav.signin": "Iniciar sesión", "nav.signout": "Cerrar sesión", "nav.admin": "⚙ Admin",
     "hero.eyebrow": "🥩 EL CRUCE GLOBAL DEL WAGYU",
     "hero.title": "El mercado y centro de conocimiento mundial de la genética Wagyu.",

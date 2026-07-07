@@ -15,6 +15,7 @@ export default function Header() {
       <Link href="/browse?product_type=clone_rights" className="nav-link">{t("nav.cloning")}</Link>
       <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>
       <Link href="/news" className="nav-link">{t("nav.news")}</Link>
+      <Link href="/market" className="nav-link">{t("nav.market")}</Link>
       <Link href="/history" className="nav-link">{t("nav.history")}</Link>
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
