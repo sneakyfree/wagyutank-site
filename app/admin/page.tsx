@@ -81,9 +81,21 @@ function Campaigns() {
     try { const r = await api.adminCampaignSend(subject, body, segment); setMsg(`Sent to ${r.sent}/${r.recipients} recipients.`); setSubject(""); setBody(""); load(); }
     catch (e: any) { setMsg(e.message); }
   }
+  async function digestTest() { setMsg(""); try { const r = await api.adminDigestTest(); setMsg(r.ok ? `Digest preview sent to ${r.sent_to}` : "Digest test failed (no mail key?)"); } catch (e: any) { setMsg(e.message); } }
+  async function digestSend() { if (!confirm(`Send the weekly Wagyu Wire digest to all ${d?.opted_in} opted-in users now?`)) return; setMsg("Sending digest…"); try { const r = await api.adminDigestSend(); setMsg(r.message); } catch (e: any) { setMsg(e.message); } }
+
   if (!d) return <div className="muted">Loading…</div>;
   return (
     <div className="stack" style={{ gap: 20 }}>
+      <div className="card card-pad" style={{ maxWidth: 680, borderColor: "var(--gold)" }}>
+        <div className="row"><div><strong>📰 The Wagyu Wire — weekly digest</strong>
+          <p className="faint" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>Auto-assembled from news, price index, listings & records. Sends weekly to opted-in users.</p></div>
+          <div className="spacer" /></div>
+        <div className="row" style={{ gap: 8, marginTop: 10 }}>
+          <button className="btn" onClick={digestTest}>Preview to me</button>
+          <button className="btn btn-gold" onClick={digestSend}>Send digest now</button>
+        </div>
+      </div>
       <div className="card card-pad" style={{ maxWidth: 680 }}>
         <div className="row"><h2 style={{ fontSize: "1.2rem", margin: 0 }}>New campaign</h2><div className="spacer" />
           <span className="faint" style={{ fontSize: "0.82rem" }}>{d.opted_in} opted-in recipients</span></div>
@@ -404,6 +416,10 @@ function SettingsTab() {
       <div className="card card-pad">
         <div className="row"><div><strong>Daily Roundup crawler</strong><p className="faint" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>Auto-aggregates web listings each morning.</p></div>
           <div className="spacer" /><button className={`pill ${s.aggregator_enabled ? "pill-green" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => put({ aggregator_enabled: !s.aggregator_enabled })}>{s.aggregator_enabled ? "ON" : "OFF"}</button></div>
+      </div>
+      <div className="card card-pad">
+        <div className="row"><div><strong>Weekly Wagyu Wire digest</strong><p className="faint" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>Auto-send the weekly digest to opted-in users.</p></div>
+          <div className="spacer" /><button className={`pill ${s.digest_enabled ? "pill-green" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => put({ digest_enabled: !s.digest_enabled })}>{s.digest_enabled ? "ON" : "OFF"}</button></div>
       </div>
       <div className="card card-pad">
         <div className="row"><div><strong>Require 2FA for all admins</strong><p className="faint" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>Admins without 2FA lose panel access until they enable it. You must have 2FA on yourself to turn this on.</p></div>
