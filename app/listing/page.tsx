@@ -79,6 +79,11 @@ function ListingDetail() {
                   {l.featured && <span className="pill">★ Featured</span>}
                 </div>
                 <h1 style={{ fontSize: "1.7rem" }}>{l.title}</h1>
+                {l.seller_handle && (
+                  <div className="muted" style={{ fontSize: "0.9rem", marginTop: 4 }}>
+                    Sold by <Link href={`/u?handle=${l.seller_handle}`} className="gold">@{l.seller_handle}</Link>
+                  </div>
+                )}
 
                 <div className="card card-pad" style={{ marginTop: 16 }}>
                   <div className="big-price">

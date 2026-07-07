@@ -149,8 +149,10 @@ export const api = {
   newsRegions: () => req("/api/news/regions"),
   newsGoUrl: (id: number) => `${API_BASE}/api/news/${id}/go`,
 
-  // storefront + content
+  // storefront + social
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
+  follow: (target_type: string, target_key: string) => req("/api/users/me/follow", { method: "POST", body: JSON.stringify({ target_type, target_key }) }),
+  unfollow: (target_type: string, target_key: string) => req("/api/users/me/unfollow", { method: "POST", body: JSON.stringify({ target_type, target_key }) }),
   breedHistory: (lang = "en") => req(`/api/content/breed-history?lang=${lang}`),
   translate: (text: string, lang = "es") => req("/api/translate", { method: "POST", body: JSON.stringify({ text, lang }) }),
 };

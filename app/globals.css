@@ -214,6 +214,10 @@ input, select, textarea, button { font: inherit; }
 .mkt-q-value { font-size: 1.5rem; font-weight: 800; color: var(--text); margin: 4px 0 8px; letter-spacing: -0.01em; }
 .mkt-q-meta a:hover { color: var(--gold); }
 
+/* Profile / storefront */
+.avatar-lg { width: 88px; height: 88px; font-size: 2rem; border: 3px solid var(--bg); }
+.profile-banner { height: 180px; background-size: cover; background-position: center; border-bottom: 1px solid var(--border); }
+
 /* Nav dropdown */
 .nav-dd { position: relative; display: inline-flex; }
 .nav-dd-btn { background: none; border: none; cursor: pointer; font: inherit; display: inline-flex; align-items: center; gap: 3px; }
