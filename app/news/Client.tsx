@@ -6,14 +6,16 @@ import { useLang } from "../../lib/i18n";
 
 const REGIONS = [
   { code: "", label: "🌍 All" },
-  { code: "US", label: "🇺🇸 United States" },
-  { code: "AU", label: "🇦🇺 Australia" },
-  { code: "JP", label: "🇯🇵 Japan" },
-  { code: "AS", label: "🇨🇳 Asia" },
+  { code: "US", label: "🇺🇸 N. America" },
+  { code: "SA", label: "🌎 S. America" },
   { code: "EU", label: "🇪🇺 Europe" },
-  { code: "SA", label: "🌎 South America" },
+  { code: "JP", label: "🇯🇵 Japan" },
+  { code: "AS", label: "🌏 Asia" },
+  { code: "ME", label: "🕌 Middle East" },
+  { code: "AF", label: "🦁 Africa" },
+  { code: "AU", label: "🇦🇺 Oceania" },
 ];
-const FLAG: Record<string, string> = { US: "🇺🇸", AU: "🇦🇺", JP: "🇯🇵", AS: "🇨🇳", EU: "🇪🇺", SA: "🌎", OTHER: "🌍" };
+const FLAG: Record<string, string> = { US: "🇺🇸", AU: "🇦🇺", JP: "🇯🇵", AS: "🌏", EU: "🇪🇺", SA: "🌎", ME: "🕌", AF: "🦁", OTHER: "🌍" };
 const WINDOWS = [
   { code: "", label: "Latest" }, { code: "day", label: "Today" }, { code: "week", label: "This week" },
   { code: "month", label: "This month" }, { code: "year", label: "This year" },
