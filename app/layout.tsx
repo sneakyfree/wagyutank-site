@@ -6,17 +6,56 @@ import Header from "../components/Header";
 import Tracker from "../components/Tracker";
 import PriceTicker from "../components/PriceTicker";
 
+const DESC =
+  "Buy and sell frozen Wagyu genetics — semen, embryos, and cloning rights — and explore the world's deepest Wagyu breed history, a live genetics price index, translated global news, and market data. Free to list.";
+
 export const metadata: Metadata = {
-  title: "WagyuTank — The Global Marketplace & Knowledge Hub for Wagyu Genetics",
-  description:
-    "Buy and sell frozen Wagyu genetics — semen, embryos, and cloning rights — and explore the world's deepest Wagyu breed history, price index, and news. Free to list.",
+  metadataBase: new URL("https://www.wagyutank.com"),
+  title: {
+    default: "WagyuTank — The Global Marketplace & Knowledge Hub for Wagyu Genetics",
+    template: "%s · WagyuTank",
+  },
+  description: DESC,
+  keywords: ["Wagyu", "Akaushi", "Wagyu semen", "Wagyu embryos", "Wagyu genetics",
+    "fullblood Wagyu", "Tajima", "Michifuku", "Wagyu marketplace", "Wagyu bloodlines"],
   icons: { icon: [{ url: "/favicon.svg", type: "image/svg+xml" }] },
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website", siteName: "WagyuTank", url: "https://www.wagyutank.com",
+    title: "WagyuTank — The Global Marketplace & Knowledge Hub for Wagyu Genetics",
+    description: DESC, images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "WagyuTank" }],
+  },
+  twitter: {
+    card: "summary_large_image", title: "WagyuTank — Wagyu Genetics Marketplace & Knowledge Hub",
+    description: DESC, images: ["/og-image.png"],
+  },
+};
+
+const JSONLD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization", "@id": "https://www.wagyutank.com/#org", name: "WagyuTank",
+      url: "https://www.wagyutank.com", logo: "https://www.wagyutank.com/favicon.svg",
+      description: DESC,
+    },
+    {
+      "@type": "WebSite", "@id": "https://www.wagyutank.com/#site",
+      url: "https://www.wagyutank.com", name: "WagyuTank", publisher: { "@id": "https://www.wagyutank.com/#org" },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: { "@type": "EntryPoint", urlTemplate: "https://www.wagyutank.com/browse?q={query}" },
+        "query-input": "required name=query",
+      },
+    },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSONLD) }} />
         <AuthProvider>
           <LangProvider>
           <Tracker />
