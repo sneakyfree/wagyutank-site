@@ -214,6 +214,21 @@ input, select, textarea, button { font: inherit; }
 .mkt-q-value { font-size: 1.5rem; font-weight: 800; color: var(--text); margin: 4px 0 8px; letter-spacing: -0.01em; }
 .mkt-q-meta a:hover { color: var(--gold); }
 
+/* Nav dropdown */
+.nav-dd { position: relative; display: inline-flex; }
+.nav-dd-btn { background: none; border: none; cursor: pointer; font: inherit; display: inline-flex; align-items: center; gap: 3px; }
+.nav-dd-btn.on { color: var(--gold); }
+.nav-dd-caret { font-size: 0.62rem; opacity: 0.7; }
+.nav-dd-menu {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 60; min-width: 220px;
+  background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow); padding: 6px; display: flex; flex-direction: column;
+}
+.nav-dd-item { display: flex; flex-direction: column; gap: 1px; padding: 8px 12px; border-radius: 7px; text-decoration: none; }
+.nav-dd-item:hover { background: var(--gold-soft); }
+.nav-dd-item-label { color: var(--text); font-weight: 600; font-size: 0.9rem; }
+.nav-dd-item-desc { color: var(--text-faint); font-size: 0.74rem; }
+
 /* Language toggle */
 .lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-right: 4px; }
 .lang-toggle button { background: none; border: none; color: var(--text-faint); font-size: 0.72rem; font-weight: 700; padding: 5px 9px; cursor: pointer; }

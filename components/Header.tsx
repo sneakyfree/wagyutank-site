@@ -3,11 +3,33 @@ import Link from "next/link";
 import { useAuth } from "../lib/auth";
 import { useLang } from "../lib/i18n";
 import Logo from "./Logo";
+import NavDropdown from "./NavDropdown";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
   const { lang, setLang, t } = useLang();
-  const links = (
+  // Desktop: grouped dropdowns keep the bar clean as the site grows.
+  const desktopNav = (
+    <>
+      <NavDropdown label={t("nav.browse")} items={[
+        { href: "/browse", label: t("nav.browseall"), desc: t("nav.browse_all_desc") },
+        { href: "/browse?product_type=semen", label: t("nav.semen"), desc: t("nav.semen_desc") },
+        { href: "/browse?product_type=embryo", label: t("nav.embryos"), desc: t("nav.embryos_desc") },
+        { href: "/browse?product_type=clone_rights", label: t("nav.cloning"), desc: t("nav.cloning_desc") },
+        { href: "/foundation", label: t("nav.foundation"), desc: t("nav.foundation_desc") },
+      ]} />
+      <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>
+      <Link href="/news" className="nav-link">{t("nav.news")}</Link>
+      <NavDropdown label={t("nav.data")} items={[
+        { href: "/market", label: t("nav.marketdata"), desc: t("nav.marketdata_desc") },
+        { href: "/sales", label: t("nav.records"), desc: t("nav.records_desc") },
+      ]} />
+      <Link href="/history" className="nav-link">{t("nav.history")}</Link>
+      <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
+    </>
+  );
+  // Mobile: flat scrollable strip (all links).
+  const mobileNav = (
     <>
       <Link href="/browse" className="nav-link">{t("nav.browse")}</Link>
       <Link href="/browse?product_type=semen" className="nav-link">{t("nav.semen")}</Link>
@@ -15,7 +37,8 @@ export default function Header() {
       <Link href="/browse?product_type=clone_rights" className="nav-link">{t("nav.cloning")}</Link>
       <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>
       <Link href="/news" className="nav-link">{t("nav.news")}</Link>
-      <Link href="/market" className="nav-link">{t("nav.market")}</Link>
+      <Link href="/market" className="nav-link">{t("nav.marketdata")}</Link>
+      <Link href="/sales" className="nav-link">{t("nav.records")}</Link>
       <Link href="/history" className="nav-link">{t("nav.history")}</Link>
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
@@ -32,7 +55,7 @@ export default function Header() {
         <Link href="/" className="logo" aria-label="WagyuTank home">
           <Logo size={34} />
         </Link>
-        <nav className="nav-desktop" style={{ marginLeft: 14 }}>{links}</nav>
+        <nav className="nav-desktop" style={{ marginLeft: 14 }}>{desktopNav}</nav>
         <div className="spacer" />
         {langToggle}
         <Link href="/sell" className="btn btn-gold">{t("nav.sell")}</Link>
@@ -49,7 +72,7 @@ export default function Header() {
         )}
       </div>
       {/* Mobile nav strip — scrollable, only shows below 860px */}
-      <nav className="nav-mobile">{links}</nav>
+      <nav className="nav-mobile">{mobileNav}</nav>
     </header>
   );
 }
