@@ -53,7 +53,7 @@ function StorefrontView() {
               <span className="faint" style={{ fontSize: "0.86rem" }}><strong style={{ color: "var(--text)" }}>{followers}</strong> follower{followers === 1 ? "" : "s"}</span>
             </div>
           </div>
-          {s.handle && <FollowButton handle={s.handle} initialFollowing={data.is_following} onChange={(d) => setFollowers((f) => f + d)} />}
+          {s.handle && <FollowButton targetType="seller" targetKey={s.handle} initialFollowing={data.is_following} onChange={(d) => setFollowers((f) => f + d)} />}
         </div>
 
         {s.bio && <p className="muted" style={{ marginTop: 18, maxWidth: "70ch", lineHeight: 1.7 }}>{s.bio}</p>}

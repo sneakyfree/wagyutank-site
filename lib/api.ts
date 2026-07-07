@@ -156,6 +156,7 @@ export const api = {
   follow: (target_type: string, target_key: string) => req("/api/users/me/follow", { method: "POST", body: JSON.stringify({ target_type, target_key }) }),
   unfollow: (target_type: string, target_key: string) => req("/api/users/me/unfollow", { method: "POST", body: JSON.stringify({ target_type, target_key }) }),
   feed: () => req("/api/users/me/feed"),
+  following: () => req("/api/users/me/following"),
   ordersMine: () => req("/api/orders/mine"),
   rateOrder: (id: number, score: number, comment?: string) => req(`/api/orders/${id}/rate`, { method: "POST", body: JSON.stringify({ score, comment: comment || null }) }),
   userReviews: (handle: string) => req(`/api/orders/user/${encodeURIComponent(handle)}/reviews`),

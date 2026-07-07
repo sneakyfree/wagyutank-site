@@ -1,4 +1,5 @@
 import Link from "next/link";
+import FollowButton from "./FollowButton";
 
 // Presentational (no hooks) — the SEO-critical content, server-renderable.
 export default function AnimalCore({ a }: { a: any }) {
@@ -9,7 +10,11 @@ export default function AnimalCore({ a }: { a: any }) {
         {a.bloodline && <span className="pill pill-dim">{a.bloodline}</span>}
         {a.breed && <span className="pill pill-dim">{a.breed}</span>}
       </div>
-      <h1 style={{ fontSize: "2.2rem" }}>{a.name}</h1>
+      <div className="row wrap" style={{ gap: 12, alignItems: "flex-start" }}>
+        <h1 style={{ fontSize: "2.2rem" }}>{a.name}</h1>
+        <div className="spacer" />
+        <FollowButton targetType="animal" targetKey={a.slug || a.registration_no || a.name} label={a.name} small />
+      </div>
       <div className="muted" style={{ fontSize: "1rem" }}>
         {a.registration_no && <span>Reg. {a.registration_no} · </span>}
         {a.animal_type}{a.birth_year ? ` · b. ${a.birth_year}` : ""}

@@ -26,9 +26,9 @@ export default function Feed() {
         </div>
       ) : (
         <div className="adslot" style={{ marginTop: 20 }}>
-          {data.following_sellers > 0
-            ? "The sellers you follow have no active listings right now."
-            : <>You're not following any sellers yet. <Link href="/browse" className="gold">Browse listings</Link> and follow a ranch to build your feed.</>}
+          {(data.following?.sellers || data.following?.bloodlines || data.following?.animals)
+            ? "Nothing new from what you follow right now — check back soon."
+            : <>You're not following anything yet. Follow a <Link href="/browse" className="gold">ranch</Link>, a <Link href="/foundation" className="gold">bloodline</Link>, or a foundation sire to build your feed.</>}
         </div>
       )}
     </div>

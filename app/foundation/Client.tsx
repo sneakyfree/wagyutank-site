@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "../../lib/api";
+import FollowButton from "../../components/FollowButton";
 
 const GLYPH: Record<string, string> = {
   Tajima: "🥩", "Fujiyoshi (Shimane)": "⚖️", "Kedaka (Tottori)": "📏",
@@ -48,6 +49,12 @@ export default function Foundation() {
           </button>
         ))}
       </div>
+      {filter && (
+        <div className="row" style={{ gap: 10, alignItems: "center", marginBottom: 20 }}>
+          <span className="faint" style={{ fontSize: "0.85rem" }}>Get new {filter} listings in your feed:</span>
+          <FollowButton targetType="bloodline" targetKey={filter as string} label={`${filter} bloodline`} small />
+        </div>
+      )}
 
       {loading ? (
         <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(230px,1fr))" }}>
