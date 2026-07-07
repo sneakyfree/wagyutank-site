@@ -4,10 +4,11 @@ import { useAuth } from "../lib/auth";
 import { useLang } from "../lib/i18n";
 import Logo from "./Logo";
 import NavDropdown from "./NavDropdown";
+import LanguageSwitcher from "./Languageswitcher";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
-  const { lang, setLang, t } = useLang();
+  const { t } = useLang();
   // Desktop: grouped dropdowns keep the bar clean as the site grows.
   const desktopNav = (
     <>
@@ -43,12 +44,7 @@ export default function Header() {
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
   );
-  const langToggle = (
-    <div className="lang-toggle" title="Language / Idioma">
-      <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button>
-      <button className={lang === "es" ? "on" : ""} onClick={() => setLang("es")}>ES</button>
-    </div>
-  );
+  const langToggle = <LanguageSwitcher />;
   return (
     <header className="hdr">
       <div className="container hdr-inner">

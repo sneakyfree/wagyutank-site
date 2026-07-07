@@ -240,11 +240,21 @@ input, select, textarea, button { font: inherit; }
 .nav-dd-item-label { color: var(--text); font-weight: 600; font-size: 0.9rem; }
 .nav-dd-item-desc { color: var(--text-faint); font-size: 0.74rem; }
 
-/* Language toggle */
-.lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-right: 4px; }
-.lang-toggle button { background: none; border: none; color: var(--text-faint); font-size: 0.72rem; font-weight: 700; padding: 5px 9px; cursor: pointer; }
-.lang-toggle button.on { background: var(--gold); color: #0c0a08; }
-.lang-toggle button:not(.on):hover { color: var(--text); }
+/* Language switcher */
+.lang-switch { position: relative; margin-right: 4px; }
+.lang-switch-btn { display: inline-flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--text-dim); font-size: 0.78rem; font-weight: 700; padding: 5px 10px; cursor: pointer; }
+.lang-switch-btn:hover { border-color: var(--gold); color: var(--text); }
+.lang-flag { font-size: 1rem; line-height: 1; }
+.lang-code { letter-spacing: 0.03em; }
+.lang-caret { font-size: 0.6rem; opacity: 0.7; }
+.lang-menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 70; min-width: 210px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow); padding: 6px; }
+.lang-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: none; background: none; border-radius: 7px; cursor: pointer; text-align: left; }
+.lang-item:hover { background: var(--gold-soft); }
+.lang-item.on { background: var(--gold-soft); }
+.lang-item-label { color: var(--text); font-weight: 600; font-size: 0.9rem; }
+.lang-item-en { color: var(--text-faint); font-size: 0.72rem; margin-left: auto; }
+.lang-item.on .lang-item-en { margin-left: 0; }
+.lang-check { color: var(--gold); font-weight: 800; margin-left: auto; }
 
 /* Wagyu News */
 .news-item { display: block; text-decoration: none; transition: border-color 0.15s; }
