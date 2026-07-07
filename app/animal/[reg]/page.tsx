@@ -18,8 +18,9 @@ export async function generateStaticParams() {
   try {
     const animals: any[] = await fetch(`${API}/api/animals/foundation`).then((r) => r.json());
     return animals
-      .filter((a) => a.registration_no && /^[A-Za-z0-9._-]+$/.test(a.registration_no))
-      .map((a) => ({ reg: a.registration_no }));
+      .map((a) => a.slug || a.registration_no)
+      .filter((s: string) => s && /^[A-Za-z0-9._-]+$/.test(s))
+      .map((reg: string) => ({ reg }));
   } catch { return []; }
 }
 

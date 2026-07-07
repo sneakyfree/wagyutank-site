@@ -12,8 +12,9 @@ let urls = staticRoutes.map(([p, pr, f]) =>
   `  <url><loc>${BASE}${p}</loc><lastmod>${now}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority></url>`);
 try {
   const animals = await fetch(`${API}/api/animals/foundation`).then(r => r.json());
-  for (const a of animals) if (a.registration_no && /^[A-Za-z0-9._-]+$/.test(a.registration_no))
-    urls.push(`  <url><loc>${BASE}/animal/${a.registration_no}/</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`);
+  for (const a of animals) { const slug = a.slug || a.registration_no;
+    if (slug && /^[A-Za-z0-9._-]+$/.test(slug))
+      urls.push(`  <url><loc>${BASE}/animal/${slug}/</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`); }
   console.log(`sitemap: ${staticRoutes.length} static + ${animals.length} animal URLs`);
 } catch (e) { console.log("sitemap: animal fetch failed, static only", e.message); }
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
