@@ -62,6 +62,7 @@ export default function Header() {
         {loading ? null : user ? (
           <div className="row" style={{ gap: 10 }}>
             {user.role === "admin" && <Link href="/admin" className="nav-link hide-sm" title="Control panel">{t("nav.admin")}</Link>}
+            <Link href="/feed" className="nav-link hide-sm" title="Your feed">Feed</Link>
             <Link href="/dashboard" className="nav-link hide-sm">
               {user.handle ? `@${user.handle}` : user.display_name}
             </Link>

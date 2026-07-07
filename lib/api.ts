@@ -153,6 +153,10 @@ export const api = {
   storefront: (handle: string) => req(`/api/users/${encodeURIComponent(handle)}`),
   follow: (target_type: string, target_key: string) => req("/api/users/me/follow", { method: "POST", body: JSON.stringify({ target_type, target_key }) }),
   unfollow: (target_type: string, target_key: string) => req("/api/users/me/unfollow", { method: "POST", body: JSON.stringify({ target_type, target_key }) }),
+  feed: () => req("/api/users/me/feed"),
+  ordersMine: () => req("/api/orders/mine"),
+  rateOrder: (id: number, score: number, comment?: string) => req(`/api/orders/${id}/rate`, { method: "POST", body: JSON.stringify({ score, comment: comment || null }) }),
+  userReviews: (handle: string) => req(`/api/orders/user/${encodeURIComponent(handle)}/reviews`),
   breedHistory: (lang = "en") => req(`/api/content/breed-history?lang=${lang}`),
   translate: (text: string, lang = "es") => req("/api/translate", { method: "POST", body: JSON.stringify({ text, lang }) }),
 };

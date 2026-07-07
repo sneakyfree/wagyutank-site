@@ -20,10 +20,12 @@ function StorefrontView() {
   const handle = useSearchParams().get("handle") || "";
   const [data, setData] = useState<any>(null);
   const [followers, setFollowers] = useState(0);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
     if (!handle) { setData(false); return; }
     api.storefront(handle).then((d: any) => { setData(d); setFollowers(d.follower_count || 0); }).catch(() => setData(false));
+    api.userReviews(handle).then(setReviews).catch(() => {});
   }, [handle]);
 
   if (data === false) return <div className="container section">Storefront not found.</div>;
@@ -63,6 +65,23 @@ function StorefrontView() {
           <div className="grid listings-grid">{data.listings.map((l: any) => <ListingCard key={l.id} l={l} />)}</div>
         ) : (
           <div className="adslot">No active listings.</div>
+        )}
+
+        {reviews.length > 0 && (
+          <>
+            <div className="section-head" style={{ marginTop: 34 }}><h2>Reviews</h2></div>
+            <div className="stack" style={{ gap: 10 }}>
+              {reviews.map((r: any, i: number) => (
+                <div key={i} className="card card-pad">
+                  <div className="row" style={{ gap: 8 }}>
+                    <span className="stars" style={{ color: "var(--gold)" }}>{"★".repeat(r.score)}{"☆".repeat(5 - r.score)}</span>
+                    <span className="faint" style={{ fontSize: "0.82rem" }}>as {r.role} · from @{r.rater}</span>
+                  </div>
+                  {r.comment && <p className="muted" style={{ margin: "6px 0 0", fontSize: "0.92rem" }}>{r.comment}</p>}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

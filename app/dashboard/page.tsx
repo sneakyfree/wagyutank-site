@@ -5,15 +5,20 @@ import { api, money, PRODUCT_LABEL } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import Checkout from "../../components/Checkout";
 import TwoFactorSetup from "../../components/TwoFactorSetup";
+import RateOrder from "../../components/RateOrder";
 
 export default function Dashboard() {
   const { user, loading, refresh } = useAuth();
   const [listings, setListings] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [checkout, setCheckout] = useState<{ secret: string | null; label: string } | null>(null);
   const [onboarding, setOnboarding] = useState(false);
   const [toast, setToast] = useState("");
 
-  function load() { api.myListings().then(setListings).catch(() => {}); }
+  function load() {
+    api.myListings().then(setListings).catch(() => {});
+    api.ordersMine().then(setOrders).catch(() => {});
+  }
   useEffect(() => { if (user) load(); }, [user]);
 
   if (loading) return <div className="container section">Loading…</div>;
@@ -92,6 +97,28 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="adslot">No listings yet. <Link href="/sell" className="gold">Create your first →</Link></div>
+      )}
+
+      {orders.length > 0 && (
+        <>
+          <div className="section-head" style={{ marginTop: 32 }}><h2>Orders & reviews</h2></div>
+          <div className="stack" style={{ gap: 12 }}>
+            {orders.map((o) => (
+              <div key={o.order_id} className="card card-pad">
+                <div className="row wrap" style={{ gap: 8, alignItems: "center" }}>
+                  <div>
+                    <span className="pill pill-dim" style={{ marginRight: 8 }}>{o.role === "buyer" ? "Bought" : "Sold"}</span>
+                    <strong>{o.listing_title}</strong>
+                    <span className="faint" style={{ fontSize: "0.85rem" }}> · {o.role === "buyer" ? "from" : "to"} {o.counterparty_handle ? <Link href={`/u?handle=${o.counterparty_handle}`} className="gold">@{o.counterparty_handle}</Link> : o.counterparty}</span>
+                  </div>
+                  <div className="spacer" />
+                  {o.rated && <span className="pill pill-green">✓ Rated</span>}
+                </div>
+                {!o.rated && <RateOrder order={o} onRated={load} />}
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <div className="section-head" style={{ marginTop: 32 }}><h2>Security</h2></div>
