@@ -133,7 +133,19 @@ export const api = {
   // Admin control panel (require_admin)
   adminOverview: () => req("/api/admin/overview"),
   adminUsers: (params: Record<string, any> = {}) => req(`/api/admin/users?${new URLSearchParams(clean(params))}`),
-  adminUserAction: (id: number, action: string) => req(`/api/admin/users/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
+  adminUserAction: (id: number, action: string, role?: string) => req(`/api/admin/users/${id}/action`, { method: "POST", body: JSON.stringify(role ? { action, role } : { action }) }),
+  adminMessageUser: (id: number, subject: string, body: string) => req(`/api/admin/users/${id}/message`, { method: "POST", body: JSON.stringify({ subject, body }) }),
+  adminCatalogSubmissions: (params: Record<string, any> = {}) => req(`/api/admin/catalog/submissions?${new URLSearchParams(clean(params))}`),
+  adminCatalogAction: (id: number, action: string) => req(`/api/admin/catalog/submissions/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
+  adminCatalogCsv: async (edition?: string) => {
+    const t = typeof window !== "undefined" ? localStorage.getItem("wt_token") : null;
+    const res = await fetch(`${API_BASE}/api/admin/catalog-submissions.csv${edition ? `?edition=${encodeURIComponent(edition)}` : ""}`, { headers: t ? { Authorization: `Bearer ${t}` } : {} });
+    return res.text();
+  },
+  // Catalog (public + member)
+  catalogInfo: () => req("/api/catalog/info"),
+  catalogSubmit: (payload: any) => req("/api/catalog/submit", { method: "POST", body: JSON.stringify(payload) }),
+  catalogMySubmissions: () => req("/api/catalog/my-submissions"),
   adminSettings: () => req("/api/admin/settings"),
   adminPutSettings: (updates: any) => req("/api/admin/settings", { method: "PUT", body: JSON.stringify(updates) }),
   adminAiTest: (prompt?: string) => req("/api/admin/ai/test", { method: "POST", body: JSON.stringify(prompt ? { prompt } : {}) }),

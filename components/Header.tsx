@@ -26,6 +26,7 @@ export default function Header() {
         { href: "/sale-reports", label: t("nav.salereports"), desc: t("nav.salereports_desc") },
         { href: "/sales", label: t("nav.records"), desc: t("nav.records_desc") },
       ]} />
+      <Link href="/catalog" className="nav-link">{t("nav.catalog")}</Link>
       <Link href="/history" className="nav-link">{t("nav.history")}</Link>
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
@@ -42,6 +43,7 @@ export default function Header() {
       <Link href="/market" className="nav-link">{t("nav.marketdata")}</Link>
       <Link href="/sale-reports" className="nav-link">{t("nav.salereports")}</Link>
       <Link href="/sales" className="nav-link">{t("nav.records")}</Link>
+      <Link href="/catalog" className="nav-link">{t("nav.catalog")}</Link>
       <Link href="/history" className="nav-link">{t("nav.history")}</Link>
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
@@ -59,7 +61,10 @@ export default function Header() {
         <Link href="/sell" className="btn btn-gold">{t("nav.sell")}</Link>
         {loading ? null : user ? (
           <div className="row" style={{ gap: 10 }}>
-            {user.role === "admin" && <Link href="/admin" className="nav-link hide-sm" title="Control panel">{t("nav.admin")}</Link>}
+            {user.role && ["manager", "admin", "super_admin"].includes(user.role) &&
+              <Link href="/admin" className="nav-link hide-sm" title="Control panel">
+                {user.role === "super_admin" ? "⚙ Owner" : user.role === "manager" ? "⚙ Manager" : t("nav.admin")}
+              </Link>}
             <Link href="/feed" className="nav-link hide-sm" title="Your feed">Feed</Link>
             <Link href="/dashboard" className="nav-link hide-sm">
               {user.handle ? `@${user.handle}` : user.display_name}

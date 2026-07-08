@@ -311,6 +311,10 @@ input, select, textarea, button { font: inherit; }
 .tk-down { color: #e0685c; font-weight: 700; }
 .tk-flat { color: var(--text-faint); }
 
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
+
 /* Sample-listing treatment */
 .pill-sample { background: rgba(109, 153, 149, 0.18); border-color: #4d7570; color: #9ecfca; font-weight: 800; letter-spacing: 0.04em; }
 .sample-banner { margin-top: 12px; padding: 10px 14px; border: 1px dashed #4d7570; border-radius: var(--radius-sm); background: rgba(109, 153, 149, 0.08); color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
