@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { api, PRODUCT_LABEL, money, countryFlag, freshness } from "../lib/api";
 import ExportInfo from "./ExportInfo";
+import ProductBadge from "./ProductBadge";
 
 export default function RoundupCard({ l }: { l: any }) {
   const [flagged, setFlagged] = useState(false);
@@ -15,7 +16,7 @@ export default function RoundupCard({ l }: { l: any }) {
     <div className="card roundup-card">
       <div className="lc-body">
         <div className="row wrap" style={{ gap: 6, marginBottom: 8 }}>
-          <span className="pill pill-dim">{PRODUCT_LABEL[l.product_type]}</span>
+          <ProductBadge type={l.product_type} />
           <span className="pill roundup-pill">📡 Web listing</span>
           {l.country && <span title={l.country} style={{ fontSize: "0.95rem" }}>{countryFlag(l.country)}</span>}
         </div>

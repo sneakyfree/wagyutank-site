@@ -21,13 +21,17 @@ function RoundupInner() {
   const css = sp.get("css") || "";
   const sort = sp.get("sort") || "recent";
   const source = sp.get("source") || "";
+  const q = sp.get("q") || "";
+  const bloodline = sp.get("bloodline") || "";
+  const [qInput, setQInput] = useState(q);
+  useEffect(() => { setQInput(q); }, [q]);
 
   useEffect(() => { api.roundupStats().then(setStats).catch(() => {}); }, []);
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      api.roundup({ product_type: product, region, css, sort, limit: 60 }).catch(() => []),
-      api.browse({ product_type: product, limit: 60 }).catch(() => []),
+      api.roundup({ product_type: product, region, css, sort, q, bloodline, limit: 80 }).catch(() => []),
+      api.browse({ product_type: product, limit: 80 }).catch(() => []),
     ]).then(([web, wt]) => {
       setWebRows(web || []);
       setWtRows(wt || []);
@@ -41,10 +45,15 @@ function RoundupInner() {
     router.push(`/roundup?${p.toString()}`);
   }
 
-  // WagyuTank listings honor the css filter client-side; region/price-sort are
-  // web-listing concepts, so natives ride along under "Worldwide"/recent only.
+  // WagyuTank listings honor css/keyword/bloodline client-side; region/price-sort
+  // are web-listing concepts, so natives ride along under "Worldwide"/recent only.
   let natives = wtRows;
   if (css) natives = natives.filter((l) => l.css_status === css);
+  if (q) {
+    const ql = q.toLowerCase();
+    natives = natives.filter((l) => `${l.title} ${l.animal_reg || ""} ${l.sire_reg || ""} ${l.dam_reg || ""}`.toLowerCase().includes(ql));
+  }
+  if (bloodline) natives = [];  // native listings don't carry a bloodline field
   if (region || sort !== "recent") natives = [];
   if (source === "web") natives = [];
   const web = source === "wagyutank" ? [] : webRows;
@@ -72,7 +81,26 @@ function RoundupInner() {
         </p>
       </div>
 
-      <div className="row wrap" style={{ gap: 8, margin: "20px 0 10px" }}>
+      {/* Search box — sire name, registration number, or keyword */}
+      <form onSubmit={(e) => { e.preventDefault(); setParam("q", qInput.trim()); }} className="searchbar" style={{ maxWidth: 640, marginTop: 20 }}>
+        <span className="faint">🔍</span>
+        <input value={qInput} onChange={(e) => setQInput(e.target.value)} placeholder="Search by sire, registration number, or keyword — e.g. Michifuku, FB1615, Itoshigenami…" aria-label="Search listings" />
+        {q && <button type="button" className="pill pill-dim" style={{ cursor: "pointer" }} onClick={() => setParam("q", "")}>clear ✕</button>}
+        <button type="submit" className="btn btn-gold">Search</button>
+      </form>
+
+      {/* Bloodline facet */}
+      {stats?.bloodlines && Object.keys(stats.bloodlines).length > 0 && (
+        <div className="row wrap" style={{ gap: 8, marginTop: 12 }}>
+          <span className="faint" style={{ fontSize: "0.82rem", alignSelf: "center" }}>🩸 Bloodline:</span>
+          <button className={`pill ${bloodline === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("bloodline", "")}>All</button>
+          {Object.entries(stats.bloodlines).map(([bl, n]: any) => (
+            <button key={bl} className={`pill ${bloodline === bl ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("bloodline", bloodline === bl ? "" : bl)}>{bl} ({n})</button>
+          ))}
+        </div>
+      )}
+
+      <div className="row wrap" style={{ gap: 8, margin: "16px 0 10px" }}>
         <button className={`pill ${source === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "")}>All sources</button>
         <button className={`pill ${source === "wagyutank" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "wagyutank")}>🏷 On WagyuTank</button>
         <button className={`pill ${source === "web" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "web")}>📡 Around the web</button>

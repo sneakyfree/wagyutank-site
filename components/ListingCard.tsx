@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { PRODUCT_GLYPH, PRODUCT_LABEL, money } from "../lib/api";
 import ExportInfo from "./ExportInfo";
+import ProductBadge, { ProductMark } from "./ProductBadge";
 
 export default function ListingCard({ l }: { l: any }) {
   const isAuction = l.sale_type === "auction";
@@ -16,10 +17,11 @@ export default function ListingCard({ l }: { l: any }) {
         )}
         {l.is_sample ? <span className="pill pill-sample badge-featured">SAMPLE</span>
           : l.featured && <span className="pill badge-featured">★ Featured</span>}
+        <ProductMark type={l.product_type} />
       </div>
       <div className="lc-body">
         <div className="row" style={{ gap: 6, marginBottom: 8 }}>
-          <span className="pill pill-dim">{PRODUCT_LABEL[l.product_type]}</span>
+          <ProductBadge type={l.product_type} />
           {isAuction && <span className="pill pill-red">{l.no_reserve ? "No Reserve" : "Auction"}</span>}
           {l.exclusive && <span className="pill">Exclusive</span>}
         </div>
