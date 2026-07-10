@@ -69,6 +69,7 @@ export const api = {
   animalZenkyo: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/zenkyo`),
   zenkyo: () => req("/api/zenkyo"),
   canon: (lang = "en") => req(`/api/canon?lang=${lang}`),
+  zenkyoEvent: (n: number | string) => req(`/api/zenkyo/event/${n}`),
   zenkyoInterest: (body: any) => req("/api/zenkyo/interest", { method: "POST", body: JSON.stringify(body) }),
   videos: (params: Record<string, any> = {}) => req(`/api/videos?${new URLSearchParams(clean(params))}`),
   videoCharts: () => req("/api/videos/charts"),
@@ -78,8 +79,8 @@ export const api = {
   claimChannel: (channel_id: string, channel: string, note?: string) => req("/api/videos/channels/claim", { method: "POST", body: JSON.stringify({ channel_id, channel, note: note ?? null }) }),
   submitAnimalVideo: (reg: string, title: string, video_url: string) =>
     req(`/api/animals/${encodeURIComponent(reg)}/videos`, { method: "POST", body: JSON.stringify({ title, video_url }) }),
-  animalComments: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/comments`),
-  postComment: (reg: string, body: string, parent_id?: number) => req(`/api/animals/${encodeURIComponent(reg)}/comments`, { method: "POST", body: JSON.stringify({ body, parent_id: parent_id ?? null }) }),
+  animalComments: (reg: string, lang = "en") => req(`/api/animals/${encodeURIComponent(reg)}/comments?lang=${lang}`),
+  postComment: (reg: string, body: string, parent_id?: number, lang = "en") => req(`/api/animals/${encodeURIComponent(reg)}/comments`, { method: "POST", body: JSON.stringify({ body, parent_id: parent_id ?? null, lang }) }),
   likeComment: (id: number) => req(`/api/comments/${id}/like`, { method: "POST" }),
 
   // facilities

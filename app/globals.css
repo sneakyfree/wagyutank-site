@@ -341,6 +341,10 @@ input, select, textarea, button { font: inherit; }
 .video-dur { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.68rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
 .video-jp { position: absolute; top: 8px; right: 8px; font-size: 0.9rem; }
 
+/* Zenkyo tiles */
+.zenkyo-tile { text-decoration: none; color: inherit; transition: border-color 0.15s, transform 0.1s; display: block; }
+.zenkyo-tile:hover { border-color: var(--gold); transform: translateY(-2px); }
+
 /* Modal */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .modal-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }

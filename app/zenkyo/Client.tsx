@@ -72,13 +72,46 @@ export default function Client() {
         </div>
       </div>
 
-      {/* Champions in the world's pedigrees */}
+      {/* Event timeline — the champions of every Zenkyo, clickable into scrapbooks */}
       <div className="section" style={{ paddingBottom: 0 }}>
-        <h2 style={{ fontSize: "1.5rem" }}>🐂 The champions in your herd's pedigree</h2>
+        <h2 style={{ fontSize: "1.5rem" }}>🥇 Every Zenkyo &amp; its champions</h2>
+        <p className="muted" style={{ marginTop: 0, marginBottom: 16, maxWidth: "74ch" }}>
+          Prefectures compete like national teams, in two divisions — <strong>breeding cattle</strong> (種牛)
+          and <strong>meat</strong> (肉牛). Tap any event for its scrapbook: the winners, the story, and photos.
+        </p>
+        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
+          {events.map((e: any) => (
+            <Link key={e.number} href={`/zenkyo/event?n=${e.number}`} className="card card-pad zenkyo-tile" style={e.year === 2027 ? { borderColor: "var(--gold)" } : {}}>
+              <div className="row" style={{ gap: 10, alignItems: "baseline" }}>
+                <div className="gold display" style={{ fontSize: "1.6rem", fontWeight: 700, lineHeight: 1 }}>{e.number}<span style={{ fontSize: "0.85rem" }}>{["th","st","nd","rd"][(e.number % 10 > 3 || [11,12,13].includes(e.number)) ? 0 : e.number % 10] || "th"}</span></div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700 }}>{e.year} · 🇯🇵 {e.host_prefecture}</div>
+                  <div className="faint" style={{ fontSize: "0.78rem" }}>{e.dates}</div>
+                </div>
+                {e.year === 2027 && <span className="pill" style={{ fontSize: "0.58rem" }}>UPCOMING</span>}
+              </div>
+              {(e.breeding_winner || e.meat_winner) ? (
+                <div style={{ marginTop: 8, fontSize: "0.82rem" }}>
+                  {e.breeding_winner && <div>🐂 Breeding: <span className="gold" style={{ fontWeight: 600 }}>{e.breeding_winner}</span></div>}
+                  {e.meat_winner && <div>🥩 Meat: <span className="gold" style={{ fontWeight: 600 }}>{e.meat_winner}</span></div>}
+                </div>
+              ) : e.year === 2027 ? (
+                <div className="muted" style={{ marginTop: 8, fontSize: "0.82rem" }}>Champions to be decided — {cd ? `${cd.days} days away` : "August 2027"}.</div>
+              ) : null}
+              {e.champion_note && <div className="faint" style={{ fontSize: "0.78rem", marginTop: 6 }}>{e.champion_note}</div>}
+              <div className="gold" style={{ fontSize: "0.78rem", marginTop: 8 }}>Open the scrapbook →</div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Champion bulls behind the winners — clearly labeled */}
+      <div className="section" style={{ paddingBottom: 0 }}>
+        <h2 style={{ fontSize: "1.5rem" }}>🐂 The champion sires behind the winners</h2>
         <p className="muted" style={{ marginTop: 0, marginBottom: 18, maxWidth: "74ch", lineHeight: 1.7 }}>
-          These are the medalists and their sons — the bulls who won at the Zenkyo, or sired those who
-          did, and then passed into the foundation animals exported to the world. When you see a 🏆
-          badge on a foundation bull's page, this is why.
+          The individual bulls who <strong>won</strong> a Zenkyo, or <strong>sired</strong> a Grand Champion —
+          and then passed into the pedigrees of the world's herds. Each one's record is stated plainly.
+          A 🏆 badge appears on any foundation animal descended from them.
         </p>
         <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: 16 }}>
           {champs.map((c: any) => (
@@ -108,31 +141,8 @@ export default function Client() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Event timeline */}
-      <div className="section" style={{ paddingBottom: 0 }}>
-        <h2 style={{ fontSize: "1.5rem" }}>📜 Every Zenkyo since 1966</h2>
-        <div className="stack" style={{ gap: 14, marginTop: 8 }}>
-          {events.map((e: any) => (
-            <div key={e.number} className={`card card-pad ${e.year === 2027 ? "" : ""}`} style={e.year === 2027 ? { borderColor: "var(--gold)" } : {}}>
-              <div className="row wrap" style={{ gap: 12, alignItems: "baseline" }}>
-                <div style={{ minWidth: 62 }}>
-                  <div className="gold display" style={{ fontSize: "1.8rem", fontWeight: 700, lineHeight: 1 }}>{e.number}<span style={{ fontSize: "0.9rem" }}>{["th","st","nd","rd"][(e.number % 10 > 3 || [11,12,13].includes(e.number)) ? 0 : e.number % 10] || "th"}</span></div>
-                </div>
-                <div style={{ flex: 1, minWidth: 220 }}>
-                  <div style={{ fontWeight: 700, fontSize: "1.05rem" }}>{e.year} · 🇯🇵 {e.host_prefecture}{e.year === 2027 && <span className="pill" style={{ marginLeft: 8, fontSize: "0.6rem" }}>UPCOMING</span>}</div>
-                  <div className="faint" style={{ fontSize: "0.82rem" }}>{e.dates}{e.city ? ` · ${e.city}` : ""}</div>
-                  {e.theme && <div className="muted" style={{ fontSize: "0.85rem", fontStyle: "italic", marginTop: 4 }}>“{e.theme}”</div>}
-                </div>
-              </div>
-              {e.top_honors && <div style={{ marginTop: 8, fontSize: "0.9rem" }}><span className="gold" style={{ fontWeight: 600 }}>🥇 {e.top_honors}</span></div>}
-              {e.notable_facts && <p className="muted" style={{ fontSize: "0.9rem", lineHeight: 1.6, margin: "6px 0 0" }}>{e.notable_facts}</p>}
-            </div>
-          ))}
-        </div>
         <p className="help" style={{ marginTop: 12 }}>
-          Champion and event records compiled from Japanese primary sources (National Wagyu Registration Association, prefecture records, breeder histories). Pre-2000 individual placings are documented where sources allow; some remain unverified and are noted as such.
+          Records compiled from Japanese primary sources (National Wagyu Registration Association, prefecture records, breeder histories). Some pre-2000 individual placings remain unverified and are noted as such.
         </p>
       </div>
 
