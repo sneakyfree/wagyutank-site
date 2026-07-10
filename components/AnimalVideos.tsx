@@ -50,8 +50,8 @@ export default function AnimalVideos({ reg, name }: { reg: string; name: string 
       )}
 
       {vids.length ? (
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
-          {vids.map((v) => (
+        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16 }}>
+          {vids.map((v) => v.kind === "member" ? (
             <div key={v.id} className="card" style={{ overflow: "hidden" }}>
               <div style={{ aspectRatio: "16/9", background: "#000" }}>
                 <iframe src={v.embed_url} title={v.title} style={{ width: "100%", height: "100%", border: 0 }}
@@ -59,9 +59,22 @@ export default function AnimalVideos({ reg, name }: { reg: string; name: string 
               </div>
               <div className="lc-body">
                 <div className="lc-title" style={{ fontSize: "0.95rem" }}>{v.title}</div>
-                <div className="faint" style={{ fontSize: "0.78rem" }}>shared by {v.submitter_name}</div>
+                <div className="faint" style={{ fontSize: "0.78rem" }}>🤝 shared by {v.submitter_name}</div>
               </div>
             </div>
+          ) : (
+            <Link key={v.id} href={`/video?id=${v.theater_id}`} className="card video-card">
+              <div className="video-thumb">
+                {v.thumbnail_url && <img src={v.thumbnail_url} alt={v.title} loading="lazy" />}
+                {v.pedigree_of && <span className="video-rank" title={`Footage of this animal's ${v.pedigree_of}`}>🧬 {v.pedigree_of}</span>}
+              </div>
+              <div className="lc-body" style={{ padding: "10px 12px 12px" }}>
+                <div className="lc-title" style={{ fontSize: "0.9rem", lineHeight: 1.35 }}>{v.title}</div>
+                <div className="faint" style={{ fontSize: "0.76rem", marginTop: 4 }}>
+                  🎬 {v.channel}{v.views != null ? ` · ${v.views.toLocaleString()} views` : ""}
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
       ) : (

@@ -18,6 +18,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   const [news, setNews] = useState<any[]>([]);
+  const [theater, setTheater] = useState<any[]>([]);
+  useEffect(() => { api.videos({ sort: "views", limit: 4 }).then((d: any) => setTheater(d.videos || [])).catch(() => {}); }, []);
   useEffect(() => {
     Promise.all([api.browse({ limit: 8 }), api.foundation(), api.roundup({ limit: 8 })])
       .then(([ls, fs, rs]) => { setListings(ls); setFoundation(fs.slice(0, 10)); setRoundup(rs); })
@@ -137,6 +139,35 @@ export default function Home() {
             </p>
             <div className="grid listings-grid">
               {roundup.map((l) => <RoundupCard key={l.id} l={l} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {theater.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="section-head">
+              <h2><span className="pill" style={{ background: "var(--gold-soft)", color: "var(--gold)", borderColor: "var(--gold)" }}>🎬 The Wagyu Theater</span></h2>
+              <div className="spacer" />
+              <Link href="/videos" className="nav-link">Top 100 →</Link>
+            </div>
+            <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
+              The world's Wagyu video library — bulls on film, auction recordings, Japan, and how-to. Searchable by registration number.
+            </p>
+            <div className="grid video-grid">
+              {theater.map((v) => (
+                <Link key={v.id} href={`/video?id=${v.id}`} className="card video-card">
+                  <div className="video-thumb">
+                    {v.thumbnail_url && <img src={v.thumbnail_url} alt={v.title} loading="lazy" />}
+                    {v.lang === "ja" && <span className="video-jp">🇯🇵</span>}
+                  </div>
+                  <div className="lc-body" style={{ padding: "10px 12px 12px" }}>
+                    <div className="lc-title" style={{ fontSize: "0.9rem", lineHeight: 1.35 }}>{v.title}</div>
+                    <div className="faint" style={{ fontSize: "0.76rem", marginTop: 4 }}>{v.channel}{v.views != null ? ` · ${v.views.toLocaleString()} views` : ""}</div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>

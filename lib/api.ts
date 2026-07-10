@@ -66,6 +66,9 @@ export const api = {
   animalOffers: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/offers`),
   animalPriceHistory: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/price-history`),
   animalVideos: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/videos`),
+  videos: (params: Record<string, any> = {}) => req(`/api/videos?${new URLSearchParams(clean(params))}`),
+  videoCharts: () => req("/api/videos/charts"),
+  video: (id: number | string) => req(`/api/videos/${id}`),
   submitAnimalVideo: (reg: string, title: string, video_url: string) =>
     req(`/api/animals/${encodeURIComponent(reg)}/videos`, { method: "POST", body: JSON.stringify({ title, video_url }) }),
   animalComments: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/comments`),

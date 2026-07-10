@@ -331,6 +331,16 @@ input, select, textarea, button { font: inherit; }
 .tk-down { color: #e0685c; font-weight: 700; }
 .tk-flat { color: var(--text-faint); }
 
+/* Wagyu Theater */
+.video-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.video-card { overflow: hidden; display: flex; flex-direction: column; }
+.video-thumb { position: relative; aspect-ratio: 16/9; background: #000; overflow: hidden; }
+.video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.25s; }
+.video-card:hover .video-thumb img { transform: scale(1.04); }
+.video-rank { position: absolute; top: 8px; left: 8px; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color: #1a1408; font-weight: 800; font-size: 0.72rem; padding: 2px 8px; border-radius: 20px; }
+.video-dur { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.68rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+.video-jp { position: absolute; top: 8px; right: 8px; font-size: 0.9rem; }
+
 /* Modal */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .modal-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
