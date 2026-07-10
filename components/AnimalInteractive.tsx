@@ -15,11 +15,13 @@ export default function AnimalInteractive({ reg, name }: { reg: string; name: st
   const [webOffers, setWebOffers] = useState<any[]>([]);
   const [bullNews, setBullNews] = useState<any[]>([]);
   const [bullSales, setBullSales] = useState<any[]>([]);
+  const [zenkyo, setZenkyo] = useState<any[]>([]);
 
   useEffect(() => {
     if (!reg) return;
     api.animalOffers(reg).then(setOffers).catch(() => {});
     api.roundup({ animal: reg, limit: 12 }).then(setWebOffers).catch(() => {});
+    api.animalZenkyo(reg).then((d: any) => setZenkyo(d.champions || [])).catch(() => {});
   }, [reg]);
 
   useEffect(() => {
@@ -35,6 +37,31 @@ export default function AnimalInteractive({ reg, name }: { reg: string; name: st
 
   return (
     <>
+      {zenkyo.length > 0 && (
+        <div className="section" style={{ paddingBottom: 0 }}>
+          <div className="card card-pad" style={{ borderColor: "var(--gold)", background: "linear-gradient(160deg, var(--bg-card), var(--bg-elev))" }}>
+            <div className="row" style={{ gap: 10, alignItems: "baseline" }}>
+              <span style={{ fontSize: "1.4rem" }}>🏆</span>
+              <div>
+                <div style={{ fontWeight: 800 }}>Zenkyo champion pedigree</div>
+                <div className="faint" style={{ fontSize: "0.82rem" }}>This animal descends from a winner of Japan's Wagyu Olympics.</div>
+              </div>
+            </div>
+            <div className="stack" style={{ gap: 6, marginTop: 10 }}>
+              {zenkyo.map((z: any, i: number) => (
+                <div key={i} style={{ fontSize: "0.9rem" }}>
+                  <span className="gold" style={{ fontWeight: 600 }}>{z.champion}</span>
+                  {z.name_jp && <span className="faint"> {z.name_jp}</span>}
+                  <span className="muted"> — {name}'s {z.relationship}. </span>
+                  <span className="faint">{z.zenkyo_record}</span>
+                </div>
+              ))}
+            </div>
+            <Link href="/zenkyo" className="gold" style={{ fontSize: "0.85rem", display: "inline-block", marginTop: 8 }}>The Zenkyo Hall of Champions →</Link>
+          </div>
+        </div>
+      )}
+
       <PriceAnalytics reg={reg} name={name} />
 
       <div className="section" style={{ paddingBottom: 0 }}>

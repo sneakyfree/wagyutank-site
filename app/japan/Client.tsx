@@ -50,6 +50,17 @@ export default function Client() {
         </p>
       </div>
 
+      {/* Zenkyo shrine link */}
+      <Link href="/zenkyo" className="card card-pad" style={{ display: "block", marginTop: 20, borderColor: "var(--gold)", textDecoration: "none" }}>
+        <div className="row wrap" style={{ alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: "1.8rem" }}>🏆</span>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: "1.15rem", color: "var(--text)" }}>The Zenkyo — Japan's Wagyu Olympics</div>
+            <div className="muted" style={{ fontSize: "0.9rem" }}>Every champion since 1966, the bulls in your herd's pedigree, and the countdown to Hokkaido 2027 →</div>
+          </div>
+        </div>
+      </Link>
+
       {/* Videos from Japan */}
       <div className="section" style={{ paddingBottom: 0 }}>
         <div className="section-head">
