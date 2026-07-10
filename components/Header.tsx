@@ -23,6 +23,7 @@ export default function Header() {
       <Link href="/news" className="nav-link">{t("nav.news")}</Link>
       <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>
       <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>
+      <Link href="/feeding" className="nav-link">{t("nav.feeding")}</Link>
       <NavDropdown label={t("nav.data")} items={[
         { href: "/market", label: t("nav.marketdata"), desc: t("nav.marketdata_desc") },
         { href: "/sale-reports", label: t("nav.salereports"), desc: t("nav.salereports_desc") },
@@ -44,6 +45,7 @@ export default function Header() {
       <Link href="/news" className="nav-link">{t("nav.news")}</Link>
       <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>
       <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>
+      <Link href="/feeding" className="nav-link">{t("nav.feeding")}</Link>
       <Link href="/market" className="nav-link">{t("nav.marketdata")}</Link>
       <Link href="/sale-reports" className="nav-link">{t("nav.salereports")}</Link>
       <Link href="/sales" className="nav-link">{t("nav.records")}</Link>

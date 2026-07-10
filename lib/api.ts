@@ -69,6 +69,7 @@ export const api = {
   animalZenkyo: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/zenkyo`),
   zenkyo: () => req("/api/zenkyo"),
   canon: (lang = "en") => req(`/api/canon?lang=${lang}`),
+  feeding: (lang = "en") => req(`/api/feeding?lang=${lang}`),
   zenkyoEvent: (n: number | string) => req(`/api/zenkyo/event/${n}`),
   zenkyoInterest: (body: any) => req("/api/zenkyo/interest", { method: "POST", body: JSON.stringify(body) }),
   videos: (params: Record<string, any> = {}) => req(`/api/videos?${new URLSearchParams(clean(params))}`),

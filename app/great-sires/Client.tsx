@@ -4,9 +4,17 @@ import Link from "next/link";
 import { api } from "../../lib/api";
 import { useLang, LANGUAGES, Lang } from "../../lib/i18n";
 
+// Every entry now has its own Animal profile page (bio, videos, translated
+// comments). Link by clean reg if present, else by name — find_animal resolves both.
+function profileKey(a: any): string {
+  const reg = a.registry_reg || (a.reg && !/\s|registry/i.test(a.reg) ? a.reg : null);
+  return (reg || (a.name || "").split("(")[0].trim());
+}
+
 function Card({ a }: { a: any }) {
+  const href = `/animal?reg=${encodeURIComponent(profileKey(a))}`;
   return (
-    <div className="card card-pad" style={{ borderTop: "3px solid var(--gold)" }}>
+    <Link href={href} className="card card-pad" style={{ borderTop: "3px solid var(--gold)", display: "block", textDecoration: "none", color: "inherit" }}>
       <div className="row" style={{ alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
         {a.ono_rank && <span className="pill" style={{ fontSize: "0.66rem", background: "var(--gold-soft)", color: "var(--gold)", borderColor: "var(--gold)" }}>Ono #{a.ono_rank}</span>}
         <h3 style={{ margin: 0, fontSize: "1.2rem" }}>{a.name}</h3>
@@ -25,12 +33,10 @@ function Card({ a }: { a: any }) {
           {a.key_facts.map((f: string, i: number) => <li key={i} className="faint">{f}</li>)}
         </ul>
       )}
-      {a.registry_reg && (
-        <Link href={`/animal?reg=${encodeURIComponent(a.registry_reg)}`} className="gold" style={{ fontSize: "0.85rem", display: "inline-block", marginTop: 10 }}>
-          See {a.name} in the registry →
-        </Link>
-      )}
-    </div>
+      <div className="gold" style={{ fontSize: "0.85rem", marginTop: 10 }}>
+        View {a.name.split("(")[0].trim()}'s full profile — videos &amp; discussion →
+      </div>
+    </Link>
   );
 }
 
