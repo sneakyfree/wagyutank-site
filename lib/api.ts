@@ -69,6 +69,9 @@ export const api = {
   videos: (params: Record<string, any> = {}) => req(`/api/videos?${new URLSearchParams(clean(params))}`),
   videoCharts: () => req("/api/videos/charts"),
   video: (id: number | string) => req(`/api/videos/${id}`),
+  videoUploadIntent: (content_type: string, size: number) => req("/api/videos/upload-intent", { method: "POST", body: JSON.stringify({ content_type, size }) }),
+  videoUploadComplete: (key: string, title: string, animal_reg?: string) => req("/api/videos/upload-complete", { method: "POST", body: JSON.stringify({ key, title, animal_reg: animal_reg ?? null, description: null }) }),
+  claimChannel: (channel_id: string, channel: string, note?: string) => req("/api/videos/channels/claim", { method: "POST", body: JSON.stringify({ channel_id, channel, note: note ?? null }) }),
   submitAnimalVideo: (reg: string, title: string, video_url: string) =>
     req(`/api/animals/${encodeURIComponent(reg)}/videos`, { method: "POST", body: JSON.stringify({ title, video_url }) }),
   animalComments: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/comments`),
@@ -142,6 +145,10 @@ export const api = {
   adminUsers: (params: Record<string, any> = {}) => req(`/api/admin/users?${new URLSearchParams(clean(params))}`),
   adminUserAction: (id: number, action: string, role?: string) => req(`/api/admin/users/${id}/action`, { method: "POST", body: JSON.stringify(role ? { action, role } : { action }) }),
   adminMessageUser: (id: number, subject: string, body: string) => req(`/api/admin/users/${id}/message`, { method: "POST", body: JSON.stringify({ subject, body }) }),
+  adminVideos: (params: Record<string, any> = {}) => req(`/api/admin/videos?${new URLSearchParams(clean(params))}`),
+  adminVideoAction: (id: number, action: string, category?: string) => req(`/api/admin/videos/${id}/action`, { method: "POST", body: JSON.stringify(category ? { action, category } : { action }) }),
+  adminVideoClaims: (status = "pending") => req(`/api/admin/video-claims?status=${status}`),
+  adminVideoClaimAction: (id: number, action: string) => req(`/api/admin/video-claims/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
   adminCatalogSubmissions: (params: Record<string, any> = {}) => req(`/api/admin/catalog/submissions?${new URLSearchParams(clean(params))}`),
   adminCatalogAction: (id: number, action: string) => req(`/api/admin/catalog/submissions/${id}/action`, { method: "POST", body: JSON.stringify({ action }) }),
   adminCatalogCsv: async (edition?: string) => {

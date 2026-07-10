@@ -7,7 +7,7 @@ const ROLE_RANK: Record<string, number> = { user: 0, manager: 1, admin: 2, super
 const ROLE_LABEL: Record<string, string> = { user: "member", manager: "Manager", admin: "Admin", super_admin: "Super Admin" };
 // Tabs only admins+ may open; managers get the rest (visibility + moderation).
 const ADMIN_ONLY_TABS = new Set(["Members", "Campaigns", "AI & Compute", "Settings", "Audit"]);
-const ALL_TABS = ["Overview", "Health", "Analytics", "Members", "Catalog", "Campaigns", "Roundup", "Ads", "AI & Compute", "Settings", "Audit"];
+const ALL_TABS = ["Overview", "Health", "Analytics", "Members", "Catalog", "Theater", "Campaigns", "Roundup", "Ads", "AI & Compute", "Settings", "Audit"];
 
 function Bars({ data, color = "var(--gold)" }: { data: any[]; color?: string }) {
   if (!data?.length) return null;
@@ -66,6 +66,7 @@ export default function AdminPage() {
       {tab === "Analytics" && <Analytics />}
       {tab === "Members" && isAdmin && <Members myRole={user.role || "user"} />}
       {tab === "Catalog" && <CatalogAdmin isAdmin={isAdmin} />}
+      {tab === "Theater" && <TheaterAdmin isAdmin={isAdmin} />}
       {tab === "Roundup" && <Roundup />}
       {tab === "Ads" && <Ads />}
       {tab === "Campaigns" && isAdmin && <Campaigns />}
@@ -321,6 +322,70 @@ function Analytics() {
           {d.top_animals?.length ? d.top_animals.map((a: any) => <div key={a.path} className="kv"><span className="k" style={{ fontSize: "0.8rem" }}>{a.path.replace("/animal/", "").replace(/\/$/, "").replace("?reg=", "")}</span><span>{a.views}</span></div>) : <span className="faint">Fills in as visitors browse animals.</span>}</div>
         <div className="card card-pad"><div className="faint" style={{ fontSize: "0.78rem", marginBottom: 8 }}>Hottest Roundup listings (outbound clicks)</div>
           {d.roundup_demand?.length ? d.roundup_demand.map((r: any, i: number) => <div key={i} className="kv"><span className="k" style={{ fontSize: "0.8rem" }}>{r.title} · {r.source}</span><span>{r.clicks}</span></div>) : <span className="faint">No outbound clicks yet.</span>}</div>
+      </div>
+    </div>
+  );
+}
+
+function TheaterAdmin({ isAdmin }: { isAdmin: boolean }) {
+  const [claims, setClaims] = useState<any[]>([]);
+  const [vids, setVids] = useState<any[]>([]);
+  const [q, setQ] = useState("");
+  function load() {
+    api.adminVideoClaims("pending").then(setClaims).catch(() => {});
+    api.adminVideos({ q, limit: 50 }).then(setVids).catch(() => {});
+  }
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [q]);
+  async function claimAct(id: number, action: string) { await api.adminVideoClaimAction(id, action); load(); }
+  async function vidAct(id: number, action: string) {
+    if (action === "delete" && !confirm("Delete this video from the library?")) return;
+    await api.adminVideoAction(id, action); load();
+  }
+  return (
+    <div className="stack" style={{ gap: 20 }}>
+      <div>
+        <h2 style={{ fontSize: "1.2rem" }}>✓ Pending channel claims {claims.length ? `(${claims.length})` : ""}</h2>
+        {claims.length ? (
+          <div className="admin-table-wrap"><table className="admin-table">
+            <thead><tr><th>Channel</th><th>Claimed by</th><th>Note</th><th>Actions</th></tr></thead>
+            <tbody>{claims.map((c) => (
+              <tr key={c.id}>
+                <td>{c.channel || c.channel_id}</td>
+                <td>@{c.handle} <span className="faint" style={{ fontSize: "0.75rem" }}>{c.email}</span></td>
+                <td className="faint" style={{ fontSize: "0.8rem" }}>{c.note || "—"}</td>
+                <td>{isAdmin && <div className="row" style={{ gap: 4 }}>
+                  <button className="mini-btn" onClick={() => claimAct(c.id, "approve")}>Approve</button>
+                  <button className="mini-btn danger" onClick={() => claimAct(c.id, "reject")}>Reject</button>
+                </div>}</td>
+              </tr>
+            ))}</tbody>
+          </table></div>
+        ) : <p className="faint">No pending claims. Members claim channels from video pages; verify it's really their channel before approving.</p>}
+      </div>
+      <div>
+        <div className="row" style={{ gap: 10 }}>
+          <h2 style={{ fontSize: "1.2rem", margin: 0 }}>🎬 Video library</h2>
+          <div className="spacer" />
+          <input className="input" style={{ maxWidth: 260 }} placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
+        <div className="admin-table-wrap" style={{ marginTop: 10 }}><table className="admin-table">
+          <thead><tr><th>Title</th><th>Source</th><th>Channel</th><th>Views</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>{vids.map((v) => (
+            <tr key={v.id}>
+              <td style={{ maxWidth: 320 }}>{v.title?.slice(0, 60)}</td>
+              <td>{v.source === "native" ? <span className="pill">⬆ native</span> : "yt"}</td>
+              <td className="faint" style={{ fontSize: "0.8rem" }}>{v.channel}</td>
+              <td>{v.views?.toLocaleString?.() ?? "—"}</td>
+              <td>{v.category}</td>
+              <td><span className={`pill ${v.status === "approved" ? "pill-green" : "pill-dim"}`}>{v.status}</span></td>
+              <td><div className="row" style={{ gap: 4 }}>
+                {v.status !== "approved" && <button className="mini-btn" onClick={() => vidAct(v.id, "approve")}>Approve</button>}
+                {v.status === "approved" && <button className="mini-btn" onClick={() => vidAct(v.id, "hide")}>Hide</button>}
+                <button className="mini-btn danger" onClick={() => vidAct(v.id, "delete")}>Delete</button>
+              </div></td>
+            </tr>
+          ))}</tbody>
+        </table></div>
       </div>
     </div>
   );

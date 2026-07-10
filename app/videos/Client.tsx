@@ -3,6 +3,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "../../lib/api";
+import UploadVideo from "../../components/UploadVideo";
 
 function views(n: number | null): string {
   if (n == null) return "";
@@ -45,6 +46,7 @@ function TheaterInner() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [qInput, setQInput] = useState("");
+  const [showUpload, setShowUpload] = useState(false);
 
   const cat = sp.get("category") || "";
   const q = sp.get("q") || "";
@@ -90,6 +92,7 @@ function TheaterInner() {
             onClick={() => setParam("category", cat === c.key ? "" : c.key)}>{c.icon} {c.label}</button>
         ))}
         <div className="spacer" />
+        <button className="btn btn-gold" onClick={() => setShowUpload(true)}>⬆ Share your video</button>
         <form onSubmit={(e) => { e.preventDefault(); setParam("q", qInput); }} className="row" style={{ gap: 6 }}>
           <input className="input" style={{ width: 210 }} placeholder="Search title or reg # …" value={qInput} onChange={(e) => setQInput(e.target.value)} />
           <button className="btn" type="submit">Search</button>
@@ -134,6 +137,7 @@ function TheaterInner() {
       ) : (
         <div className="adslot" style={{ marginTop: 20 }}>Nothing found{q ? ` for “${q}”` : ""} — the harvest crawler keeps hunting. Try a bull's name or registration number.</div>
       )}
+      {showUpload && <UploadVideo onClose={() => setShowUpload(false)} />}
     </div>
   );
 }
