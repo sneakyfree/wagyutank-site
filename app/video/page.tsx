@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { api } from "../../lib/api";
 import { VideoCard } from "../videos/Client";
+import Discussion from "../../components/Discussion";
 
 // The canonical WagyuTank page for a video — the embed is an implementation
 // detail (YouTube today, native player later); the URL, context, and community
@@ -38,6 +39,12 @@ function VideoInner() {
               {v.channel}{v.views != null ? ` · ${v.views.toLocaleString()} views` : ""}
             </span>
           </div>
+          {v.editorial && (
+            <div className="card card-pad" style={{ marginTop: 16, borderColor: "var(--gold)", maxWidth: "74ch" }}>
+              <div className="faint" style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>🖋 WagyuTank notes</div>
+              <p className="muted" style={{ margin: 0, lineHeight: 1.7 }}>{v.editorial}</p>
+            </div>
+          )}
           {v.description && <p className="muted" style={{ marginTop: 14, lineHeight: 1.7, maxWidth: "72ch", whiteSpace: "pre-wrap" }}>{v.description}</p>}
           {v.source === "youtube" && v.video_id && (
             <p className="help" style={{ marginTop: 10 }}>
@@ -45,6 +52,13 @@ function VideoInner() {
               <a href={`https://www.youtube.com/watch?v=${v.video_id}`} target="_blank" rel="noopener noreferrer" className="gold">Watch on YouTube ↗</a>
             </p>
           )}
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org", "@type": "VideoObject",
+            name: v.title_en || v.title, description: (v.editorial || v.description || v.title || "").slice(0, 300),
+            thumbnailUrl: v.thumbnail_url, uploadDate: v.published_at || v.first_seen_at,
+            embedUrl: v.embed_url, interactionCount: v.views || undefined,
+          }) }} />
+          <Discussion reg={`video:${v.id}`} name="this video" />
         </div>
 
         <div style={{ flex: "1 1 280px", minWidth: 260 }}>

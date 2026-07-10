@@ -17,11 +17,12 @@ function dur(s: number | null): string {
 }
 
 export function VideoCard({ v, rank }: { v: any; rank?: number }) {
+  const delta = v.views != null && v.views_prev != null ? v.views - v.views_prev : null;
   return (
     <Link href={`/video?id=${v.id}`} className="card video-card">
       <div className="video-thumb">
         {v.thumbnail_url && <img src={v.thumbnail_url} alt={v.title} loading="lazy" />}
-        {rank != null && <span className="video-rank">#{rank}</span>}
+        {rank != null && <span className="video-rank">#{rank}{delta != null && delta !== 0 ? (delta > 0 ? " ▲" : " ▼") : ""}</span>}
         {v.duration != null && <span className="video-dur">{dur(v.duration)}</span>}
         {v.lang === "ja" && <span className="video-jp">🇯🇵</span>}
       </div>

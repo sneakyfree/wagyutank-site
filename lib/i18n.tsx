@@ -29,6 +29,7 @@ const K: Record<string, Partial<Record<Lang, string>>> = {
   "nav.advertise": { en: "Advertise", es: "Anunciar", pt: "Anunciar", de: "Werben", ja: "広告", zh: "广告" },
   "nav.catalog": { en: "Catalog", es: "Catálogo", pt: "Catálogo", de: "Katalog", ja: "カタログ", zh: "目录" },
   "nav.videos": { en: "Videos", es: "Videos", pt: "Vídeos", de: "Videos", ja: "動画", zh: "视频" },
+  "nav.japan": { en: "🇯🇵 Japan", es: "🇯🇵 Japón", pt: "🇯🇵 Japão", de: "🇯🇵 Japan", ja: "🇯🇵 日本", zh: "🇯🇵 日本" },
   "nav.sell": { en: "+ Sell", es: "+ Vender", pt: "+ Vender", de: "+ Verkaufen", ja: "+ 出品", zh: "+ 出售" },
   "nav.signin": { en: "Sign in", es: "Iniciar sesión", pt: "Entrar", de: "Anmelden", ja: "ログイン", zh: "登录" },
   "nav.signout": { en: "Sign out", es: "Cerrar sesión", pt: "Sair", de: "Abmelden", ja: "ログアウト", zh: "登出" },
