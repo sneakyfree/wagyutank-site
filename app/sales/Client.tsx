@@ -71,9 +71,16 @@ export default function Sales() {
       {/* Record leaderboard */}
       <div className="section" style={{ paddingTop: 22, paddingBottom: 0 }}>
         <h2 style={{ fontSize: "1.3rem" }}>🥇 {win === "year" ? "This year's" : win === "decade" ? "This decade's" : "The all-time"} records</h2>
-        <div className="sale-grid">
-          {d.records.map((s: any, i: number) => <SaleCard key={s.id} s={s} rank={i + 1} />)}
-        </div>
+        {d.records.length ? (
+          <div className="sale-grid">
+            {d.records.map((s: any, i: number) => <SaleCard key={s.id} s={s} rank={i + 1} />)}
+          </div>
+        ) : (
+          <div className="adslot">
+            No documented sales recorded for {win === "year" ? "this year" : "this decade"} yet — Wagyu results publish on a lag, and many private-treaty sales are never reported.
+            {" "}<button onClick={() => setWin("")} className="gold" style={{ background: "none", border: "none", cursor: "pointer", font: "inherit", padding: 0 }}>See all-time records →</button>
+          </div>
+        )}
       </div>
 
       {d.categories.map((c: any) => (

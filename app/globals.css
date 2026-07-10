@@ -20,6 +20,8 @@
 
 * { box-sizing: border-box; }
 html, body { padding: 0; margin: 0; }
+/* Backstop: no page should ever scroll sideways on mobile. */
+html, body { overflow-x: hidden; max-width: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -112,6 +114,24 @@ input, select, textarea, button { font: inherit; }
   display: grid; place-items: center; position: relative;
 }
 .lc-media .glyph { font-size: 2.6rem; opacity: 0.5; }
+/* Foundation animal photos: side-profile crops bias toward the head. */
+.lc-media img.animal-photo { object-position: 50% 28%; }
+/* Branded placeholder for foundation animals without a period photograph. */
+.foundation-ph {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px; text-align: center;
+  background:
+    radial-gradient(120% 80% at 50% 30%, rgba(217,164,65,0.06), transparent 65%),
+    repeating-linear-gradient(115deg, transparent 0 14px, rgba(217,164,65,0.025) 14px 15px);
+}
+.foundation-ph .fp-seal {
+  width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
+  font-family: Georgia, serif; font-weight: 800; font-size: 0.9rem; color: #1a1408;
+  background: linear-gradient(145deg, var(--gold-bright), var(--gold));
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.15);
+}
+.foundation-ph .fp-name { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.04em; }
+.foundation-ph .fp-note { font-size: 0.6rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.1em; }
 .lc-body { padding: 14px 16px 16px; }
 .lc-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
 .lc-price { color: var(--gold-bright); font-weight: 800; font-size: 1.15rem; }
@@ -301,7 +321,7 @@ input, select, textarea, button { font: inherit; }
 /* Price Index ticker */
 .ticker { display: flex; align-items: stretch; text-decoration: none; background: linear-gradient(180deg, #12100c, #0c0a08); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
 .ticker-badge { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 14px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.05em; color: #0c0a08; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); white-space: nowrap; }
-.ticker-track { flex: 1 1 auto; overflow: hidden; position: relative; }
+.ticker-track { flex: 1 1 auto; min-width: 0; overflow: hidden; position: relative; }
 .ticker-run { display: inline-flex; align-items: center; gap: 0; white-space: nowrap; padding: 9px 0; will-change: transform; }
 .tk-item { font-size: 0.82rem; color: var(--text-dim); padding: 0 20px; border-right: 1px solid var(--border-soft); }
 .tk-item b { color: var(--text); font-weight: 700; margin-right: 5px; }

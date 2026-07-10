@@ -64,6 +64,7 @@ export const api = {
     req(`/api/animals/foundation${bloodline ? `?bloodline=${encodeURIComponent(bloodline)}` : ""}`),
   animal: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}`),
   animalOffers: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/offers`),
+  animalPriceHistory: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/price-history`),
   animalComments: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/comments`),
   postComment: (reg: string, body: string, parent_id?: number) => req(`/api/animals/${encodeURIComponent(reg)}/comments`, { method: "POST", body: JSON.stringify({ body, parent_id: parent_id ?? null }) }),
   likeComment: (id: number) => req(`/api/comments/${id}/like`, { method: "POST" }),
@@ -185,6 +186,8 @@ export const api = {
   userReviews: (handle: string) => req(`/api/orders/user/${encodeURIComponent(handle)}/reviews`),
   breedHistory: (lang = "en") => req(`/api/content/breed-history?lang=${lang}`),
   translate: (text: string, lang = "es") => req("/api/translate", { method: "POST", body: JSON.stringify({ text, lang }) }),
+  translateBatch: (items: { id: number; text: string }[], lang = "es") => req("/api/translate/batch", { method: "POST", body: JSON.stringify({ items, lang }) }),
+  newsArticle: (id: number, lang = "en") => req(`/api/news/${id}?lang=${lang}`),
 };
 
 // Freshness signal for a Roundup listing — source-updated date if known, else our own index date.

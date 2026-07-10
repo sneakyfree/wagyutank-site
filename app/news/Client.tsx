@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "../../lib/api";
-import { useLang } from "../../lib/i18n";
+import { useLang, LANGUAGES } from "../../lib/i18n";
 
 const REGIONS = [
   { code: "", label: "🌍 All" },
@@ -29,18 +29,21 @@ function timeAgo(iso: string | null): string {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-// Translate a headline into the active language on demand (cached server-side).
+// Translate headlines into the active language. One batched request (not 40
+// separate ones), progressive state, and a hard reset on language change so a
+// previous language's translations never linger.
 function useTranslated(rows: any[], lang: string) {
   const [map, setMap] = useState<Record<number, string>>({});
   useEffect(() => {
-    if (lang === "en" || !rows.length) { setMap({}); return; }
+    setMap({});                      // clear immediately on any lang/row change
+    if (lang === "en" || !rows.length) return;
     let alive = true;
     (async () => {
-      const out: Record<number, string> = {};
-      await Promise.all(rows.slice(0, 40).map(async (a) => {
-        try { const r = await api.translate(a.title, lang); if (r?.text) out[a.id] = r.text; } catch {}
-      }));
-      if (alive) setMap(out);
+      const items = rows.slice(0, 50).map((a) => ({ id: a.id, text: a.title }));
+      try {
+        const r = await api.translateBatch(items, lang);
+        if (alive && r?.translations) setMap(r.translations);
+      } catch { /* leave English on failure — no stale text */ }
     })();
     return () => { alive = false; };
   }, [rows, lang]);
@@ -60,6 +63,7 @@ function NewsInner() {
   const [highlights, setHighlights] = useState<any>(null);
   const [years, setYears] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState<number | null>(null);
   const translated = useTranslated(rows, lang);
 
   useEffect(() => {
@@ -134,7 +138,7 @@ function NewsInner() {
       ) : rows.length ? (
         <div className="stack" style={{ gap: 12 }}>
           {rows.map((a, i) => (
-            <a key={a.id} href={api.newsGoUrl(a.id)} target="_blank" rel="noopener noreferrer" className="card card-pad news-item">
+            <button key={a.id} onClick={() => setOpenId(a.id)} className="card card-pad news-item" style={{ textAlign: "left", cursor: "pointer", width: "100%" }}>
               <div className="row wrap" style={{ gap: 8, marginBottom: 6 }}>
                 {trending && <span className="news-rank">#{i + 1}</span>}
                 <span className="news-region">{FLAG[a.region] || "🌍"} {a.region}</span>
@@ -144,12 +148,61 @@ function NewsInner() {
               <div className="news-title">{translated[a.id] || a.title}</div>
               {translated[a.id] && a.title !== translated[a.id] && <div className="faint news-orig">{a.title}</div>}
               {!translated[a.id] && a.original_title && a.is_translated && <div className="faint news-orig">{a.original_title}</div>}
-            </a>
+            </button>
           ))}
         </div>
       ) : (
         <div className="adslot">No stories in this window yet — the archive builds over time as the crawler runs.</div>
       )}
+      {openId != null && <ArticleModal id={openId} initialLang={lang} onClose={() => setOpenId(null)} />}
+    </div>
+  );
+}
+
+// On-site article view with its OWN language selector, so a reader can read the
+// headline + our summary in any language before choosing to visit the source.
+function ArticleModal({ id, initialLang, onClose }: { id: number; initialLang: string; onClose: () => void }) {
+  const [alang, setALang] = useState(initialLang || "en");
+  const [a, setA] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    api.newsArticle(id, alang).then(setA).catch(() => setA(false)).finally(() => setLoading(false));
+  }, [id, alang]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 620 }}>
+        <div className="row" style={{ justifyContent: "flex-end", marginBottom: 6 }}>
+          <select className="select" style={{ width: "auto" }} value={alang} onChange={(e) => setALang(e.target.value)} aria-label="Read in language">
+            {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.flag} {l.label}</option>)}
+          </select>
+          <button className="btn btn-ghost" onClick={onClose} style={{ marginLeft: 8 }} aria-label="Close">✕</button>
+        </div>
+        {loading ? <div className="skeleton" style={{ width: "80%", height: 24 }} />
+          : !a ? <p className="muted">Couldn't load this article.</p>
+          : (
+            <>
+              <div className="row wrap" style={{ gap: 8, marginBottom: 8 }}>
+                <span className="news-region">{FLAG[a.region] || "🌍"} {a.region}</span>
+                {a.translated && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>🌐 Translated</span>}
+                <span className="faint" style={{ fontSize: "0.78rem" }}>{a.source_name} · {timeAgo(a.published_at)}</span>
+              </div>
+              <h2 style={{ fontSize: "1.5rem", lineHeight: 1.25, marginTop: 0 }}>{a.title}</h2>
+              {a.original_title && a.original_title !== a.title && a.original_title !== a.english_title &&
+                <p className="faint" style={{ fontSize: "0.85rem", marginTop: -4 }}>{a.original_title}</p>}
+              {a.summary && <p className="muted" style={{ lineHeight: 1.7 }}>{a.summary}</p>}
+              <p className="faint" style={{ fontSize: "0.82rem" }}>Headline and summary shown here; full article lives on the source site.</p>
+              <a href={api.newsGoUrl(a.id)} target="_blank" rel="noopener noreferrer" className="btn btn-gold btn-block" style={{ marginTop: 8 }}>
+                Read the full story at {a.source_name} ↗
+              </a>
+            </>
+          )}
+      </div>
     </div>
   );
 }

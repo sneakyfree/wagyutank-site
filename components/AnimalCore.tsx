@@ -25,7 +25,6 @@ export default function AnimalCore({ a }: { a: any }) {
       {a.photo_url && (
         <div className="card" style={{ marginTop: 18, maxWidth: 640, overflow: "hidden" }}>
           <img src={a.photo_url} alt={a.name} style={{ width: "100%", display: "block" }} />
-          {a.photo_note && <div className="faint" style={{ padding: "8px 14px", fontSize: "0.78rem" }}>{a.photo_note}</div>}
         </div>
       )}
 

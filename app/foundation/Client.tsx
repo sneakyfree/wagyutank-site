@@ -82,9 +82,13 @@ function FoundationGrid({ label, animals }: { label: string; animals: any[] }) {
             : `/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card">
             <div className="lc-media">
               {a.photo_url ? (
-                <img src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img className="animal-photo" src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
-                <span className="glyph">{GLYPH[a.bloodline] || "🐂"}</span>
+                <div className="foundation-ph">
+                  <span className="fp-seal">{a.animal_type === "cow" ? "♀" : "WT"}</span>
+                  <span className="fp-name">{a.bloodline || a.breed || "Foundation"}</span>
+                  <span className="fp-note">{a.animal_type === "cow" ? "Foundation dam" : "Foundation sire"}</span>
+                </div>
               )}
             </div>
             <div className="lc-body">

@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import ListingCard from "./ListingCard";
 import RoundupCard from "./RoundupCard";
 import Discussion from "./Discussion";
+import PriceAnalytics from "./PriceAnalytics";
 
 // The live/interactive parts of an animal page — fetched client-side so they stay
 // current, while the SEO-critical core is server-rendered by AnimalCore.
@@ -33,6 +34,8 @@ export default function AnimalInteractive({ reg, name }: { reg: string; name: st
 
   return (
     <>
+      <PriceAnalytics reg={reg} name={name} />
+
       <div className="section" style={{ paddingBottom: 0 }}>
         <div className="section-head">
           <h2>{offers.length} {offers.length === 1 ? "offer" : "offers"} for {name}</h2>

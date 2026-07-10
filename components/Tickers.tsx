@@ -70,7 +70,7 @@ export default function Tickers() {
   if (genetics?.market?.semen_avg) {
     g.push(<span className="tk-item tk-market" key="g0"><b>WAGYU SEMEN INDEX</b> {money(genetics.market.semen_avg)}<span className="tk-unit">/straw</span> {arrow(genetics.market.trend)}</span>);
     (genetics.sires || []).forEach((s: any, i: number) =>
-      g.push(<span className="tk-item" key={`g${i + 1}`}><b>{s.sire}</b> {money(s.avg)} {arrow(s.trend)}</span>));
+      g.push(<span className="tk-item" key={`g${i + 1}`}><b>{s.sire}</b> {money(s.avg)}<span className="tk-unit">/straw</span> {arrow(s.trend)}</span>));
   }
 
   // Band 2 — beef market
@@ -87,7 +87,7 @@ export default function Tickers() {
 
   return (
     <div className="ticker-stack">
-      <Band badge="📈 GENETICS INDEX" href="/roundup" items={g} title="Wagyu Genetics Price Index — live semen prices" />
+      <Band badge="📈 GENETICS INDEX" href="/foundation" items={g} title="Wagyu Genetics Price Index — verified foundation-sire prices. Tap for per-bull analytics." />
       <Band badge="🥩 BEEF MARKET" href="/market" items={b} title="Beef & Wagyu market prices" accent="linear-gradient(180deg,#c86b4e,#a9481f)" />
       <Band badge="🏆 SALE DATA" href="/sale-reports" items={s} title="Wagyu auction sale averages" accent="linear-gradient(180deg,#6d9995,#4d7570)" />
     </div>
