@@ -6,6 +6,7 @@ import ListingCard from "./ListingCard";
 import RoundupCard from "./RoundupCard";
 import Discussion from "./Discussion";
 import PriceAnalytics from "./PriceAnalytics";
+import AnimalVideos from "./AnimalVideos";
 
 // The live/interactive parts of an animal page — fetched client-side so they stay
 // current, while the SEO-critical core is server-rendered by AnimalCore.
@@ -89,6 +90,8 @@ export default function AnimalInteractive({ reg, name }: { reg: string; name: st
           </div>
         </div>
       )}
+
+      <AnimalVideos reg={reg} name={name} />
 
       <Discussion reg={reg} name={name} />
     </>

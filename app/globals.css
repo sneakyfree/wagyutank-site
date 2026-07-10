@@ -426,8 +426,9 @@ select.fresh-green, select.fresh-amber { }
 
 /* Utility */
 .divider { height: 1px; background: var(--border-soft); margin: 20px 0; }
-.kv { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border-soft); font-size: 0.93rem; }
-.kv .k { color: var(--text-faint); }
+.kv { display: flex; justify-content: space-between; gap: 20px; padding: 9px 0; border-bottom: 1px solid var(--border-soft); font-size: 0.93rem; }
+.kv .k { color: var(--text-faint); flex: 0 0 auto; }
+.kv > span:last-child { text-align: right; min-width: 0; }
 .big-price { font-size: 2rem; font-weight: 800; color: var(--gold-bright); }
 .toast {
   position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);

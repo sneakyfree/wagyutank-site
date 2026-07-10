@@ -65,6 +65,9 @@ export const api = {
   animal: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}`),
   animalOffers: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/offers`),
   animalPriceHistory: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/price-history`),
+  animalVideos: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/videos`),
+  submitAnimalVideo: (reg: string, title: string, video_url: string) =>
+    req(`/api/animals/${encodeURIComponent(reg)}/videos`, { method: "POST", body: JSON.stringify({ title, video_url }) }),
   animalComments: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/comments`),
   postComment: (reg: string, body: string, parent_id?: number) => req(`/api/animals/${encodeURIComponent(reg)}/comments`, { method: "POST", body: JSON.stringify({ body, parent_id: parent_id ?? null }) }),
   likeComment: (id: number) => req(`/api/comments/${id}/like`, { method: "POST" }),
