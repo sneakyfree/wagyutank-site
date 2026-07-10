@@ -61,6 +61,17 @@ export default function Client() {
         </div>
       </Link>
 
+      {/* Great Sires encyclopedia link */}
+      <Link href="/great-sires" className="card card-pad" style={{ display: "block", marginTop: 12, borderColor: "var(--gold)", textDecoration: "none" }}>
+        <div className="row wrap" style={{ alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: "1.8rem" }}>📖</span>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: "1.15rem", color: "var(--text)" }}>The Great Sires &amp; Dams of Japan</div>
+            <div className="muted" style={{ fontSize: "0.9rem" }}>An encyclopedia of the legendary animals behind the breed — readable in your language →</div>
+          </div>
+        </div>
+      </Link>
+
       {/* Videos from Japan */}
       <div className="section" style={{ paddingBottom: 0 }}>
         <div className="section-head">

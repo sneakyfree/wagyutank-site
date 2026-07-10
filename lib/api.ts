@@ -68,6 +68,7 @@ export const api = {
   animalVideos: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/videos`),
   animalZenkyo: (reg: string) => req(`/api/animals/${encodeURIComponent(reg)}/zenkyo`),
   zenkyo: () => req("/api/zenkyo"),
+  canon: (lang = "en") => req(`/api/canon?lang=${lang}`),
   zenkyoInterest: (body: any) => req("/api/zenkyo/interest", { method: "POST", body: JSON.stringify(body) }),
   videos: (params: Record<string, any> = {}) => req(`/api/videos?${new URLSearchParams(clean(params))}`),
   videoCharts: () => req("/api/videos/charts"),
