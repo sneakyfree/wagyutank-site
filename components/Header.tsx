@@ -20,6 +20,7 @@ export default function Header() {
         { href: "/foundation", label: t("nav.foundation"), desc: t("nav.foundation_desc") },
       ]} />
       <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>
+      <Link href="/directory" className="nav-link">{t("nav.directory")}</Link>
       <Link href="/news" className="nav-link">{t("nav.news")}</Link>
       <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>
       <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>
@@ -43,6 +44,7 @@ export default function Header() {
       <Link href="/browse?product_type=embryo" className="nav-link">{t("nav.embryos")}</Link>
       <Link href="/browse?product_type=clone_rights" className="nav-link">{t("nav.cloning")}</Link>
       <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>
+      <Link href="/directory" className="nav-link">{t("nav.directory")}</Link>
       <Link href="/news" className="nav-link">{t("nav.news")}</Link>
       <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>
       <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>

@@ -145,6 +145,11 @@ export const api = {
   helpAsk: (question: string, lang = "en") =>
     req("/api/help/ask", { method: "POST", body: JSON.stringify({ question, lang }) }),
 
+  // The Wagyu Atlas (seller directory)
+  directory: (params: Record<string, any> = {}) =>
+    req(`/api/directory?${new URLSearchParams(clean(params))}`),
+  directoryStats: () => req("/api/directory/stats"),
+
   // Ads / advertisers
   ads: (placement: string) => req(`/api/ads?placement=${placement}`),
   adsPricing: () => req("/api/ads/pricing"),
