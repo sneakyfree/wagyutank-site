@@ -7,6 +7,11 @@ const REGION_LABEL: Record<string, string> = {
   NA: "North America", SA: "South America", CAM: "Central America",
   EU: "Europe", AU: "Oceania", AS: "Asia", AF: "Africa", ME: "Middle East",
 };
+const CAT_LABEL: Record<string, string> = {
+  genetics: "🧬 Genetics", live_cattle: "🐂 Live cattle", beef: "🥩 Beef",
+  feedlot: "🌾 Feedlot", stud_services: "⚕ Stud services",
+};
+const BREED_LABEL: Record<string, string> = { black_wagyu: "Black Wagyu", akaushi: "Akaushi" };
 
 function SellerCard({ s }: { s: any }) {
   return (
@@ -17,6 +22,9 @@ function SellerCard({ s }: { s: any }) {
           <div className="faint" style={{ fontSize: "0.78rem", marginTop: 2 }}>
             {s.country && <span title={s.country}>{countryFlag(s.country)} </span>}
             {s.region ? REGION_LABEL[s.region] || s.region : ""}
+            {(s.breeds || []).length > 0 && (
+              <> · {s.breeds.map((b: string) => BREED_LABEL[b] || b).join(" & ")}</>
+            )}
           </div>
         </div>
         {s.css_eligible && (
@@ -24,11 +32,27 @@ function SellerCard({ s }: { s: any }) {
             style={{ fontSize: "0.66rem" }}>✈ Export</span>
         )}
       </div>
+      {s.blurb && (
+        <p className="muted" style={{ fontSize: "0.82rem", margin: 0, lineHeight: 1.55 }}>{s.blurb}</p>
+      )}
+      {(s.categories || []).length > 0 && (
+        <div className="row wrap" style={{ gap: 5 }}>
+          {s.categories.map((c: string) => (
+            <span key={c} className="pill" style={{ fontSize: "0.68rem" }}>{CAT_LABEL[c] || c}</span>
+          ))}
+        </div>
+      )}
       <div className="row wrap" style={{ gap: 5 }}>
         {(s.products || []).map((p: string) => <ProductBadge key={p} type={p} />)}
-        <span className="faint" style={{ fontSize: "0.76rem", alignSelf: "center" }}>
-          {s.listings} listing{s.listings === 1 ? "" : "s"}
-        </span>
+        {s.listings > 0 ? (
+          <span className="faint" style={{ fontSize: "0.76rem", alignSelf: "center" }}>
+            {s.listings} indexed listing{s.listings === 1 ? "" : "s"}
+          </span>
+        ) : (
+          <span className="faint" style={{ fontSize: "0.74rem", alignSelf: "center", fontStyle: "italic" }}>
+            See their site for current offerings
+          </span>
+        )}
       </div>
       {(s.sires || []).length > 0 && (
         <div className="faint" style={{ fontSize: "0.74rem", lineHeight: 1.5 }}>
@@ -50,23 +74,25 @@ export default function Client() {
   const [country, setCountry] = useState("");
   const [region, setRegion] = useState("");
   const [product, setProduct] = useState("");
+  const [category, setCategory] = useState("");
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { api.directoryStats().then(setStats).catch(() => {}); }, []);
   useEffect(() => {
     setLoading(true);
-    const params: any = { limit: 500 };
+    const params: any = { limit: 1000 };
     if (country) params.country = country;
     if (region) params.region = region;
     if (product) params.product = product;
+    if (category) params.category = category;
     if (q.trim()) params.q = q.trim();
     const h = setTimeout(() => {
       api.directory(params).then((d) => { setSellers(d.sellers || []); setTotal(d.total || 0); })
         .finally(() => setLoading(false));
     }, q ? 250 : 0);
     return () => clearTimeout(h);
-  }, [country, region, product, q]);
+  }, [country, region, product, category, q]);
 
   const countryOptions = useMemo(
     () => Object.keys(stats?.countries || {}).sort(), [stats]);
@@ -101,6 +127,14 @@ export default function Client() {
             <option value="semen">Semen</option>
             <option value="embryo">Embryos</option>
             <option value="clone_rights">Cloning rights</option>
+          </select>
+          <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ padding: "8px 10px" }}>
+            <option value="">All activities</option>
+            <option value="genetics">Genetics</option>
+            <option value="live_cattle">Live cattle</option>
+            <option value="beef">Beef</option>
+            <option value="feedlot">Feedlot</option>
+            <option value="stud_services">Stud services</option>
           </select>
         </div>
         {stats && (
