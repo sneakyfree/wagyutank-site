@@ -75,8 +75,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="/sales">Record Sales</a>
                 <a href="/catalog">Semen Catalog</a>
                 <a href="/history">Breed History</a>
+                <a href="/help">Help &amp; FAQ</a>
                 <a href="/sell">Sell</a>
               </div>
+            </div>
+            <div className="container row wrap faint" style={{ gap: 18, marginTop: 12, fontSize: "0.8rem", opacity: 0.8 }}>
+              <span>Contact: <a href="mailto:office@wagyutank.com">office@wagyutank.com</a></span>
+              <span>Salt Lake City, Utah, USA</span>
+              <span>© {new Date().getFullYear()} WagyuTank — a Utah company</span>
             </div>
           </footer>
           </LangProvider>

@@ -4,7 +4,7 @@ const API = process.env.NEXT_PUBLIC_API_BASE || "https://api.wagyutank.com";
 const staticRoutes = [
   ["/", 1.0, "daily"], ["/browse/", 0.9, "daily"], ["/roundup/", 0.9, "daily"],
   ["/news/", 0.9, "hourly"], ["/market/", 0.8, "daily"], ["/sales/", 0.8, "weekly"], ["/sale-reports/", 0.85, "weekly"], ["/catalog/", 0.8, "monthly"], ["/videos/", 0.9, "daily"], ["/japan/", 0.9, "daily"], ["/zenkyo/", 0.85, "weekly"], ["/great-sires/", 0.85, "monthly"], ["/feeding/", 0.9, "monthly"],
-  ["/history/", 0.8, "monthly"], ["/foundation/", 0.9, "weekly"], ["/advertise/", 0.5, "monthly"],
+  ["/history/", 0.8, "monthly"], ["/foundation/", 0.9, "weekly"], ["/help/", 0.6, "monthly"], ["/advertise/", 0.5, "monthly"],
   ["/sell/", 0.6, "monthly"], ["/register/", 0.4, "yearly"], ["/login/", 0.3, "yearly"],
 ];
 const now = new Date().toISOString();

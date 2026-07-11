@@ -26,6 +26,7 @@ const K: Record<string, Partial<Record<Lang, string>>> = {
   "nav.salereports": { en: "Sale Reports", es: "Informes de Venta", pt: "Relatórios de Venda", de: "Verkaufsberichte", ja: "販売レポート", zh: "拍卖报告" },
   "nav.data": { en: "Data", es: "Datos", pt: "Dados", de: "Daten", ja: "データ", zh: "数据" },
   "nav.history": { en: "Breed History", es: "Historia de la Raza", pt: "História da Raça", de: "Rassegeschichte", ja: "品種の歴史", zh: "品种历史" },
+  "nav.help": { en: "Help", es: "Ayuda", pt: "Ajuda", de: "Hilfe", ja: "ヘルプ", zh: "帮助" },
   "nav.advertise": { en: "Advertise", es: "Anunciar", pt: "Anunciar", de: "Werben", ja: "広告", zh: "广告" },
   "nav.catalog": { en: "Catalog", es: "Catálogo", pt: "Catálogo", de: "Katalog", ja: "カタログ", zh: "目录" },
   "nav.videos": { en: "Videos", es: "Videos", pt: "Vídeos", de: "Videos", ja: "動画", zh: "视频" },

@@ -140,6 +140,11 @@ export const api = {
   roundupFlag: (id: number, email: string) =>
     req(`/api/roundup/${id}/flag`, { method: "POST", body: JSON.stringify({ email }) }),
 
+  // Help & FAQ
+  faq: (lang = "en") => req(`/api/help?lang=${lang}`),
+  helpAsk: (question: string, lang = "en") =>
+    req("/api/help/ask", { method: "POST", body: JSON.stringify({ question, lang }) }),
+
   // Ads / advertisers
   ads: (placement: string) => req(`/api/ads?placement=${placement}`),
   adsPricing: () => req("/api/ads/pricing"),

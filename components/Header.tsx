@@ -31,6 +31,7 @@ export default function Header() {
       ]} />
       <Link href="/catalog" className="nav-link">{t("nav.catalog")}</Link>
       <Link href="/history" className="nav-link">{t("nav.history")}</Link>
+      <Link href="/help" className="nav-link">{t("nav.help")}</Link>
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
   );
@@ -51,6 +52,7 @@ export default function Header() {
       <Link href="/sales" className="nav-link">{t("nav.records")}</Link>
       <Link href="/catalog" className="nav-link">{t("nav.catalog")}</Link>
       <Link href="/history" className="nav-link">{t("nav.history")}</Link>
+      <Link href="/help" className="nav-link">{t("nav.help")}</Link>
       <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>
     </>
   );
