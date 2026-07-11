@@ -2,32 +2,32 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { AuthProvider } from "../lib/auth";
 import { LangProvider } from "../lib/i18n";
+import { brand, featureOn } from "../lib/tank";
 import Header from "../components/Header";
 import Tracker from "../components/Tracker";
 import Tickers from "../components/Tickers";
 
-const DESC =
-  "Buy and sell frozen Wagyu genetics — semen, embryos, and cloning rights — and explore the world's deepest Wagyu breed history, a live genetics price index, translated global news, and market data. Free to list.";
+const NAME = brand.name || "WagyuTank";
+const DOMAIN = brand.domain || "wagyutank.com";
+const BASE = `https://www.${DOMAIN}`;
+const TITLE = (brand as any).titleLong || `${NAME} — Genetics Marketplace & Knowledge Hub`;
+const DESC = (brand as any).description ||
+  `Buy and sell ${brand.breed || ""} genetics on ${NAME}. Free to list.`;
+const KEYWORDS: string[] = (brand as any).keywords || [];
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.wagyutank.com"),
-  title: {
-    default: "WagyuTank — The Global Marketplace & Knowledge Hub for Wagyu Genetics",
-    template: "%s · WagyuTank",
-  },
+  metadataBase: new URL(BASE),
+  title: { default: TITLE, template: `%s · ${NAME}` },
   description: DESC,
-  keywords: ["Wagyu", "Akaushi", "Wagyu semen", "Wagyu embryos", "Wagyu genetics",
-    "fullblood Wagyu", "Tajima", "Michifuku", "Wagyu marketplace", "Wagyu bloodlines"],
+  keywords: KEYWORDS,
   icons: { icon: [{ url: "/favicon.svg", type: "image/svg+xml" }] },
   alternates: { canonical: "/" },
   openGraph: {
-    type: "website", siteName: "WagyuTank", url: "https://www.wagyutank.com",
-    title: "WagyuTank — The Global Marketplace & Knowledge Hub for Wagyu Genetics",
-    description: DESC, images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "WagyuTank" }],
+    type: "website", siteName: NAME, url: BASE, title: TITLE,
+    description: DESC, images: [{ url: "/og-image.png", width: 1200, height: 630, alt: NAME }],
   },
   twitter: {
-    card: "summary_large_image", title: "WagyuTank — Wagyu Genetics Marketplace & Knowledge Hub",
-    description: DESC, images: ["/og-image.png"],
+    card: "summary_large_image", title: TITLE, description: DESC, images: ["/og-image.png"],
   },
 };
 
@@ -35,16 +35,15 @@ const JSONLD = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization", "@id": "https://www.wagyutank.com/#org", name: "WagyuTank",
-      url: "https://www.wagyutank.com", logo: "https://www.wagyutank.com/favicon.svg",
-      description: DESC,
+      "@type": "Organization", "@id": `${BASE}/#org`, name: NAME,
+      url: BASE, logo: `${BASE}/favicon.svg`, description: DESC,
     },
     {
-      "@type": "WebSite", "@id": "https://www.wagyutank.com/#site",
-      url: "https://www.wagyutank.com", name: "WagyuTank", publisher: { "@id": "https://www.wagyutank.com/#org" },
+      "@type": "WebSite", "@id": `${BASE}/#site`,
+      url: BASE, name: NAME, publisher: { "@id": `${BASE}/#org` },
       potentialAction: {
         "@type": "SearchAction",
-        target: { "@type": "EntryPoint", urlTemplate: "https://www.wagyutank.com/browse?q={query}" },
+        target: { "@type": "EntryPoint", urlTemplate: `${BASE}/browse?q={query}` },
         "query-input": "required name=query",
       },
     },
@@ -65,25 +64,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="footer">
             <div className="container row wrap">
               <div>
-                <strong className="gold">WagyuTank.com</strong> — the world's marketplace for frozen Wagyu genetics.
+                <strong className="gold">{DOMAIN}</strong> — {(brand as any).footerBlurb || "the world's marketplace for frozen genetics"}.
               </div>
               <div className="spacer" />
               <div className="row wrap faint" style={{ gap: 18 }}>
                 <a href="/browse">Browse</a>
-                <a href="/directory">Directory</a>
-                <a href="/news">News</a>
-                <a href="/market">Market</a>
-                <a href="/sales">Record Sales</a>
-                <a href="/catalog">Semen Catalog</a>
-                <a href="/history">Breed History</a>
-                <a href="/help">Help &amp; FAQ</a>
+                {featureOn("directory") && <a href="/directory">Directory</a>}
+                {featureOn("news") && <a href="/news">News</a>}
+                {featureOn("market_data") && <a href="/market">Market</a>}
+                {featureOn("sale_reports") && <a href="/sales">Record Sales</a>}
+                {featureOn("catalog") && <a href="/catalog">Semen Catalog</a>}
+                {featureOn("history") && <a href="/history">Breed History</a>}
+                {featureOn("help") && <a href="/help">Help &amp; FAQ</a>}
                 <a href="/sell">Sell</a>
               </div>
             </div>
             <div className="container row wrap faint" style={{ gap: 18, marginTop: 12, fontSize: "0.8rem", opacity: 0.8 }}>
-              <span>Contact: <a href="mailto:office@wagyutank.com">office@wagyutank.com</a></span>
-              <span>Salt Lake City, Utah, USA</span>
-              <span>© {new Date().getFullYear()} WagyuTank — a Utah company</span>
+              {brand.contactEmail && <span>Contact: <a href={`mailto:${brand.contactEmail}`}>{brand.contactEmail}</a></span>}
+              {(brand as any).location && <span>{(brand as any).location}</span>}
+              <span>© {new Date().getFullYear()} {NAME} — a Utah company</span>
             </div>
           </footer>
           </LangProvider>

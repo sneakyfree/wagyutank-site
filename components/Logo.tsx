@@ -1,4 +1,5 @@
 "use client";
+import { brand } from "../lib/tank";
 
 // The WagyuTank marbled-medallion mark: a ribeye seal (marbling = the hero) with
 // an interlocked W·T monogram embossed on top. Scales cleanly from favicon to hero.
@@ -47,10 +48,13 @@ export function LogoMark({ size = 40 }: { size?: number }) {
 }
 
 export default function Logo({ size = 34 }: { size?: number }) {
+  // Wordmark text comes from tank config (["WAGYU","TANK"], ["HIGHLAND","TANK"]…).
+  // The medallion SVG above is a per-tank brand asset, swapped at clone time.
+  const wm = ((brand as any).wordmark as string[] | undefined) || ["WAGYU", "TANK"];
   return (
     <span className="wt-logo">
       <LogoMark size={size} />
-      <span className="wt-wordmark"><b>WAGYU</b><span className="wt-tank">TANK</span></span>
+      <span className="wt-wordmark"><b>{wm[0]}</b><span className="wt-tank">{wm[1] || ""}</span></span>
     </span>
   );
 }
