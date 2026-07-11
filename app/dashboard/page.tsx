@@ -4,6 +4,7 @@ import Link from "next/link";
 import { api, money, PRODUCT_LABEL } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import Checkout from "../../components/Checkout";
+import ClaimListings from "../../components/ClaimListings";
 import TwoFactorSetup from "../../components/TwoFactorSetup";
 import RateOrder from "../../components/RateOrder";
 
@@ -62,6 +63,8 @@ export default function Dashboard() {
         <div className="spacer" />
         <Link href="/sell" className="btn btn-gold">+ New listing</Link>
       </div>
+
+      <ClaimListings onImported={load} />
 
       {!user.is_seller && (
         <div className="card card-pad" style={{ marginTop: 18, borderColor: "var(--gold)" }}>

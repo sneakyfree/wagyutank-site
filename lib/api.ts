@@ -150,6 +150,12 @@ export const api = {
     req(`/api/directory?${new URLSearchParams(clean(params))}`),
   directoryStats: () => req("/api/directory/stats"),
 
+  // Claim-your-listings + email verification
+  claimable: () => req("/api/users/me/claimable"),
+  claimListings: (listing_ids?: number[]) =>
+    req("/api/users/me/claim", { method: "POST", body: JSON.stringify({ listing_ids: listing_ids || null }) }),
+  sendVerify: () => req("/api/auth/send-verify", { method: "POST" }),
+
   // Ads / advertisers
   ads: (placement: string) => req(`/api/ads?placement=${placement}`),
   adsPricing: () => req("/api/ads/pricing"),
