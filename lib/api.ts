@@ -137,7 +137,8 @@ export const api = {
   saleEventChart: (series: string) => req(`/api/sale-events/chart?series=${series}`),
   saleTicker: () => req("/api/sale-events/ticker"),
   roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
-  roundupFlag: (id: number) => req(`/api/roundup/${id}/flag`, { method: "POST" }),
+  roundupFlag: (id: number, email: string) =>
+    req(`/api/roundup/${id}/flag`, { method: "POST", body: JSON.stringify({ email }) }),
 
   // Ads / advertisers
   ads: (placement: string) => req(`/api/ads?placement=${placement}`),

@@ -5,11 +5,24 @@ import ExportInfo from "./ExportInfo";
 import ProductBadge from "./ProductBadge";
 
 export default function RoundupCard({ l }: { l: any }) {
-  const [flagged, setFlagged] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function flag(e: React.MouseEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault(); e.stopPropagation();
-    try { await api.roundupFlag(l.id); setFlagged(true); } catch {}
+    if (busy) return;
+    setBusy(true); setError(null);
+    try {
+      const r = await api.roundupFlag(l.id, email.trim());
+      setDone(r?.message || "Request received.");
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -48,10 +61,29 @@ export default function RoundupCard({ l }: { l: any }) {
         <a href={api.roundupGoUrl(l.id)} target="_blank" rel="noopener noreferrer" className="btn btn-block">
           View original listing ↗
         </a>
-        {flagged ? (
-          <p className="help" style={{ marginTop: 6 }}>Flagged — hidden pending review. Thank you.</p>
+        {done ? (
+          <p className="help" style={{ marginTop: 8 }}>{done}</p>
+        ) : showForm ? (
+          <form onSubmit={submit} style={{ marginTop: 8 }} onClick={(e) => e.stopPropagation()}>
+            <p className="faint" style={{ fontSize: "0.72rem", marginBottom: 6, lineHeight: 1.5 }}>
+              Enter an email on <strong style={{ color: "var(--text-dim)" }}>{l.source_site}</strong> and
+              we'll send a one-click removal link there. (Other addresses go to manual review.)
+            </p>
+            <div className="row" style={{ gap: 6 }}>
+              <input
+                type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                placeholder={`you@${l.source_site}`} disabled={busy}
+                style={{ flex: 1, minWidth: 0, fontSize: "0.8rem", padding: "6px 8px" }}
+              />
+              <button type="submit" className="btn" disabled={busy} style={{ fontSize: "0.78rem" }}>
+                {busy ? "…" : "Request"}
+              </button>
+            </div>
+            {error && <p className="help" style={{ marginTop: 6, color: "#c0392b" }}>{error}</p>}
+          </form>
         ) : (
-          <button onClick={flag} className="faint roundup-flag" title="Is this your listing? Remove it.">
+          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowForm(true); }}
+            className="faint roundup-flag" title="Is this your listing? Request removal.">
             This is my listing — remove it
           </button>
         )}
