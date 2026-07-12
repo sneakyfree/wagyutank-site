@@ -2,6 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
+import { copy } from "../../lib/tank";
 import RoundupCard from "../../components/RoundupCard";
 import ListingCard from "../../components/ListingCard";
 import AdSlot from "../../components/AdSlot";
@@ -67,14 +68,14 @@ function RoundupInner() {
   return (
     <div className="container section">
       <span className="pill roundup-pill">📡 The Roundup</span>
-      <h1 style={{ fontSize: "2.2rem", marginTop: 12 }}>Every Wagyu genetics listing, one feed</h1>
+      <h1 style={{ fontSize: "2.2rem", marginTop: 12 }}>{copy.roundupTitle || "Every Wagyu genetics listing, one feed"}</h1>
       <div className="roundup-banner" style={{ maxWidth: "75ch", marginTop: 14 }}>
         <p className="muted" style={{ margin: 0, lineHeight: 1.7 }}>
-          The Roundup brings the whole frozen-genetics market together: listings posted
+          {copy.roundupIntro || (<>The Roundup brings the whole frozen-genetics market together: listings posted
           <strong className="gold"> on WagyuTank</strong> plus semen, embryo, and cloning listings we
           track from public sources <strong className="gold">across the web</strong> (marked 📡 — those
           link straight back to the original seller's page; web sellers pay nothing and can remove a
-          listing anytime).
+          listing anytime).</>)}
           {stats && <span className="faint"> Currently tracking {stats.active} web listings across {stats.sources} sources
             {stats.countries?.length ? ` in ${stats.countries.length} countries` : ""}
             {stats.css_export_eligible ? `, ${stats.css_export_eligible} export-eligible` : ""}.</span>}

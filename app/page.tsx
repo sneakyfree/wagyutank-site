@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../lib/api";
 import { useLang } from "../lib/i18n";
+import { copy, products } from "../lib/tank";
 import ListingCard from "../components/ListingCard";
 import RoundupCard from "../components/RoundupCard";
 import AdSlot from "../components/AdSlot";
@@ -32,16 +33,16 @@ export default function Home() {
     <>
       <section className="hero marble-bg">
         <div className="container">
-          <span className="hero-eyebrow">{t("hero.eyebrow")}</span>
-          <h1>{t("hero.title")}</h1>
-          <p className="sub" style={{ marginTop: 14 }}>{t("hero.sub")}</p>
+          <span className="hero-eyebrow">{copy.heroEyebrow || t("hero.eyebrow")}</span>
+          <h1>{copy.heroTitle || t("hero.title")}</h1>
+          <p className="sub" style={{ marginTop: 14 }}>{copy.heroSub || t("hero.sub")}</p>
           <form
             className="searchbar"
             style={{ marginTop: 26 }}
             onSubmit={(e) => { e.preventDefault(); if (q.trim()) api.track("search", { q: q.trim().toLowerCase() }); router.push(`/browse?q=${encodeURIComponent(q)}`); }}
           >
             <input
-              placeholder={t("hero.search")}
+              placeholder={copy.searchPlaceholder || t("hero.search")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
@@ -57,21 +58,13 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <div className="cats">
-            <Link href="/browse?product_type=semen" className="cat">
-              <div className="glyph">🧬</div>
-              <h3>Semen Straws</h3>
-              <p className="muted">Conventional & sexed, from proven Wagyu sires worldwide.</p>
-            </Link>
-            <Link href="/browse?product_type=embryo" className="cat">
-              <div className="glyph">🥚</div>
-              <h3>Embryos</h3>
-              <p className="muted">Full-blood IVF & in-vivo embryos, sire × dam pedigrees.</p>
-            </Link>
-            <Link href="/browse?product_type=clone_rights" className="cat">
-              <div className="glyph">🐂</div>
-              <h3>Cloning Rights</h3>
-              <p className="muted">License the right to clone a banked cell line. Ours alone.</p>
-            </Link>
+            {products().map((p: any) => (
+              <Link key={p.key} href={`/browse?product_type=${p.key}`} className="cat">
+                <div className="glyph">{p.glyph || "🧬"}</div>
+                <h3>{p.cardTitle || p.label}</h3>
+                <p className="muted">{p.blurb || ""}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

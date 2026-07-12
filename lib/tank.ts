@@ -14,8 +14,9 @@ type TankConfig = {
   langs?: string[];
 };
 
-export const TANK = cfg as TankConfig;
+export const TANK = cfg as TankConfig & { copy?: Record<string, string> };
 export const brand = TANK.brand;
+export const copy = (TANK.copy || {}) as Record<string, string>;
 export const featureOn = (name: string): boolean => TANK.features?.[name] !== false;
 export const products = (): Product[] => TANK.products || [];
 export const productLabel = (key: string): string =>
