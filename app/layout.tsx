@@ -50,10 +50,16 @@ const JSONLD = {
   ],
 };
 
+const COLORS = (brand as any).colors || {};
+const THEME_CSS = COLORS.gold
+  ? `:root{--gold:${COLORS.gold};${COLORS.goldBright ? `--gold-bright:${COLORS.goldBright};` : ""}${COLORS.goldSoft ? `--gold-soft:${COLORS.goldSoft};` : ""}}`
+  : "";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
+        {THEME_CSS && <style dangerouslySetInnerHTML={{ __html: THEME_CSS }} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSONLD) }} />
         <AuthProvider>
           <LangProvider>
