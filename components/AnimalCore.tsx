@@ -23,8 +23,24 @@ export default function AnimalCore({ a }: { a: any }) {
       {a.notable && <p className="gold" style={{ maxWidth: "70ch", marginTop: 14, fontSize: "1.08rem", fontWeight: 600 }}>{a.notable}</p>}
 
       {a.photo_url && (
-        <div className="card" style={{ marginTop: 18, maxWidth: 640, overflow: "hidden" }}>
+        <figure className="card" style={{ marginTop: 18, maxWidth: 640, overflow: "hidden", margin: "18px 0 0" }}>
           <img src={a.photo_url} alt={a.name} style={{ width: "100%", display: "block" }} />
+          {a.photo_note && (
+            <figcaption className="faint" style={{ fontSize: "0.78rem", padding: "8px 10px", lineHeight: 1.5 }}>{a.photo_note}</figcaption>
+          )}
+        </figure>
+      )}
+
+      {a.photos?.length > 0 && (
+        <div className="row wrap" style={{ gap: 12, marginTop: 12, maxWidth: 640 }}>
+          {a.photos.map((p: any, i: number) => (
+            <figure key={i} className="card" style={{ margin: 0, overflow: "hidden", flex: "1 1 240px", maxWidth: 320 }}>
+              <img src={p.url} alt={`${a.name} — additional photograph`} style={{ width: "100%", display: "block" }} />
+              {p.attribution && (
+                <figcaption className="faint" style={{ fontSize: "0.75rem", padding: "6px 9px", lineHeight: 1.5 }}>{p.attribution}</figcaption>
+              )}
+            </figure>
+          ))}
         </div>
       )}
 
