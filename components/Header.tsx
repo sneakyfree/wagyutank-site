@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useAuth } from "../lib/auth";
 import { useLang } from "../lib/i18n";
-import { featureOn, products } from "../lib/tank";
+import { brand, featureOn, products } from "../lib/tank";
 import Logo from "./Logo";
 import NavDropdown from "./NavDropdown";
 import LanguageSwitcher from "./Languageswitcher";
@@ -69,7 +69,7 @@ export default function Header() {
   return (
     <header className="hdr">
       <div className="container hdr-inner">
-        <Link href="/" className="logo" aria-label="WagyuTank home">
+        <Link href="/" className="logo" aria-label={`${brand.name} home`}>
           <Logo size={34} />
         </Link>
         <nav className="nav-desktop" style={{ marginLeft: 14 }}>{desktopNav}</nav>

@@ -141,12 +141,12 @@ export default function Home() {
         <section className="section">
           <div className="container">
             <div className="section-head">
-              <h2><span className="pill" style={{ background: "var(--gold-soft)", color: "var(--gold)", borderColor: "var(--gold)" }}>🎬 The Wagyu Theater</span></h2>
+              <h2><span className="pill" style={{ background: "var(--gold-soft)", color: "var(--gold)", borderColor: "var(--gold)" }}>{copy.theaterTitle || "🎬 The Wagyu Theater"}</span></h2>
               <div className="spacer" />
               <Link href="/videos" className="nav-link">Top 100 →</Link>
             </div>
             <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
-              The world's Wagyu video library — bulls on film, auction recordings, Japan, and how-to. Searchable by registration number.
+              {copy.theaterIntro || "The world's Wagyu video library — bulls on film, auction recordings, Japan, and how-to. Searchable by registration number."}
             </p>
             <div className="grid video-grid">
               {theater.map((v) => (
@@ -175,12 +175,12 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <div className="section-head">
-            <h2>The foundation bulls</h2>
+            <h2>{copy.foundationTitle || "The foundation bulls"}</h2>
             <div className="spacer" />
             <Link href="/foundation" className="nav-link">View all foundation animals →</Link>
           </div>
           <p className="muted" style={{ maxWidth: "60ch", marginTop: -10, marginBottom: 20 }}>
-            Every full-blood Wagyu in the West descends from a handful of animals that left Japan before the 1997 export ban. They're all here.
+            {copy.foundationIntro || "Every full-blood Wagyu in the West descends from a handful of animals that left Japan before the 1997 export ban. They're all here."}
           </p>
           <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))" }}>
             {foundation.map((a) => (
