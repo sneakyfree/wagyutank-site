@@ -1,3 +1,5 @@
+import { products } from "./tank";
+
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8100";
 
@@ -42,6 +44,10 @@ export const api = {
   twofaSetup: () => req("/api/auth/2fa/setup", { method: "POST" }),
   twofaEnable: (code: string) => req("/api/auth/2fa/enable", { method: "POST", body: JSON.stringify({ code }) }),
   twofaDisable: (code: string) => req("/api/auth/2fa/disable", { method: "POST", body: JSON.stringify({ code }) }),
+  // Sister-site SSO (cross-site flywheel): mint a 90s single-use hop token here,
+  // redeem one minted by the peer site.
+  ssoMint: () => req("/api/auth/sso/mint", { method: "POST" }),
+  ssoRedeem: (ssoToken: string) => req("/api/auth/sso/redeem", { method: "POST", body: JSON.stringify({ token: ssoToken }) }),
   forgotPassword: (email: string) => req("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }),
   resetPassword: (token: string, new_password: string) => req("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ token, new_password }) }),
   adminAnalytics: () => req("/api/admin/analytics"),
@@ -253,15 +259,29 @@ function clean(p: Record<string, any>): Record<string, string> {
   return out;
 }
 
-export const PRODUCT_GLYPH: Record<string, string> = {
+// Config-first product glyphs/labels: the baked tank config wins; the hardcoded
+// maps are only a fallback for keys the config doesn't know (or a stale bake).
+const GLYPH_FALLBACK: Record<string, string> = {
   semen: "🧬",
   embryo: "🥚",
   clone_rights: "🐂",
+  live_animal: "🐄",
+  beef: "🥩",
 };
-export const PRODUCT_LABEL: Record<string, string> = {
+const LABEL_FALLBACK: Record<string, string> = {
   semen: "Semen",
   embryo: "Embryo",
   clone_rights: "Cloning Rights",
+  live_animal: "Live Animals",
+  beef: "Beef",
+};
+export const PRODUCT_GLYPH: Record<string, string> = {
+  ...GLYPH_FALLBACK,
+  ...Object.fromEntries(products().filter((p) => p.glyph).map((p) => [p.key, p.glyph as string])),
+};
+export const PRODUCT_LABEL: Record<string, string> = {
+  ...LABEL_FALLBACK,
+  ...Object.fromEntries(products().filter((p) => p.label).map((p) => [p.key, p.label])),
 };
 
 // ---- Export eligibility + international helpers ----
@@ -297,6 +317,32 @@ export function cssLabel(status?: string): { text: string; cls: string } {
   if (status === "css") return { text: "CSS — export-eligible", cls: "pill-green" };
   if (status === "domestic") return { text: "Domestic only (non-CSS)", cls: "pill-red" };
   return { text: "Export status not stated", cls: "pill-dim" };
+}
+
+// ---- Live-animal / beef display helpers ----
+// Price-basis → human suffix ("per head", "per lb"…). Empty for flat pricing.
+export function basisLabel(basis?: string | null): string {
+  const map: Record<string, string> = {
+    per_head: "per head", per_cwt: "per cwt", per_lb: "per lb",
+    per_box: "per box", flat: "",
+  };
+  return map[basis || ""] ?? "";
+}
+
+// "State, CC · ~120 mi" from a listing's seller-location fields (all nullable).
+export function placeLine(l: any): string {
+  const parts = [l?.state_region, l?.country].filter(Boolean).join(", ");
+  const dist = l?.distance_miles != null ? `~${Math.round(l.distance_miles)} mi` : "";
+  return [parts, dist].filter(Boolean).join(" · ");
+}
+
+// Rough age from a date of birth — "14 mo" under 2 years, else "3 yr".
+export function ageFromDob(dob?: string | null): string {
+  if (!dob) return "";
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return "";
+  const months = Math.max(0, Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 30.44)));
+  return months < 24 ? `${months} mo` : `${Math.floor(months / 12)} yr`;
 }
 
 export function money(n: number | null | undefined, ccy = "USD"): string {

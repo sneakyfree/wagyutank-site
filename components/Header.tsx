@@ -6,6 +6,7 @@ import { brand, featureOn, products } from "../lib/tank";
 import Logo from "./Logo";
 import NavDropdown from "./NavDropdown";
 import LanguageSwitcher from "./Languageswitcher";
+import PeerHop from "./PeerHop";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
@@ -75,6 +76,7 @@ export default function Header() {
         <nav className="nav-desktop" style={{ marginLeft: 14 }}>{desktopNav}</nav>
         <div className="spacer" />
         {langToggle}
+        <PeerHop />
         <Link href="/sell" className="btn btn-gold">{t("nav.sell")}</Link>
         {loading ? null : user ? (
           <div className="row" style={{ gap: 10 }}>

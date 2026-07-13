@@ -17,6 +17,8 @@ type AuthCtx = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<any>;
+  // Store an already-issued session (e.g. sister-site SSO redeem) exactly like login.
+  loginWithToken: (access_token: string, user: User) => void;
   verify2fa: (challenge: string, code: string) => Promise<void>;
   register: (body: any) => Promise<void>;
   logout: () => void;
@@ -57,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (res.access_token) persist(res);
       return res; // may be { twofa_required, challenge }
     },
+    loginWithToken: (access_token, u) => persist({ access_token, user: u }),
     verify2fa: async (challenge, code) => persist(await api.twofaVerify(challenge, code)),
     register: async (body) => persist(await api.register(body)),
     logout: () => { localStorage.removeItem("wt_token"); setUser(null); },
