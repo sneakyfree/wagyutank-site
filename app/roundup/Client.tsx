@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
-import { copy } from "../../lib/tank";
+import { copy, products } from "../../lib/tank";
 import RoundupCard from "../../components/RoundupCard";
 import ListingCard from "../../components/ListingCard";
 import AdSlot from "../../components/AdSlot";
@@ -107,9 +107,9 @@ function RoundupInner() {
         <button className={`pill ${source === "web" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "web")}>📡 Around the web</button>
         <span style={{ width: 10 }} />
         <button className={`pill ${product === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", "")}>All products</button>
-        {["semen", "embryo", "clone_rights"].map((p) => (
-          <button key={p} className={`pill ${product === p ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", p)}>
-            {PRODUCT_LABEL[p]}
+        {products().map((p) => (
+          <button key={p.key} className={`pill ${product === p.key ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("product_type", p.key)}>
+            {PRODUCT_LABEL[p.key]}
           </button>
         ))}
         <div className="spacer" />

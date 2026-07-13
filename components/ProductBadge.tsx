@@ -1,12 +1,15 @@
 "use client";
 // Visual, color-coded markers so a listing's type reads at a glance:
 // semen = sperm cell, embryo = morula (cell cluster), clone rights = DNA helix.
-import { PRODUCT_LABEL } from "../lib/api";
+// Non-genetics families (live animals, beef) get the tank config's emoji glyph.
+import { PRODUCT_GLYPH, PRODUCT_LABEL } from "../lib/api";
 
 const STYLE: Record<string, { color: string; bg: string; border: string }> = {
   semen: { color: "#5ec8e0", bg: "rgba(94,200,224,0.14)", border: "rgba(94,200,224,0.4)" },
   embryo: { color: "#e0a53a", bg: "rgba(224,165,58,0.14)", border: "rgba(224,165,58,0.4)" },
   clone_rights: { color: "#b98ce0", bg: "rgba(185,140,224,0.14)", border: "rgba(185,140,224,0.4)" },
+  live_animal: { color: "#7fc07f", bg: "rgba(127,192,127,0.14)", border: "rgba(127,192,127,0.4)" },
+  beef: { color: "#e07a6a", bg: "rgba(224,122,106,0.14)", border: "rgba(224,122,106,0.4)" },
 };
 
 function Icon({ type, size = 14 }: { type: string; size?: number }) {
@@ -31,14 +34,21 @@ function Icon({ type, size = 14 }: { type: string; size?: number }) {
       </svg>
     );
   }
-  // clone rights: DNA double helix
+  if (type === "clone_rights") {
+    // clone rights: DNA double helix
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M8 3 C8 8, 16 8, 16 12 C16 16, 8 16, 8 21" stroke={c} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <path d="M16 3 C16 8, 8 8, 8 12 C8 16, 16 16, 16 21" stroke={c} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <line x1="9.5" y1="6" x2="14.5" y2="6" stroke={c} strokeWidth="1.1" />
+        <line x1="9.5" y1="18" x2="14.5" y2="18" stroke={c} strokeWidth="1.1" />
+      </svg>
+    );
+  }
+  // Everything else (live_animal, beef, unknown): the config's emoji glyph —
+  // simple, and it can never crash on a product type this build hasn't met.
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M8 3 C8 8, 16 8, 16 12 C16 16, 8 16, 8 21" stroke={c} strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <path d="M16 3 C16 8, 8 8, 8 12 C8 16, 16 16, 16 21" stroke={c} strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <line x1="9.5" y1="6" x2="14.5" y2="6" stroke={c} strokeWidth="1.1" />
-      <line x1="9.5" y1="18" x2="14.5" y2="18" stroke={c} strokeWidth="1.1" />
-    </svg>
+    <span aria-hidden style={{ fontSize: size, lineHeight: 1 }}>{PRODUCT_GLYPH[type] || "🐄"}</span>
   );
 }
 

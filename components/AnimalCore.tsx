@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FollowButton from "./FollowButton";
+import PeerLink from "./PeerLink";
 
 // Presentational (no hooks) — the SEO-critical content, server-renderable.
 export default function AnimalCore({ a }: { a: any }) {
@@ -19,6 +20,8 @@ export default function AnimalCore({ a }: { a: any }) {
         {a.registration_no && <span>Reg. {a.registration_no} · </span>}
         {a.animal_type}{a.birth_year ? ` · b. ${a.birth_year}` : ""}
       </div>
+      {/* Cross-site flywheel: same animal on the sister tank (null on standalone tanks) */}
+      <PeerLink reg={a.registration_no} style={{ marginTop: 10 }} />
 
       {a.notable && <p className="gold" style={{ maxWidth: "70ch", marginTop: 14, fontSize: "1.08rem", fontWeight: 600 }}>{a.notable}</p>}
 
