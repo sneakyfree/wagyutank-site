@@ -46,7 +46,7 @@ export default function CatalogSubmit() {
         <h3 style={{ marginTop: 0 }}>Your genetics</h3>
         <div className="field"><label>Ranch / seller name *</label><input className="input" value={f.ranch_name || ""} onChange={set("ranch_name")} placeholder={user.display_name} /></div>
         <div className="row" style={{ gap: 10 }}>
-          <div className="field" style={{ flex: 2 }}><label>Bull / animal name</label><input className="input" value={f.animal_name || ""} onChange={set("animal_name")} placeholder="e.g. Michifuku" /></div>
+          <div className="field" style={{ flex: 2 }}><label>Bull / animal name</label><input className="input" value={f.animal_name || ""} onChange={set("animal_name")} placeholder="animal name" /></div>
           <div className="field" style={{ flex: 1 }}><label>Reg #</label><input className="input" value={f.animal_reg || ""} onChange={set("animal_reg")} placeholder="FB1615" /></div>
         </div>
         <div className="row" style={{ gap: 10 }}>
@@ -54,7 +54,7 @@ export default function CatalogSubmit() {
             <select className="select" value={f.product_type} onChange={set("product_type")}>
               <option value="semen">Semen</option><option value="embryo">Embryos</option><option value="bull">Bull (whole animal)</option><option value="ranch">My ranch / program</option>
             </select></div>
-          <div className="field" style={{ flex: 1 }}><label>Bloodline</label><input className="input" value={f.bloodline || ""} onChange={set("bloodline")} placeholder="Tajima / Akaushi…" /></div>
+          <div className="field" style={{ flex: 1 }}><label>Bloodline</label><input className="input" value={f.bloodline || ""} onChange={set("bloodline")} placeholder="bloodline" /></div>
         </div>
         <div className="field"><label>Price note (optional)</label><input className="input" value={f.price_note || ""} onChange={set("price_note")} placeholder="$120/straw · volume discounts" /></div>
         <div className="field"><label>Description</label><textarea className="input" rows={4} value={f.description || ""} onChange={set("description")} placeholder="Marbling, EBVs, CSS/export status, what makes this bull worth breeding to…" /></div>

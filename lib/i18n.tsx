@@ -64,7 +64,7 @@ const K: Record<string, Partial<Record<Lang, string>>> = {
     ja: "精液・受精卵・クローン権の売買。品種の詳細な歴史、リアルタイム価格指数、創始種牛までさかのぼる血統も。1分以内で出品、無料。",
     zh: "买卖精液、胚胎和克隆权——探索最深入的品种历史、实时价格指数，以及可追溯到创始公牛的血统。一分钟内即可发布，免费。",
   },
-  "hero.search": { en: "Search Michifuku, Tajima, Itoshigenami…", es: "Busca Michifuku, Tajima, Itoshigenami…", pt: "Busque Michifuku, Tajima, Itoshigenami…", de: "Suche Michifuku, Tajima, Itoshigenami…", ja: "美津福、但馬、糸桜を検索…", zh: "搜索美津福、但马、糸樱…" },
+  "hero.search": { en: "Search a sire, bloodline, or registration number…", es: "Busca un semental, linaje o número de registro…", pt: "Busque um touro, linhagem ou número de registro…", de: "Suche nach Bulle, Blutlinie oder Registriernummer…", ja: "種雄牛・血統・登録番号で検索…", zh: "搜索公牛、血统或登记号…" },
   "hero.list": { en: "List your genetics →", es: "Publica tu genética →", pt: "Anuncie sua genética →", de: "Genetik inserieren →", ja: "遺伝資源を出品 →", zh: "发布您的遗传资源 →" },
   "hero.explore": { en: "Explore the breed history", es: "Explora la historia de la raza", pt: "Explore a história da raça", de: "Rassegeschichte entdecken", ja: "品種の歴史を見る", zh: "探索品种历史" },
   "home.wire": { en: "📰 The Wagyu Wire", es: "📰 El Cable Wagyu", pt: "📰 O Fio Wagyu", de: "📰 Der Wagyu-Draht", ja: "📰 和牛ワイヤー", zh: "📰 和牛快讯" },

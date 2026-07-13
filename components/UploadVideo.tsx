@@ -48,7 +48,7 @@ export default function UploadVideo({ onClose }: { onClose: () => void }) {
               registration number is in the title, it joins the pedigree video registry automatically.
             </p>
             <div className="field"><label>Title *</label>
-              <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Our Michifuku FB1615 heifers on spring pasture" /></div>
+              <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. our young heifers on spring pasture" /></div>
             <div className="field"><label>Animal registration # (optional)</label>
               <input className="input" value={reg} onChange={(e) => setReg(e.target.value)} placeholder="FB1615" /></div>
             <div className="field"><label>Video file *</label>

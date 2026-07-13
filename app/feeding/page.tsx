@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Client from "./Client";
+import FeatureGate from "../../components/FeatureGate";
 
 export const metadata: Metadata = {
   title: "The Art of Feeding Wagyu — Learn From the Science",
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <Client />;
+  return <FeatureGate feature="feeding"><Client /></FeatureGate>;
 }

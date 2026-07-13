@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { TANK } from "../../lib/tank";
 import { api, money } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
@@ -406,7 +407,7 @@ function CatalogAdmin({ isAdmin }: { isAdmin: boolean }) {
   async function exportCsv() {
     const csv = await api.adminCatalogCsv(edition);
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    const a = document.createElement("a"); a.href = url; a.download = "wagyutank-catalog-printrun.csv"; a.click();
+    const a = document.createElement("a"); a.href = url; a.download = `${(TANK as any).key || "tank"}-catalog-printrun.csv`; a.click();
   }
   if (!d) return <div className="muted">Loading catalog submissions…</div>;
   return (
@@ -490,7 +491,7 @@ function Members({ myRole }: { myRole: string }) {
   async function exportCsv() {
     const csv = await api.adminEmailList();
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    const a = document.createElement("a"); a.href = url; a.download = "wagyutank-email-list.csv"; a.click();
+    const a = document.createElement("a"); a.href = url; a.download = `${(TANK as any).key || "tank"}-email-list.csv`; a.click();
   }
 
   return (

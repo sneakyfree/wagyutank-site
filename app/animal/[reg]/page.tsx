@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { readFileSync } from "node:fs";
 import AnimalCore from "../../../components/AnimalCore";
 import AnimalInteractive from "../../../components/AnimalInteractive";
 
@@ -14,14 +15,29 @@ async function getAnimal(reg: string) {
   } catch { return null; }
 }
 
+// Mirror the backend Animal.slug: reg number if present, else slugified name.
+function slugOf(a: any): string {
+  if (a.slug) return a.slug;
+  if (a.registration_no) return a.registration_no;
+  return String(a.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
 export async function generateStaticParams() {
+  let animals: any[] = [];
   try {
-    const animals: any[] = await fetch(`${API}/api/animals/foundation`).then((r) => r.json());
-    return animals
-      .map((a) => a.slug || a.registration_no)
-      .filter((s: string) => s && /^[A-Za-z0-9._-]+$/.test(s))
-      .map((reg: string) => ({ reg }));
-  } catch { return []; }
+    animals = await fetch(`${API}/api/animals/foundation`).then((r) => r.json());
+    if (!Array.isArray(animals)) animals = [];
+  } catch { animals = []; }
+  // Bootstrap: a brand-new tank's API isn't up at first build. Read the tank's
+  // own foundation seed file (TANK_FOUNDATION) so real foundation pages still
+  // pre-render — and so `output: export` never fails on an empty param set.
+  if (animals.length === 0 && process.env.TANK_FOUNDATION) {
+    try { animals = JSON.parse(readFileSync(process.env.TANK_FOUNDATION, "utf8")); } catch { /* keep [] */ }
+  }
+  return animals
+    .map(slugOf)
+    .filter((s: string) => s && /^[A-Za-z0-9._-]+$/.test(s))
+    .map((reg: string) => ({ reg }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ reg: string }> }): Promise<Metadata> {

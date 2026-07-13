@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "../../lib/api";
+import { TANK } from "../../lib/tank";
 import FollowButton from "../../components/FollowButton";
 
 // The five founder groups, in the order the story is best told: the three black
@@ -50,20 +51,44 @@ export default function Foundation() {
   const imports = allBulls.filter((b) => !b.bred_outside_japan);
   const domestic = allBulls.filter((b) => b.bred_outside_japan).sort(byName);
 
-  const grouped = GROUPS
-    .map((g) => ({ ...g, animals: imports.filter((b) => groupOf(b.bloodline) === g.key).sort(byName) }))
-    .filter((g) => g.animals.length > 0);
+  // WagyuTank keeps its five hand-curated bloodline groups (Tajima/Shimane/…).
+  // Every other tank derives groups from the distinct bloodlines its own
+  // foundation animals actually carry — so a clone never shows empty Wagyu
+  // bloodline headers, and its real lines each get a section.
+  let grouped: { key: string; label: string; glyph: string; blurb: string; follow: string | null; animals: any[] }[];
+  if ((TANK as any).key === "wagyu") {
+    grouped = GROUPS
+      .map((g) => ({ ...g, animals: imports.filter((b) => groupOf(b.bloodline) === g.key).sort(byName) }))
+      .filter((g) => g.animals.length > 0);
+  } else {
+    const order: string[] = [];
+    const bucket: Record<string, any[]> = {};
+    for (const b of imports) {
+      const line = (b.bloodline || "").trim() || "Foundation";
+      if (!bucket[line]) { bucket[line] = []; order.push(line); }
+      bucket[line].push(b);
+    }
+    grouped = order
+      .sort((a, z) => bucket[z].length - bucket[a].length || a.localeCompare(z))
+      .map((line) => ({
+        key: line, label: line, glyph: "🐄",
+        blurb: bucket[line].length > 1 ? `${bucket[line].length} foundation animals in the ${line} line.` : "",
+        follow: line === "Foundation" ? null : line,
+        animals: bucket[line].sort(byName),
+      }))
+      .filter((g) => g.animals.length > 0);
+  }
 
   return (
     <div className="container section">
       <div style={{ maxWidth: "72ch" }}>
         <span className="pill">Breed History</span>
-        <h1 style={{ fontSize: "2.4rem", marginTop: 12 }}>The Foundation Wagyu</h1>
+        <h1 style={{ fontSize: "2.4rem", marginTop: 12 }}>
+          {(TANK as any).copy?.foundationTitle || "The Foundation Wagyu"}
+        </h1>
         <p className="muted" style={{ fontSize: "1.1rem", lineHeight: 1.7 }}>
-          Every full-blood Wagyu bred outside Japan descends from a small group of animals exported
-          before Japan closed its borders in 1997. Below are the original import sires, sorted into the
-          three Black bloodlines and the Akaushi Red line, then the influential sires bred outside Japan
-          from imported parents. Tap any animal for its full history.
+          {(TANK as any).copy?.foundationIntro ||
+            "Every full-blood Wagyu bred outside Japan descends from a small group of animals exported before Japan closed its borders in 1997. Below are the original import sires, sorted into the three Black bloodlines and the Akaushi Red line, then the influential sires bred outside Japan from imported parents. Tap any animal for its full history."}
         </p>
         <p style={{ marginTop: 10 }}>
           <Link href="/history" className="nav-link" style={{ paddingLeft: 0 }}>Read the full breed history →</Link>

@@ -4,7 +4,7 @@ import Client from "./Client";
 export const metadata: Metadata = {
   title: "The World's Deepest Wagyu Breed History",
   description:
-    "From draft animal to the world's most coveted beef: the definitive history of the Wagyu breed — the Tajima, Fujiyoshi and Kedaka strains, the 1976 and 1990s imports, Akaushi's arrival, and the foundation sires and dams behind every fullblood pedigree.",
+    "The definitive history of the Wagyu breed — its origins, its foundation bloodlines, and the sires and dams behind every pedigree.",
   alternates: { canonical: "/history/" },
   openGraph: { title: "The World's Deepest Wagyu Breed History · WagyuTank", url: "/history/" },
 };

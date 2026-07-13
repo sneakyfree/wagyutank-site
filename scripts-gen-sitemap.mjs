@@ -1,6 +1,21 @@
 import fs from "node:fs";
 const BASE = "https://www.wagyutank.com";
 const API = process.env.TANK_API || process.env.NEXT_PUBLIC_API_BASE || "https://api.wagyutank.com";
+
+// The baked config (written by scripts-gen-tank-config.mjs just before this) tells
+// us which feature pages this tank actually shows — so a clone with japan_hub/
+// zenkyo/feeding/great-sires OFF doesn't publish those (Wagyu-lore) URLs to Google.
+let FEAT = {};
+try { FEAT = JSON.parse(fs.readFileSync(new URL("./lib/tank.config.json", import.meta.url))).features || {}; } catch {}
+const on = (flag) => flag === undefined || FEAT[flag] !== false;
+// route path → the feature flag that must be on for it to be listed.
+const ROUTE_FEATURE = {
+  "/japan/": "japan_hub", "/zenkyo/": "zenkyo", "/great-sires/": "great_sires",
+  "/feeding/": "feeding", "/market/": "market_data", "/catalog/": "catalog",
+  "/sale-reports/": "sale_reports", "/videos/": "videos", "/news/": "news",
+  "/roundup/": "roundup", "/directory/": "directory", "/foundation/": "foundation",
+  "/advertise/": "ads", "/sales/": "sale_reports",
+};
 const staticRoutes = [
   ["/", 1.0, "daily"], ["/browse/", 0.9, "daily"], ["/roundup/", 0.9, "daily"],
   ["/news/", 0.9, "hourly"], ["/market/", 0.8, "daily"], ["/sales/", 0.8, "weekly"], ["/sale-reports/", 0.85, "weekly"], ["/catalog/", 0.8, "monthly"], ["/videos/", 0.9, "daily"], ["/japan/", 0.9, "daily"], ["/zenkyo/", 0.85, "weekly"], ["/great-sires/", 0.85, "monthly"], ["/feeding/", 0.9, "monthly"],
@@ -8,7 +23,7 @@ const staticRoutes = [
   ["/sell/", 0.6, "monthly"], ["/register/", 0.4, "yearly"], ["/login/", 0.3, "yearly"],
 ];
 const now = new Date().toISOString();
-let urls = staticRoutes.map(([p, pr, f]) =>
+let urls = staticRoutes.filter(([p]) => on(ROUTE_FEATURE[p])).map(([p, pr, f]) =>
   `  <url><loc>${BASE}${p}</loc><lastmod>${now}</lastmod><changefreq>${f}</changefreq><priority>${pr}</priority></url>`);
 try {
   const animals = await fetch(`${API}/api/animals/foundation`).then(r => r.json());

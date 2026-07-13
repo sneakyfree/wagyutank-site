@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Client from "./Client";
+import FeatureGate from "../../components/FeatureGate";
 
 export const metadata: Metadata = {
   title: "The WagyuTank Semen Catalog — printed & mailed to breeders worldwide",
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <Client />;
+  return <FeatureGate feature="catalog"><Client /></FeatureGate>;
 }
