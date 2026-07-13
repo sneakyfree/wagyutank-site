@@ -5,7 +5,10 @@
 // committed default (WagyuTank), so a build never depends on the API being up.
 import { writeFileSync, existsSync } from "node:fs";
 
-const API = process.env.TANK_API || "https://api.wagyutank.com";
+// Accept EITHER env name — TANK_API is canonical, but the README/CI history
+// used NEXT_PUBLIC_API_BASE; if only that is set, honoring it here prevents the
+// silent worst case (baking the wagyu default so tankify no-ops on a clone).
+const API = process.env.TANK_API || process.env.NEXT_PUBLIC_API_BASE || "https://api.wagyutank.com";
 const OUT = new URL("./lib/tank.config.json", import.meta.url);
 
 try {

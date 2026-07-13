@@ -29,10 +29,17 @@ const PLAIN = [
   ["Wagyu & Akaushi", breed],
   ["Wagyu and Akaushi", breed],
   ["Wagyu/Akaushi", breed],
+  // CJK: ja/zh i18n strings + Japan-page copy write Wagyu as 和牛 — a Latin-only
+  // regex can't catch it. Clones show the English breed name in those locales.
+  ["和牛", breed],
 ];
 const REGEX = [
   [/\bAkaushi\b/g, breed],   // capital only; lowercase `akaushi` (a breed key) untouched
   [/\bWagyu\b/g, breed],     // capital only; lowercase `wagyu` (black_wagyu, e.wagyu) untouched
+  // ALL-CAPS display strings (hero eyebrow "THE GLOBAL WAGYU CROSSROADS",
+  // "WAGYU SEMEN INDEX" ticker, pills) — \bWagyu\b never matches these.
+  [/\bWAGYU\b/g, breed.toUpperCase()],
+  [/\bAKAUSHI\b/g, breed.toUpperCase()],
 ];
 // Optional per-tank extra substitutions for deeper source-specific content
 // (e.g. a tank can map "Japanese farms" -> "Australian studs"). From tank.json.

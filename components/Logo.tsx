@@ -50,7 +50,13 @@ export function LogoMark({ size = 40 }: { size?: number }) {
 export default function Logo({ size = 34 }: { size?: number }) {
   // Wordmark text comes from tank config (["WAGYU","TANK"], ["HIGHLAND","TANK"]…).
   // The medallion SVG above is a per-tank brand asset, swapped at clone time.
-  const wm = ((brand as any).wordmark as string[] | undefined) || ["WAGYU", "TANK"];
+  // Fallback derives from the brand name ("DexterTank" → ["DEXTER","TANK"]) so
+  // a config without an explicit wordmark never shows another tank's mark.
+  const bn = ((brand as any).name as string | undefined) || "WagyuTank";
+  const derived = bn.toUpperCase().endsWith("TANK")
+    ? [bn.slice(0, -4).toUpperCase().trim(), "TANK"]
+    : [bn.toUpperCase(), ""];
+  const wm = ((brand as any).wordmark as string[] | undefined) || derived;
   return (
     <span className="wt-logo">
       <LogoMark size={size} />
