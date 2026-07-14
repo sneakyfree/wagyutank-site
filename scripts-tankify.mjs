@@ -71,6 +71,12 @@ const CLONE_DROPS = [
   ["Matsusaka champion cow — auction price by year", "Champion female — auction price by year"],
   ["Japanese reporting translated into English, found nowhere else.",
    "global reporting translated into your language."],
+  // page <head> metadata descriptions (SEO) — drop the Japan/CSS clauses
+  ["Japanese farm and technique videos, ", ""],
+  ["Australia, Japan, the US, Europe, and Brazil", "Australia, the US, Europe, and South America"],
+  [" — plus Japanese Wagyu reporting translated into English, found nowhere else", ""],
+  ["& Translated Japanese Reporting", ""],
+  ["CSS export eligibility, ", ""],
 ];
 const PLAIN = [
   ...CLONE_DROPS,
