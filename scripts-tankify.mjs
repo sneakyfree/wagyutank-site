@@ -77,6 +77,14 @@ const CLONE_DROPS = [
   [" — plus Japanese Wagyu reporting translated into English, found nowhere else", ""],
   ["& Translated Japanese Reporting", ""],
   ["CSS export eligibility, ", ""],
+  // home/news wire subtitle — the "Japanese reporting" clause in every locale
+  // (tankify's other drops were EN-only; these cover es/pt/de/ja/zh).
+  [" — including Japanese reporting translated into English, found nowhere else", ""],
+  [" — incluyendo reportajes japoneses traducidos, que no encontrarás en ningún otro lugar", ""],
+  [" — incluindo reportagens japonesas traduzidas, que você não encontra em nenhum outro lugar", ""],
+  [" — inklusive übersetzter japanischer Berichte, die es sonst nirgends gibt", ""],
+  [" — 他では読めない日本語報道の翻訳も", ""],
+  ["——包括别处找不到的日本报道翻译", ""],
 ];
 const PLAIN = [
   ...CLONE_DROPS,

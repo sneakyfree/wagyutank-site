@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "../../lib/api";
 import UploadVideo from "../../components/UploadVideo";
+import { featureOn } from "../../lib/tank";
 
 function views(n: number | null): string {
   if (n == null) return "";
@@ -80,7 +81,7 @@ function TheaterInner() {
           Foundation bulls and their sons on film. Auction recordings. Japanese farms and technique.
           Ranch tours and how-to. Gathered from across the web, organized, and <strong className="gold">searchable
           by registration number</strong> — type a reg and see the animal, or its ancestors, moving.
-          {stats && <span className="faint"> {stats.total} videos · {stats.channels} channels · {stats.matched_animals} matched to registry animals · {stats.japanese} from Japan.</span>}
+          {stats && <span className="faint"> {stats.total} videos · {stats.channels} channels · {stats.matched_animals} matched to registry animals{featureOn("japan_hub") ? ` · ${stats.japanese} from Japan` : ""}.</span>}
         </p>
       </div>
 
