@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, PRODUCT_GLYPH, PRODUCT_LABEL, money, EXPORT_REGIONS } from "../../lib/api";
-import { products, productFamily, productOptions, hasFamily } from "../../lib/tank";
+import { products, productFamily, productOptions, hasFamily, TANK } from "../../lib/tank";
 import { useAuth } from "../../lib/auth";
 
 // Product cards come from this tank's baked config; the fallbacks below only
@@ -248,7 +248,7 @@ export default function Sell() {
           <h1>{isEmbryo ? "Which sire?" : "Which animal?"}</h1>
           <p className="muted">Type the registration number (FB…) or name. Foundation animals fill in instantly.</p>
           <div className="field" style={{ marginTop: 16, position: "relative" }}>
-            <input className="input" placeholder="e.g. FB1615 or Michifuku" value={animalQuery}
+            <input className="input" placeholder="e.g. a registration number or animal name" value={animalQuery}
               onChange={(e) => { setAnimalQuery(e.target.value); setAnimal(null); }} />
             {suggestions.length > 0 && !animal && (
               <div className="card" style={{ position: "absolute", zIndex: 20, width: "100%", marginTop: 4 }}>
@@ -361,13 +361,13 @@ export default function Sell() {
           {(form.bred_status === "bred" || form.bred_status === "exposed") && (
             <div className="field">
               <label>Service sire registration # (optional)</label>
-              <input className="input" value={form.service_sire_reg} onChange={(e) => setForm({ ...form, service_sire_reg: e.target.value })} placeholder="e.g. FB1615" />
+              <input className="input" value={form.service_sire_reg} onChange={(e) => setForm({ ...form, service_sire_reg: e.target.value })} placeholder="e.g. a registration number" />
             </div>
           )}
 
           <div className="field" style={{ position: "relative" }}>
             <label>Registration # or name (optional, if registered)</label>
-            <input className="input" placeholder="e.g. FB1615 or Michifuku" value={animalQuery}
+            <input className="input" placeholder="e.g. a registration number or animal name" value={animalQuery}
               onChange={(e) => { setAnimalQuery(e.target.value); setAnimal(null); }} />
             {suggestions.length > 0 && !animal && (
               <div className="card" style={{ position: "absolute", zIndex: 20, width: "100%", marginTop: 4 }}>
@@ -650,7 +650,7 @@ export default function Sell() {
           </div>
           {facility && <p className="help">Stored at <strong className="gold">{facility.name}</strong> — {facility.city}, {facility.state}.</p>}
 
-          {!isClone && (
+          {!isClone && (TANK as any).vocab?.export_program && (
             <div className="card card-pad" style={{ marginTop: 8 }}>
               <label style={{ fontWeight: 700, display: "block", marginBottom: 8 }}>✈ Export eligibility</label>
               <div className="field">

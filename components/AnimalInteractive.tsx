@@ -7,6 +7,7 @@ import RoundupCard from "./RoundupCard";
 import Discussion from "./Discussion";
 import PriceAnalytics from "./PriceAnalytics";
 import AnimalVideos from "./AnimalVideos";
+import { featureOn } from "../lib/tank";
 
 // The live/interactive parts of an animal page — fetched client-side so they stay
 // current, while the SEO-critical core is server-rendered by AnimalCore.
@@ -37,7 +38,7 @@ export default function AnimalInteractive({ reg, name }: { reg: string; name: st
 
   return (
     <>
-      {zenkyo.length > 0 && (
+      {featureOn("zenkyo") && zenkyo.length > 0 && (
         <div className="section" style={{ paddingBottom: 0 }}>
           <div className="card card-pad" style={{ borderColor: "var(--gold)", background: "linear-gradient(160deg, var(--bg-card), var(--bg-elev))" }}>
             <div className="row" style={{ gap: 10, alignItems: "baseline" }}>

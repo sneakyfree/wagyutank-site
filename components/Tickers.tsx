@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { api, money } from "../lib/api";
+import { featureOn } from "../lib/tank";
 
 function arrow(t: number | null | undefined) {
   if (t == null) return null;
@@ -88,7 +89,7 @@ export default function Tickers() {
   return (
     <div className="ticker-stack">
       <Band badge="📈 GENETICS INDEX" href="/foundation" items={g} title="Wagyu Genetics Price Index — verified foundation-sire prices. Tap for per-bull analytics." />
-      <Band badge="🥩 BEEF MARKET" href="/market" items={b} title="Beef & Wagyu market prices" accent="linear-gradient(180deg,#c86b4e,#a9481f)" />
+      {featureOn("market_data") && <Band badge="🥩 BEEF MARKET" href="/market" items={b} title="Beef & Wagyu market prices" accent="linear-gradient(180deg,#c86b4e,#a9481f)" />}
       <Band badge="🏆 SALE DATA" href="/sale-reports" items={s} title="Wagyu auction sale averages" accent="linear-gradient(180deg,#6d9995,#4d7570)" />
     </div>
   );

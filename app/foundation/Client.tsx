@@ -46,6 +46,7 @@ export default function Foundation() {
     api.foundation().then((all: any[]) => setBulls(all)).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
+  const isWagyu = (TANK as any).key === "wagyu";
   const allBulls = bulls.filter((b) => b.animal_type === "bull");
   const cows = bulls.filter((b) => b.animal_type === "cow").sort(byName);
   const imports = allBulls.filter((b) => !b.bred_outside_japan);
@@ -102,9 +103,11 @@ export default function Foundation() {
       ) : (
         <>
           <div className="section" style={{ paddingTop: 20 }}>
-            <h2 style={{ fontSize: "1.5rem" }}>Original import foundation sires</h2>
+            <h2 style={{ fontSize: "1.5rem" }}>{isWagyu ? "Original import foundation sires" : "Foundation sires"}</h2>
             <p className="faint" style={{ maxWidth: "70ch", marginTop: 4 }}>
-              The bulls whose genetics were exported from Japan — grouped by bloodline, alphabetical within each.
+              {isWagyu
+                ? "The bulls whose genetics were exported from Japan — grouped by bloodline, alphabetical within each."
+                : "The bulls behind the breed — grouped by bloodline, alphabetical within each."}
             </p>
           </div>
           {grouped.map((g) => (
@@ -115,12 +118,13 @@ export default function Foundation() {
             <div className="section" style={{ paddingTop: 12 }}>
               <div className="section-head" style={{ borderTop: "1px solid var(--border, #2a2a2a)", paddingTop: 22 }}>
                 <h2 style={{ fontSize: "1.35rem" }}>
-                  Influential sires bred outside Japan <span className="faint" style={{ fontWeight: 400 }}>· {domestic.length}</span>
+                  {isWagyu ? "Influential sires bred outside Japan" : "Influential home-bred sires"} <span className="faint" style={{ fontWeight: 400 }}>· {domestic.length}</span>
                 </h2>
               </div>
               <p className="faint" style={{ maxWidth: "70ch", margin: "2px 0 16px" }}>
-                Not Japan imports, but foundation-defining in their own right — full-bloods born abroad from
-                imported parents, most out of the great World K's sire Haruki 2.
+                {isWagyu
+                  ? "Not Japan imports, but foundation-defining in their own right — full-bloods born abroad from imported parents, most out of the great World K's sire Haruki 2."
+                  : "Not imports, but foundation-defining in their own right — bred at home from imported foundation parents."}
               </p>
               <FoundationCards animals={domestic} />
             </div>
@@ -159,6 +163,10 @@ function BloodlineGroup({ group }: { group: any }) {
 }
 
 function FoundationCards({ animals }: { animals: any[] }) {
+  // Photo-less card seal = the brand's initials (wagyu ["WAGYU","TANK"] → "WT",
+  // a clone ["GIR","TANK"] → "GT"). Never the hardcoded "WT".
+  const wm = ((TANK as any).brand?.wordmark as string[] | undefined) || ["WAGYU", "TANK"];
+  const seal = ((wm[0]?.[0] || "") + (wm[1]?.[0] || "")).toUpperCase() || "★";
   return (
     <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(230px,1fr))" }}>
       {animals.map((a) => (
@@ -170,7 +178,7 @@ function FoundationCards({ animals }: { animals: any[] }) {
               <img className="animal-photo" src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
               <div className="foundation-ph">
-                <span className="fp-seal">{a.animal_type === "cow" ? "♀" : "WT"}</span>
+                <span className="fp-seal">{a.animal_type === "cow" ? "♀" : seal}</span>
                 <span className="fp-name">{a.bloodline || a.breed || "Foundation"}</span>
                 <span className="fp-note">{a.animal_type === "cow" ? "Foundation dam" : "Foundation sire"}</span>
               </div>

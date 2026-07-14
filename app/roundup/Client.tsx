@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
-import { copy, products } from "../../lib/tank";
+import { copy, products, TANK } from "../../lib/tank";
 import RoundupCard from "../../components/RoundupCard";
 import ListingCard from "../../components/ListingCard";
 import AdSlot from "../../components/AdSlot";
@@ -85,7 +85,7 @@ function RoundupInner() {
       {/* Search box — sire name, registration number, or keyword */}
       <form onSubmit={(e) => { e.preventDefault(); setParam("q", qInput.trim()); }} className="searchbar" style={{ maxWidth: 640, marginTop: 20 }}>
         <span className="faint">🔍</span>
-        <input value={qInput} onChange={(e) => setQInput(e.target.value)} placeholder="Search by sire, registration number, or keyword — e.g. Michifuku, FB1615, Itoshigenami…" aria-label="Search listings" />
+        <input value={qInput} onChange={(e) => setQInput(e.target.value)} placeholder="Search by sire, registration number, or keyword…" aria-label="Search listings" />
         {q && <button type="button" className="pill pill-dim" style={{ cursor: "pointer" }} onClick={() => setParam("q", "")}>clear ✕</button>}
         <button type="submit" className="btn btn-gold">Search</button>
       </form>
@@ -113,11 +113,13 @@ function RoundupInner() {
           </button>
         ))}
         <div className="spacer" />
-        <select className="select" style={{ width: "auto" }} value={css} onChange={(e) => setParam("css", e.target.value)}>
-          <option value="">Any export status</option>
-          <option value="css">✈ CSS export-eligible</option>
-          <option value="domestic">Domestic only</option>
-        </select>
+        {(TANK as any).vocab?.export_program && (
+          <select className="select" style={{ width: "auto" }} value={css} onChange={(e) => setParam("css", e.target.value)}>
+            <option value="">Any export status</option>
+            <option value="css">✈ {(TANK as any).vocab.export_program} export-eligible</option>
+            <option value="domestic">Domestic only</option>
+          </select>
+        )}
         <select className="select" style={{ width: "auto" }} value={sort} onChange={(e) => setParam("sort", e.target.value)}>
           <option value="recent">Most recent</option>
           <option value="price_asc">Price ↑</option>

@@ -1,9 +1,21 @@
 "use client";
-import { brand } from "../lib/tank";
+import { brand, TANK } from "../lib/tank";
 
-// The WagyuTank marbled-medallion mark: a ribeye seal (marbling = the hero) with
-// an interlocked W·T monogram embossed on top. Scales cleanly from favicon to hero.
+// The marbled-medallion mark: a ribeye seal (marbling = the hero). The source
+// (wagyu) carries the hand-drawn W·T monogram; every CLONE gets a medallion in
+// ITS OWN palette (brand.colors) with ITS OWN initials, so no Wagyu gold or W·T
+// seal ever leaks onto another breed's site. Scales from favicon to hero.
 export function LogoMark({ size = 40 }: { size?: number }) {
+  const isWagyu = (TANK as any).key === "wagyu";
+  const colors = ((brand as any).colors || {}) as Record<string, string>;
+  // clone gradient stops from config; wagyu keeps its exact original 3-stop gold.
+  const gBright = colors.goldBright || "#f6cd6b";
+  const gMid = colors.gold || "#d9a441";
+  const gDeep = isWagyu ? "#a9761f" : (colors.gold || "#a9761f");
+  // clone monogram = breed initials (["GIR","TANK"] -> "GT"); wagyu = hand path.
+  const wm = ((brand as any).wordmark as string[] | undefined) || ["WAGYU", "TANK"];
+  const initials = ((wm[0]?.[0] || "") + (wm[1]?.[0] || "")).toUpperCase();
+
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true"
          style={{ flex: "0 0 auto", display: "block" }}>
@@ -14,9 +26,9 @@ export function LogoMark({ size = 40 }: { size?: number }) {
           <stop offset="100%" stopColor="#0c0a08" />
         </radialGradient>
         <linearGradient id="wtGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#f6cd6b" />
-          <stop offset="48%" stopColor="#d9a441" />
-          <stop offset="100%" stopColor="#a9761f" />
+          <stop offset="0%" stopColor={gBright} />
+          <stop offset="48%" stopColor={gMid} />
+          <stop offset="100%" stopColor={gDeep} />
         </linearGradient>
         <clipPath id="wtClip"><circle cx="32" cy="32" r="28" /></clipPath>
       </defs>
@@ -36,13 +48,25 @@ export function LogoMark({ size = 40 }: { size?: number }) {
         <path d="M52 50 C46 47 43 41 47 36" strokeWidth="0.7" opacity="0.35" />
       </g>
 
-      {/* W·T monogram, embossed */}
-      <g strokeLinecap="round" strokeLinejoin="round" fill="none">
-        <path d="M15 22 L23 44 L32 30 L41 44 L49 22" stroke="#000" strokeOpacity="0.35" strokeWidth="5.4" transform="translate(0.6,0.9)" />
-        <path d="M20 17.5 L44 17.5 M32 17.5 L32 30" stroke="#000" strokeOpacity="0.35" strokeWidth="5.4" transform="translate(0.6,0.9)" />
-        <path d="M15 22 L23 44 L32 30 L41 44 L49 22" stroke="url(#wtGold)" strokeWidth="5" />
-        <path d="M20 17.5 L44 17.5 M32 17.5 L32 30" stroke="#f6cd6b" strokeWidth="5" />
-      </g>
+      {isWagyu ? (
+        /* W·T monogram, embossed — the source mark, kept byte-identical */
+        <g strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M15 22 L23 44 L32 30 L41 44 L49 22" stroke="#000" strokeOpacity="0.35" strokeWidth="5.4" transform="translate(0.6,0.9)" />
+          <path d="M20 17.5 L44 17.5 M32 17.5 L32 30" stroke="#000" strokeOpacity="0.35" strokeWidth="5.4" transform="translate(0.6,0.9)" />
+          <path d="M15 22 L23 44 L32 30 L41 44 L49 22" stroke="url(#wtGold)" strokeWidth="5" />
+          <path d="M20 17.5 L44 17.5 M32 17.5 L32 30" stroke="#f6cd6b" strokeWidth="5" />
+        </g>
+      ) : (
+        /* clone: the breed's initials in its own gold, embossed */
+        <g>
+          <text x="32" y="33" transform="translate(0.6,0.9)" textAnchor="middle" dominantBaseline="central"
+                fontFamily="Georgia, 'Times New Roman', serif" fontWeight="700"
+                fontSize={initials.length > 1 ? 26 : 34} fill="#000" fillOpacity="0.35">{initials}</text>
+          <text x="32" y="33" textAnchor="middle" dominantBaseline="central"
+                fontFamily="Georgia, 'Times New Roman', serif" fontWeight="700"
+                fontSize={initials.length > 1 ? 26 : 34} fill="url(#wtGold)">{initials}</text>
+        </g>
+      )}
     </svg>
   );
 }

@@ -99,7 +99,7 @@ export default function Advertise() {
             <div className="field"><label>Contact email *</label>
               <input className="input" value={form.contact_email} onChange={(e) => set("contact_email", e.target.value)} placeholder="you@ranch.com" /></div>
             <div className="field"><label>Headline *</label>
-              <input className="input" value={form.headline} onChange={(e) => set("headline", e.target.value)} placeholder="Fullblood Wagyu semen — export-eligible" maxLength={120} /></div>
+              <input className="input" value={form.headline} onChange={(e) => set("headline", e.target.value)} placeholder="Your headline — what makes this listing stand out" maxLength={120} /></div>
             <div className="field"><label>Body (optional)</label>
               <textarea className="input" rows={2} value={form.body} onChange={(e) => set("body", e.target.value)} maxLength={300} /></div>
             <div className="field"><label>Link URL *</label>

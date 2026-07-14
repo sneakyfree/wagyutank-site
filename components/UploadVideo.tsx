@@ -50,7 +50,7 @@ export default function UploadVideo({ onClose }: { onClose: () => void }) {
             <div className="field"><label>Title *</label>
               <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. our young heifers on spring pasture" /></div>
             <div className="field"><label>Animal registration # (optional)</label>
-              <input className="input" value={reg} onChange={(e) => setReg(e.target.value)} placeholder="FB1615" /></div>
+              <input className="input" value={reg} onChange={(e) => setReg(e.target.value)} placeholder="e.g. a registration number" /></div>
             <div className="field"><label>Video file *</label>
               <input className="input" type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(e) => setFile(e.target.files?.[0] || null)} /></div>
             {pct != null && (
