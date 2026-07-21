@@ -42,7 +42,7 @@ export default function Client() {
 
       <div className="row wrap" style={{ gap: 16, marginTop: 24, alignItems: "stretch" }}>
         <div className="card card-pad" style={{ flex: "1 1 300px" }}>
-          <h3 style={{ marginTop: 0 }}>🌎 Northern Hemisphere Edition</h3>
+          <h3 style={{ marginTop: 0 }}>🌱 Spring-Calving Program Edition</h3>
           <p className="muted" style={{ lineHeight: 1.65 }}>
             North American and European herds mostly calve in late winter and spring, which puts AI
             season in <b>May–July</b>. This edition mails in <b>early March</b>, while sire lists are
@@ -52,7 +52,7 @@ export default function Client() {
           <div className="kv"><span className="k">Mails</span><span>early March</span></div>
         </div>
         <div className="card card-pad" style={{ flex: "1 1 300px" }}>
-          <h3 style={{ marginTop: 0 }}>🌏 Southern Hemisphere Edition</h3>
+          <h3 style={{ marginTop: 0 }}>🍂 Fall-Calving Program Edition</h3>
           <p className="muted" style={{ lineHeight: 1.65 }}>
             Australian, New Zealand, and South American spring-calving herds join from
             <b> October–January</b>. This edition mails in <b>early October</b>, ahead of joining.

@@ -4,6 +4,9 @@ import Link from "next/link";
 import { api } from "../../lib/api";
 import { TANK } from "../../lib/tank";
 import FollowButton from "../../components/FollowButton";
+import { BlendBar } from "../../components/BloodBlend";
+import OriginLine from "../../components/Origin";
+import { thumbUrl } from "../../lib/thumb";
 
 // The five founder groups, in the order the story is best told: the three black
 // Wagyu bloodlines (largest → rarest), then the separate Akaushi red breed, then
@@ -19,12 +22,15 @@ const GROUPS: { key: string; label: string; glyph: string; blurb: string; follow
   { key: "Kedaka", label: "Kedaka / Tottori", glyph: "📏",
     blurb: "The rare frame-and-growth line from Tottori — the fewest founders of the three black bloodlines.",
     follow: "Kedaka (Tottori)" },
-  { key: "Akaushi", label: "Akaushi — Japanese Red", glyph: "🟥",
-    blurb: "A separate red breed from Kumamoto, imported alongside the Blacks. Rueshaw and Judo lead this line.",
-    follow: "Kumamoto (Akaushi)" },
   { key: "Mixed", label: "Mixed / Multi-line", glyph: "🧬",
     blurb: "Founders that deliberately blend two or more lines — prized as outcrosses that add growth without losing marbling.",
     follow: null },
+  { key: "Mishima", label: "Mishima — a separate native breed", glyph: "🏝️",
+    blurb: "Not Wagyu at all. Mishima are one of Japan's six native cattle breeds, kept on a single island and never crossed with imported Western cattle — a living sample of Japanese cattle from before the crossbreeding that made modern Wagyu. One bull was ever exported.",
+    follow: null },
+  { key: "Akaushi", label: "Akaushi — Japanese Red", glyph: "🟥",
+    blurb: "A separate red breed from Kumamoto, imported alongside the Blacks. Rueshaw and Judo lead this line.",
+    follow: "Kumamoto (Akaushi)" },
 ];
 
 function groupOf(bloodline: string | null | undefined): string {
@@ -32,6 +38,7 @@ function groupOf(bloodline: string | null | undefined): string {
   if (b.startsWith("tajima")) return "Tajima";
   if (b.includes("shimane") || b.includes("fujiyoshi") || b.startsWith("itozakura")) return "Shimane";
   if (b.includes("kedaka") || b.includes("tottori")) return "Kedaka";
+  if (b.includes("mishima")) return "Mishima";
   if (b.includes("akaushi") || b.includes("kumamoto")) return "Akaushi";
   return "Mixed";
 }
@@ -48,7 +55,21 @@ export default function Foundation() {
 
   const isWagyu = (TANK as any).key === "wagyu";
   const allBulls = bulls.filter((b) => b.animal_type === "bull");
-  const cows = bulls.filter((b) => b.animal_type === "cow").sort(byName);
+  const allCows = bulls.filter((b) => b.animal_type === "cow").sort(byName);
+  // Two distinct breeds arrived together, and newcomers must not read them as one
+  // herd: Japanese Black and Akaushi are separate breeds, so they get separate
+  // sections rather than one undifferentiated "foundation cows" list.
+  const isRed = (a: any) =>
+    /akaushi|red|kumamoto/i.test(`${a.breed || ""} ${a.bloodline || ""}`);
+  const cowGroups = [
+    { key: "black", label: "Black Wagyu foundation dams", glyph: "⬛",
+      blurb: "The Japanese Black females — the dam side of the Tajima, Shimane and Kedaka lines.",
+      animals: allCows.filter((a) => !isRed(a)) },
+    { key: "akaushi", label: "Akaushi (Japanese Red) foundation dams", glyph: "🟥",
+      blurb: "A separate breed from Kumamoto, imported alongside the Blacks — not a colour variant of them.",
+      animals: allCows.filter(isRed) },
+  ].filter((g) => g.animals.length > 0);
+  const cows = allCows;
   const imports = allBulls.filter((b) => !b.bred_outside_japan);
   const domestic = allBulls.filter((b) => b.bred_outside_japan).sort(byName);
 
@@ -135,7 +156,21 @@ export default function Foundation() {
               <div className="section-head" style={{ borderTop: "1px solid var(--border, #2a2a2a)", paddingTop: 22 }}>
                 <h2 style={{ fontSize: "1.35rem" }}>Foundation cows <span className="faint" style={{ fontWeight: 400 }}>· {cows.length}</span></h2>
               </div>
-              <FoundationCards animals={cows} />
+              <p className="faint" style={{ maxWidth: "70ch", margin: "2px 0 16px" }}>
+                Two different breeds came out of Japan together. They are listed separately below and should not be blended: Japanese Black and Akaushi are distinct breeds, not colours of one.
+              </p>
+              {cowGroups.map((g) => (
+                <div key={g.key} className="section" style={{ paddingTop: 6 }}>
+                  <div className="section-head" style={{ alignItems: "baseline", flexWrap: "wrap", gap: 10 }}>
+                    <h3 style={{ fontSize: "1.2rem" }}>
+                      <span style={{ marginRight: 8 }}>{g.glyph}</span>{g.label}{" "}
+                      <span className="faint" style={{ fontWeight: 400, fontSize: "0.9rem" }}>· {g.animals.length} {g.animals.length === 1 ? "dam" : "dams"}</span>
+                    </h3>
+                  </div>
+                  <p className="faint" style={{ maxWidth: "70ch", margin: "2px 0 14px", fontSize: "0.9rem" }}>{g.blurb}</p>
+                  <FoundationCards animals={g.animals} />
+                </div>
+              ))}
             </div>
           )}
         </>
@@ -175,7 +210,18 @@ function FoundationCards({ animals }: { animals: any[] }) {
           : `/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card">
           <div className="lc-media">
             {a.photo_url ? (
-              <img className="animal-photo" src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img
+                className="animal-photo animal-thumb"
+                src={thumbUrl(a.photo_url)}
+                alt={a.name}
+                loading="lazy"
+                onError={(e) => {
+                  // no pre-cut thumbnail for this one — fall back to the full photo
+                  const img = e.currentTarget;
+                  if (img.src !== a.photo_url) img.src = a.photo_url;
+                }}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             ) : (
               <div className="foundation-ph">
                 <span className="fp-seal">{a.animal_type === "cow" ? "♀" : seal}</span>
@@ -193,6 +239,10 @@ function FoundationCards({ animals }: { animals: any[] }) {
               {a.registration_no ? `${a.registration_no} · ` : ""}
               {a.au_progeny ? `${a.au_progeny.toLocaleString()} AU progeny` : (a.importer || a.breed)}
             </div>
+            {a.birth_country !== undefined && (
+              <OriginLine a={a} className="faint" style={{ fontSize: "0.74rem", display: "block", marginTop: 3 }} />
+            )}
+            <BlendBar blend={a.blend} />
           </div>
         </Link>
       ))}

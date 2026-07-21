@@ -5,6 +5,7 @@ import { useLang } from "../lib/i18n";
 import { brand, featureOn, products } from "../lib/tank";
 import Logo from "./Logo";
 import NavDropdown from "./NavDropdown";
+import NavScroller from "./NavScroller";
 import LanguageSwitcher from "./Languageswitcher";
 import PeerHop from "./PeerHop";
 
@@ -32,10 +33,12 @@ export default function Header() {
         { href: "/browse", label: t("nav.browseall"), desc: t("nav.browse_all_desc") },
         ...productItems,
         ...(featureOn("foundation") ? [{ href: "/foundation", label: t("nav.foundation"), desc: t("nav.foundation_desc") }] : []),
+        ...(featureOn("great_sires") ? [{ href: "/great-sires", label: "Great Sires", desc: "The encyclopedia of the breed's most influential bulls and dams" }] : []),
       ]} />
       {featureOn("roundup") && <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>}
       {featureOn("directory") && <Link href="/directory" className="nav-link">{t("nav.directory")}</Link>}
       {featureOn("news") && <Link href="/news" className="nav-link">{t("nav.news")}</Link>}
+      <Link href="/newsletter" className="nav-link">Newsletter</Link>
       {featureOn("videos") && <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>}
       {featureOn("japan_hub") && <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>}
       {featureOn("feeding") && <Link href="/feeding" className="nav-link">{t("nav.feeding")}</Link>}
@@ -54,6 +57,8 @@ export default function Header() {
       {featureOn("roundup") && <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>}
       {featureOn("directory") && <Link href="/directory" className="nav-link">{t("nav.directory")}</Link>}
       {featureOn("news") && <Link href="/news" className="nav-link">{t("nav.news")}</Link>}
+      <Link href="/newsletter" className="nav-link">Newsletter</Link>
+      {featureOn("great_sires") && <Link href="/great-sires" className="nav-link">Great Sires</Link>}
       {featureOn("videos") && <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>}
       {featureOn("japan_hub") && <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>}
       {featureOn("feeding") && <Link href="/feeding" className="nav-link">{t("nav.feeding")}</Link>}
@@ -73,7 +78,9 @@ export default function Header() {
         <Link href="/" className="logo" aria-label={`${brand.name} home`}>
           <Logo size={34} />
         </Link>
-        <nav className="nav-desktop" style={{ marginLeft: 14 }}>{desktopNav}</nav>
+        <nav className="nav-desktop" style={{ marginLeft: 14 }}>
+          <NavScroller>{desktopNav}</NavScroller>
+        </nav>
         <div className="spacer" />
         {langToggle}
         <PeerHop />

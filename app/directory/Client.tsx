@@ -13,9 +13,53 @@ const CAT_LABEL: Record<string, string> = {
 };
 const BREED_LABEL: Record<string, string> = { black_wagyu: "Black Wagyu", akaushi: "Akaushi" };
 
-function SellerCard({ s }: { s: any }) {
+/** The captured mark: the seller's own logo, or a distinctive clip of their hero.
+ *  The backdrop follows what the mark actually is (see below). If the file is
+ *  missing or fails to decode we render nothing at all -- never a broken-image
+ *  icon -- and the card falls back to the original text-only look. */
+function RanchMark({ site, name, kind }: { site: string; name: string; kind: string }) {
+  const [dead, setDead] = useState(false);
+  if (dead) return null;
+  const scene = kind === "scene";
+  // Most ranch logos are drawn in dark ink for a white background and would
+  // disappear on our dark cards, so they get a soft light plate. The ones drawn
+  // in white ink would disappear on *that*, so they keep a dark backdrop. Hero
+  // clips are photos and run edge to edge with no plate at all.
+  const background = scene
+    ? "var(--bg-elev)"
+    : kind === "logo_dark"
+    ? "var(--bg-elev)"
+    : "rgba(247, 244, 238, 0.93)";
+  return (
+    <div
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        height: scene ? 88 : 68, marginBottom: 2,
+        padding: scene ? 0 : "8px 12px", borderRadius: 8,
+        background,
+        border: "1px solid var(--border-soft)", overflow: "hidden",
+      }}
+    >
+      <img
+        src={"/ranch/" + site + ".png"}
+        alt={name + " mark"}
+        loading="lazy"
+        decoding="async"
+        onError={() => setDead(true)}
+        style={
+          scene
+            ? { width: "100%", height: "100%", objectFit: "cover", display: "block" }
+            : { maxHeight: "100%", maxWidth: "100%", objectFit: "contain", display: "block" }
+        }
+      />
+    </div>
+  );
+}
+
+function SellerCard({ s, mark }: { s: any; mark: string | undefined }) {
   return (
     <div className="card card-pad" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {mark && <RanchMark site={s.site} name={s.name} kind={mark} />}
       <div className="row" style={{ gap: 8, alignItems: "flex-start" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h3 style={{ margin: 0, fontSize: "1.05rem", lineHeight: 1.3 }}>{s.name}</h3>
@@ -77,8 +121,26 @@ export default function Client() {
   const [category, setCategory] = useState("");
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
+  // The domains we actually captured a mark for, and what kind each one is
+  // ("logo" | "scene"). It is a static file sitting next to the images, so we
+  // never fire a request for a mark that does not exist. If it fails to load we
+  // just show no marks -- the Atlas is fully usable without them.
+  const [marks, setMarks] = useState<Record<string, string>>({});
 
   useEffect(() => { api.directoryStats().then(setStats).catch(() => {}); }, []);
+  useEffect(() => {
+    fetch("/ranch/index.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((idx: any) => {
+        if (Array.isArray(idx)) {
+          // older index format: a plain list of keys, all treated as logos
+          setMarks(Object.fromEntries(idx.map((k: string) => [k, "logo"])));
+        } else if (idx && typeof idx === "object") {
+          setMarks(idx);
+        }
+      })
+      .catch(() => {});
+  }, []);
   useEffect(() => {
     setLoading(true);
     const params: any = { limit: 1000 };
@@ -156,7 +218,9 @@ export default function Client() {
         {loading ? "Loading…" : `${total} seller${total === 1 ? "" : "s"}`}
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 14 }}>
-        {sellers.map((s) => <SellerCard key={s.site} s={s} />)}
+        {sellers.map((s) => (
+          <SellerCard key={s.site} s={s} mark={marks[s.site]} />
+        ))}
       </div>
       {!loading && sellers.length === 0 && (
         <p className="muted" style={{ textAlign: "center", marginTop: 30 }}>No sellers match those filters.</p>

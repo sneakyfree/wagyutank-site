@@ -1,4 +1,5 @@
 "use client";
+import NewsletterSignup from "../../components/NewsletterSignup";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "../../lib/api";
@@ -89,6 +90,15 @@ function NewsInner() {
     <div className="container section">
       <span className="pill roundup-pill">📰 The Wagyu Wire</span>
       <h1 style={{ fontSize: "2.2rem", marginTop: 12 }}>Wagyu news from around the world</h1>
+      <div style={{ maxWidth: 620, margin: "16px 0 4px" }}>
+        <div className="card card-pad" style={{ borderColor: "var(--gold)" }}>
+          <strong className="gold">📬 Get this week&apos;s stories as one letter</strong>
+          <p className="muted" style={{ margin: "6px 0 10px", lineHeight: 1.6 }}>
+            <b>The State of the Wagyu Weekly</b> — every Monday, in your language. Free, no account needed.
+          </p>
+          <NewsletterSignup source="news-page" compact />
+        </div>
+      </div>
       <div className="roundup-banner" style={{ maxWidth: "78ch", marginTop: 14 }}>
         <p className="muted" style={{ margin: 0, lineHeight: 1.7 }}>
           The latest Wagyu reporting from the US, Australia, Japan, Asia, Europe, and South America —

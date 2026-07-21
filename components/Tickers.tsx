@@ -46,12 +46,12 @@ function Band({ badge, href, items, title, accent }: {
 
   if (!items.length) return null;
   return (
-    <Link href={href} className="ticker" title={title}
+    <div className="ticker" title={title}
       onMouseEnter={() => { paused.current = true; }}
       onMouseLeave={() => { paused.current = false; }}>
-      <span className="ticker-badge" style={accent ? { background: accent } : undefined}>{badge}</span>
+      <Link href={href} className="ticker-badge" style={accent ? { background: accent } : undefined}>{badge}</Link>
       <div className="ticker-track"><div className="ticker-run" ref={runRef}>{items}{items}</div></div>
-    </Link>
+    </div>
   );
 }
 
@@ -70,8 +70,15 @@ export default function Tickers() {
   const g: React.ReactNode[] = [];
   if (genetics?.market?.semen_avg) {
     g.push(<span className="tk-item tk-market" key="g0"><b>WAGYU SEMEN INDEX</b> {money(genetics.market.semen_avg)}<span className="tk-unit">/straw</span> {arrow(genetics.market.trend)}</span>);
-    (genetics.sires || []).forEach((s: any, i: number) =>
-      g.push(<span className="tk-item" key={`g${i + 1}`}><b>{s.sire}</b> {money(s.avg)}<span className="tk-unit">/straw</span> {arrow(s.trend)}</span>));
+    // Deep-link each sire to his own profile — landing on the whole foundation
+    // gallery after tapping one bull's price is a dead end.
+    (genetics.sires || []).forEach((s: any, i: number) => {
+      const key = s.slug || s.registration_no;
+      const body = <><b>{s.sire}</b> {money(s.avg)}<span className="tk-unit">/straw</span> {arrow(s.trend)}</>;
+      g.push(key
+        ? <Link key={`g${i + 1}`} href={`/animal/${encodeURIComponent(key)}/`} className="tk-item tk-link">{body}</Link>
+        : <span className="tk-item" key={`g${i + 1}`}>{body}</span>);
+    });
   }
 
   // Band 2 — beef market

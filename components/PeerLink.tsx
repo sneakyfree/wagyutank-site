@@ -10,18 +10,19 @@ export default function PeerLink({ reg, style }: { reg?: string | null; style?: 
   const r = (reg || "").trim();
   if (!peers.length || !r) return null;
   return (
-    <span className="row wrap" style={{ gap: 6, display: "inline-flex", ...style }}>
+    <span className="row wrap" style={{ gap: 6, display: "inline-flex", maxWidth: "100%", ...style }}>
       {peers.map((p) => (
         <a
           key={p.domain}
           className="pill"
-          style={{ cursor: "pointer", textDecoration: "none" }}
+          style={{ cursor: "pointer", textDecoration: "none", whiteSpace: "normal" }}
           href={`https://www.${p.domain}/animal?reg=${encodeURIComponent(r)}`}
           target="_blank"
           rel="noopener"
           title={`View ${r} on ${p.name || p.domain}`}
         >
           → {p.cta || `View on ${p.name || p.domain}`}
+          <span className="faint" style={{ marginLeft: 6, fontWeight: 500 }}>on {p.domain}</span>
         </a>
       ))}
     </span>

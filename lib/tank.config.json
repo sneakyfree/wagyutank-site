@@ -8,7 +8,9 @@
     "breed": "Wagyu & Akaushi",
     "logoText": "WT",
     "colors": {
-      "gold": "#8a6d2b"
+      "gold": "#d9a441",
+      "goldBright": "#f0bd57",
+      "goldSoft": "rgba(217,164,65,0.12)"
     },
     "contactEmail": "office@wagyutank.com",
     "legal": "Salt Lake City, Utah, USA · a Utah company",
@@ -39,21 +41,30 @@
       "label": "Semen",
       "unit": "straw",
       "icon": "sperm",
-      "fresh_chilled": false
+      "fresh_chilled": false,
+      "glyph": "🧬",
+      "cardTitle": "Semen Straws",
+      "blurb": "Conventional & sexed, from proven Wagyu sires worldwide."
     },
     {
       "key": "embryo",
       "label": "Embryos",
       "unit": "embryo",
       "icon": "morula",
-      "fresh_chilled": false
+      "fresh_chilled": false,
+      "glyph": "🥚",
+      "cardTitle": "Embryos",
+      "blurb": "Full-blood IVF & in-vivo embryos, sire × dam pedigrees."
     },
     {
       "key": "clone_rights",
       "label": "Cloning Rights",
       "unit": "right",
       "icon": "helix",
-      "fresh_chilled": false
+      "fresh_chilled": false,
+      "glyph": "🐂",
+      "cardTitle": "Cloning Rights",
+      "blurb": "License the right to clone a banked cell line. Ours alone."
     }
   ],
   "features": {
@@ -94,6 +105,7 @@
     ],
     "help_nuance": "Use 'Akaushi' rather than 'Red Wagyu'. Wagyu = 'Japanese cattle' (an umbrella); Japanese Black and Akaushi are distinct breeds."
   },
+  "copy": {},
   "langs": [
     "en",
     "es",
@@ -101,5 +113,22 @@
     "de",
     "ja",
     "zh"
-  ]
+  ],
+  "network": {
+    "peers": [
+      {
+        "key": "wagyusale",
+        "name": "WagyuSale",
+        "domain": "wagyusale.com",
+        "web": "https://www.wagyusale.com",
+        "families": [
+          "live",
+          "beef"
+        ],
+        "cta": "Live cattle & beef for sale",
+        "short": "🐂 Live cattle"
+      }
+    ]
+  },
+  "substitutions": []
 }

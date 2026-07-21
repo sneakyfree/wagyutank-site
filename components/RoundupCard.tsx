@@ -4,6 +4,54 @@ import { api, PRODUCT_LABEL, money, countryFlag, freshness } from "../lib/api";
 import ExportInfo from "./ExportInfo";
 import ProductBadge from "./ProductBadge";
 
+/** One seller photograph, loaded from the seller's own server.
+ *  A hotlink that fails is expected and unremarkable -- sellers block hotlinking,
+ *  swap files, or take listings down -- so a failure hides the image silently
+ *  rather than leaving a broken-image icon on the card, and tells the strip so
+ *  it can drop the credit line once nothing is left to credit. */
+function SellerPhoto({ url, wide, onDead }: { url: string; wide: boolean; onDead: () => void }) {
+  const [dead, setDead] = useState(false);
+  if (dead) return null;
+  return (
+    <img
+      src={url}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => { setDead(true); onDead(); }}
+      style={{
+        flex: wide ? "1 1 100%" : "1 1 0",
+        minWidth: 0, height: "100%", objectFit: "cover",
+        display: "block", background: "var(--bg-elev)",
+      }}
+    />
+  );
+}
+
+/** The strip across the top of a card. Two photos sit side by side -- an embryo
+ *  lot's page usually pictures both parents -- but they are deliberately left
+ *  unlabelled: from the page's HTML we cannot honestly say which animal is in
+ *  which photograph, and a wrong caption is worse than no caption. */
+function ListingPhotos({ images, source }: { images: any[]; source: string }) {
+  const urls = (images || []).map((im: any) => im?.url).filter(Boolean).slice(0, 2);
+  const [failed, setFailed] = useState(0);
+  if (!urls.length || failed >= urls.length) return null;
+  return (
+    <div>
+      {/* Same 4:3 media block a WagyuTank listing card uses, so a photographed
+          web listing lines up with its neighbours instead of standing proud. */}
+      <div style={{ display: "flex", gap: 2, overflow: "hidden", aspectRatio: "4 / 3" }}>
+        {urls.map((u: string, i: number) => (
+          <SellerPhoto key={u + i} url={u} wide={urls.length === 1} onDead={() => setFailed((n) => n + 1)} />
+        ))}
+      </div>
+      <div className="faint" style={{ fontSize: "0.68rem", padding: "4px 12px 0" }}>
+        Photo hosted by {source}
+      </div>
+    </div>
+  );
+}
+
 export default function RoundupCard({ l }: { l: any }) {
   const [showForm, setShowForm] = useState(false);
   const [email, setEmail] = useState("");
@@ -27,6 +75,7 @@ export default function RoundupCard({ l }: { l: any }) {
 
   return (
     <div className="card roundup-card">
+      <ListingPhotos images={l.listing_images} source={l.source_site} />
       <div className="lc-body">
         <div className="row wrap" style={{ gap: 6, marginBottom: 8 }}>
           <ProductBadge type={l.product_type} />

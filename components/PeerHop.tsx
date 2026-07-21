@@ -36,12 +36,12 @@ export default function PeerHop() {
       {peers.map((p) => (
         <button
           key={p.domain}
-          className="btn btn-ghost"
+          className="btn btn-ghost peer-hop"
           disabled={busy === p.domain}
           onClick={() => hop(p.domain)}
           title={user ? `Continue on ${p.name || p.domain} — you'll stay signed in` : `Visit ${p.name || p.domain}`}
         >
-          {busy === p.domain ? "…" : p.cta || `${p.name || p.domain} ↗`}
+          {busy === p.domain ? "…" : (p as any).short || p.cta || `${p.name || p.domain} ↗`}
         </button>
       ))}
     </>

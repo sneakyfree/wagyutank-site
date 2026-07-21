@@ -1,11 +1,20 @@
 import Link from "next/link";
 import FollowButton from "./FollowButton";
 import PeerLink from "./PeerLink";
+import { BlendDonut } from "./BloodBlend";
+import { originFlag, originLong } from "./Origin";
 
 // Presentational (no hooks) — the SEO-critical content, server-renderable.
 export default function AnimalCore({ a }: { a: any }) {
   return (
     <>
+      {a.is_foundation && (
+        <div style={{ marginBottom: 10 }}>
+          <Link href="/foundation" className="nav-link" style={{ paddingLeft: 0, fontSize: "0.85rem" }}>
+            ← All foundation animals
+          </Link>
+        </div>
+      )}
       <div className="row wrap" style={{ gap: 8, marginBottom: 8 }}>
         {a.is_foundation && <span className="pill">Foundation animal</span>}
         {a.bloodline && <span className="pill pill-dim">{a.bloodline}</span>}
@@ -58,11 +67,18 @@ export default function AnimalCore({ a }: { a: any }) {
       <div className="row wrap" style={{ gap: 30, marginTop: 24, alignItems: "flex-start" }}>
         <div style={{ flex: "1 1 300px" }}>
           <h2 style={{ fontSize: "1.2rem" }}>Registry record</h2>
+          {a.birth_country && (
+            <div className="kv"><span className="k">Born</span>
+              <span>{originFlag(a)} {originLong(a)}</span></div>
+          )}
           {a.prefecture && <div className="kv"><span className="k">Prefecture of origin</span><span>{a.prefecture}</span></div>}
           <div className="kv"><span className="k">Bloodline</span><span>{a.bloodline_detail || a.bloodline || "—"}</span></div>
           <div className="kv"><span className="k">Breed</span><span>{a.breed || "—"}</span></div>
           {a.importer && <div className="kv"><span className="k">Importer</span><span>{a.importer}</span></div>}
-          {a.import_year && <div className="kv"><span className="k">Imported</span><span>{a.import_year}</span></div>}
+          {a.import_year && (
+            <div className="kv"><span className="k">Imported</span>
+              <span>{a.import_year}{a.importer ? ` · ${a.importer}` : ""}</span></div>
+          )}
           {a.au_progeny != null && <div className="kv"><span className="k">AU progeny</span><span>{a.au_progeny.toLocaleString()}</span></div>}
           {a.marbling_note && <div className="kv"><span className="k">Carcass / marbling</span><span style={{ maxWidth: "60%", textAlign: "right" }}>{a.marbling_note}</span></div>}
           {(a.sire_name || a.dam_name) && (
@@ -73,6 +89,13 @@ export default function AnimalCore({ a }: { a: any }) {
           )}
         </div>
         <div style={{ flex: "1 1 300px" }}>
+          {a.blend && (
+            <div style={{ marginBottom: 22 }}>
+              <h2 style={{ fontSize: "1.2rem" }}>Bloodline analysis</h2>
+              <BlendDonut blend={a.blend} group={a.blend_group}
+                          source={a.blend_source} total={a.blend_total} />
+            </div>
+          )}
           <div className="adslot" style={{ textAlign: "left" }}>
             <strong className="gold">Own genetics from {a.name}?</strong>
             <p className="muted" style={{ marginTop: 6 }}>List your straws, embryos, or cloning rights in under a minute.</p>
