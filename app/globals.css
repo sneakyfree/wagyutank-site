@@ -64,24 +64,42 @@ input, select, textarea, button { font: inherit; }
   .hdr-inner .peer-hop { flex: 0 0 auto; white-space: nowrap; }
 }
 
-.nav-scroller { position: relative; display: flex; align-items: center; min-width: 0; flex: 1 1 auto; }
-.nav-track {
-  display: flex; align-items: center; gap: 4px; min-width: 0;
-  overflow-x: auto; overscroll-behavior-x: contain; scroll-behavior: smooth;
-  scrollbar-width: none; -ms-overflow-style: none;
+.nav-overflow { position: relative; display: flex; align-items: center; gap: 4px; min-width: 0; flex: 1 1 auto; }
+.nav-row { display: flex; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
+/* The hidden ruler. Laid out at its natural width, off-screen and inert, so we
+   can ask the browser how wide each link really is before deciding what fits. */
+.nav-measure {
+  position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none;
+  display: flex; gap: 4px; white-space: nowrap; height: 0; overflow: hidden;
 }
-.nav-track::-webkit-scrollbar { display: none; }
-.nav-track > * { flex: 0 0 auto; }
-.nav-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
-  width: 22px; height: 26px; display: grid; place-items: center;
-  border: none; border-radius: 6px; cursor: pointer;
-  font-size: 1.05rem; line-height: 1; color: var(--text-dim);
-  background: var(--bg-elev); box-shadow: 0 0 10px 6px rgba(14,13,11,0.85);
+.nav-more { position: relative; flex: 0 0 auto; }
+.nav-more-btn {
+  background: none; border: 1px solid var(--border); cursor: pointer; font: inherit;
+  display: inline-flex; align-items: center; gap: 6px;
 }
-.nav-arrow:hover { color: var(--gold-bright); }
-.nav-arrow-l { left: -4px; }
-.nav-arrow-r { right: -4px; }
+.nav-more-btn:hover, .nav-more-btn.on { color: var(--gold-bright); border-color: var(--gold); }
+/* The count is the point: "More 6" says there are six things, where a chevron
+   only hinted that something might be off the edge. */
+.nav-more-count {
+  display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 999px; background: var(--gold-soft); color: var(--gold-bright);
+  font-size: 0.68rem; font-weight: 800; line-height: 1;
+}
+.nav-more-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; min-width: 210px;
+  max-height: 70vh; overflow-y: auto;
+  background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow); padding: 6px; display: flex; flex-direction: column; gap: 2px;
+}
+.nav-more-row > .nav-link, .nav-more-row > .nav-dd { display: flex; width: 100%; }
+.nav-more-row > .nav-link { padding: 9px 12px; border-radius: 7px; }
+.nav-more-group + * { margin-top: 4px; }
+.nav-more-group-title {
+  margin: 6px 0 2px; padding: 0 12px; font-size: 0.66rem; font-weight: 800;
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-faint);
+}
+.nav-more-sub { display: flex; width: 100%; padding: 9px 12px 9px 20px; border-radius: 7px; }
+
 /* below this the header is too tight to carry the cross-site button as well;
    the same link still sits on every animal page. */
 @media (max-width: 1300px) { .hdr-inner .peer-hop { display: none; } }
@@ -90,14 +108,42 @@ input, select, textarea, button { font: inherit; }
 .tk-link { text-decoration: none; color: inherit; }
 .tk-link:hover { color: var(--gold-bright); }
 
-/* Mobile nav strip — horizontally scrollable, hidden on desktop */
-.nav-mobile {
-  display: flex; gap: 4px; overflow-x: auto; padding: 8px 20px;
-  border-top: 1px solid var(--border-soft); -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+/* Narrow-screen menu — a labelled button and a sheet, replacing the sideways
+   strip whose scrollbar was invisible on touch. */
+.nav-burger {
+  display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto;
+  padding: 7px 11px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg-elev); color: var(--text); cursor: pointer;
+  font-size: 0.82rem; font-weight: 700;
 }
-.nav-mobile::-webkit-scrollbar { display: none; }
-@media (min-width: 860px) { .nav-mobile { display: none; } }
+.nav-burger:hover, .nav-burger.on { border-color: var(--gold); color: var(--gold-bright); }
+.nav-burger-bars { display: grid; gap: 3px; width: 15px; }
+.nav-burger-bars i { display: block; height: 2px; border-radius: 2px; background: currentColor; }
+.nav-burger.on .nav-burger-bars i:nth-child(2) { opacity: 0.35; }
+@media (min-width: 860px) { .nav-burger { display: none; } }
+
+.nav-sheet-scrim {
+  position: fixed; inset: 0; z-index: 45; background: rgba(8, 7, 6, 0.6);
+  backdrop-filter: blur(2px);
+}
+.nav-sheet {
+  position: fixed; z-index: 46; top: 62px; left: 0; right: 0;
+  max-height: calc(100vh - 62px); overflow-y: auto;
+  background: var(--bg-card); border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border); box-shadow: var(--shadow);
+  padding: 14px 20px 26px;
+}
+.nav-sheet-group + .nav-sheet-group { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-soft); }
+.nav-sheet-title {
+  margin: 0 0 8px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--text-faint);
+}
+.nav-sheet-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px; }
+.nav-sheet-link {
+  display: block; padding: 11px 12px; border-radius: 8px;
+  color: var(--text); font-size: 0.95rem; font-weight: 600; text-decoration: none;
+}
+.nav-sheet-link:hover, .nav-sheet-link:active { background: var(--gold-soft); color: var(--gold-bright); }
 
 /* Header */
 .hdr {

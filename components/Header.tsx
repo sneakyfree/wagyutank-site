@@ -5,7 +5,8 @@ import { useLang } from "../lib/i18n";
 import { brand, featureOn, products } from "../lib/tank";
 import Logo from "./Logo";
 import NavDropdown from "./NavDropdown";
-import NavScroller from "./NavScroller";
+import NavOverflow from "./NavOverflow";
+import MobileNav from "./MobileNav";
 import LanguageSwitcher from "./Languageswitcher";
 import PeerHop from "./PeerHop";
 
@@ -49,37 +50,68 @@ export default function Header() {
       {featureOn("ads") && <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>}
     </>
   );
-  // Mobile: flat scrollable strip (all links).
-  const mobileNav = (
-    <>
-      <Link href="/browse" className="nav-link">{t("nav.browse")}</Link>
-      {productItems.map((p) => <Link key={p.href} href={p.href} className="nav-link">{p.label}</Link>)}
-      {featureOn("roundup") && <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>}
-      {featureOn("directory") && <Link href="/directory" className="nav-link">{t("nav.directory")}</Link>}
-      {featureOn("news") && <Link href="/news" className="nav-link">{t("nav.news")}</Link>}
-      <Link href="/newsletter" className="nav-link">Newsletter</Link>
-      {featureOn("great_sires") && <Link href="/great-sires" className="nav-link">Great Sires</Link>}
-      {featureOn("videos") && <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>}
-      {featureOn("japan_hub") && <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>}
-      {featureOn("feeding") && <Link href="/feeding" className="nav-link">{t("nav.feeding")}</Link>}
-      {featureOn("market_data") && <Link href="/market" className="nav-link">{t("nav.marketdata")}</Link>}
-      {featureOn("sale_reports") && <Link href="/sale-reports" className="nav-link">{t("nav.salereports")}</Link>}
-      {featureOn("sale_reports") && <Link href="/sales" className="nav-link">{t("nav.records")}</Link>}
-      {featureOn("catalog") && <Link href="/catalog" className="nav-link">{t("nav.catalog")}</Link>}
-      {featureOn("history") && <Link href="/history" className="nav-link">{t("nav.history")}</Link>}
-      {featureOn("help") && <Link href="/help" className="nav-link">{t("nav.help")}</Link>}
-      {featureOn("ads") && <Link href="/advertise" className="nav-link">{t("nav.advertise")}</Link>}
-    </>
-  );
+  // Narrow screens: the same destinations, grouped, behind a labelled button.
+  // Grouping matters more here than on desktop -- eighteen undifferentiated
+  // links in a column is a list to be endured, not read.
+  const mobileSections = [
+    {
+      title: "Browse",
+      links: [
+        <Link key="browse" href="/browse" className="nav-sheet-link">{t("nav.browseall")}</Link>,
+        ...productItems.map((pr) => (
+          <Link key={pr.href} href={pr.href} className="nav-sheet-link">{pr.label}</Link>
+        )),
+        featureOn("foundation") && <Link key="foundation" href="/foundation" className="nav-sheet-link">{t("nav.foundation")}</Link>,
+        featureOn("great_sires") && <Link key="great" href="/great-sires" className="nav-sheet-link">Great Sires</Link>,
+      ].filter(Boolean),
+    },
+    {
+      title: "The market",
+      links: [
+        featureOn("roundup") && <Link key="roundup" href="/roundup" className="nav-sheet-link">{t("nav.roundup")}</Link>,
+        featureOn("directory") && <Link key="directory" href="/directory" className="nav-sheet-link">{t("nav.directory")}</Link>,
+        featureOn("catalog") && <Link key="catalog" href="/catalog" className="nav-sheet-link">{t("nav.catalog")}</Link>,
+        featureOn("market_data") && <Link key="market" href="/market" className="nav-sheet-link">{t("nav.marketdata")}</Link>,
+        featureOn("sale_reports") && <Link key="salereports" href="/sale-reports" className="nav-sheet-link">{t("nav.salereports")}</Link>,
+        featureOn("sale_reports") && <Link key="sales" href="/sales" className="nav-sheet-link">{t("nav.records")}</Link>,
+      ].filter(Boolean),
+    },
+    {
+      title: "Read & watch",
+      links: [
+        featureOn("news") && <Link key="news" href="/news" className="nav-sheet-link">{t("nav.news")}</Link>,
+        <Link key="newsletter" href="/newsletter" className="nav-sheet-link">Newsletter</Link>,
+        featureOn("videos") && <Link key="videos" href="/videos" className="nav-sheet-link">{t("nav.videos")}</Link>,
+        featureOn("japan_hub") && <Link key="japan" href="/japan" className="nav-sheet-link">{t("nav.japan")}</Link>,
+        featureOn("feeding") && <Link key="feeding" href="/feeding" className="nav-sheet-link">{t("nav.feeding")}</Link>,
+        featureOn("history") && <Link key="history" href="/history" className="nav-sheet-link">{t("nav.history")}</Link>,
+      ].filter(Boolean),
+    },
+    {
+      title: "Your account",
+      links: [
+        <Link key="sell" href="/sell" className="nav-sheet-link">{t("nav.sell")}</Link>,
+        user && <Link key="dashboard" href="/dashboard" className="nav-sheet-link">{user.handle ? `@${user.handle}` : user.display_name}</Link>,
+        user && <Link key="feed" href="/feed" className="nav-sheet-link">Feed</Link>,
+        user && user.role && ["manager", "admin", "super_admin"].includes(user.role) &&
+          <Link key="admin" href="/admin" className="nav-sheet-link">{user.role === "super_admin" ? "Owner" : user.role === "manager" ? "Manager" : t("nav.admin")}</Link>,
+        !user && <Link key="login" href="/login" className="nav-sheet-link">{t("nav.signin")}</Link>,
+        featureOn("help") && <Link key="help" href="/help" className="nav-sheet-link">{t("nav.help")}</Link>,
+        featureOn("ads") && <Link key="ads" href="/advertise" className="nav-sheet-link">{t("nav.advertise")}</Link>,
+      ].filter(Boolean),
+    },
+  ] as { title: string; links: React.ReactNode[] }[];
+
   const langToggle = <LanguageSwitcher />;
   return (
     <header className="hdr">
       <div className="container hdr-inner">
+        <MobileNav sections={mobileSections} />
         <Link href="/" className="logo" aria-label={`${brand.name} home`}>
           <Logo size={34} />
         </Link>
         <nav className="nav-desktop" style={{ marginLeft: 14 }}>
-          <NavScroller>{desktopNav}</NavScroller>
+          <NavOverflow>{desktopNav}</NavOverflow>
         </nav>
         <div className="spacer" />
         {langToggle}
@@ -101,8 +133,6 @@ export default function Header() {
           <Link href="/login" className="btn btn-ghost">{t("nav.signin")}</Link>
         )}
       </div>
-      {/* Mobile nav strip — scrollable, only shows below 860px */}
-      <nav className="nav-mobile">{mobileNav}</nav>
     </header>
   );
 }

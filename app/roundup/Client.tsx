@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL, WORLD_REGIONS } from "../../lib/api";
 import { copy, products, TANK } from "../../lib/tank";
@@ -39,6 +39,40 @@ function RoundupInner() {
     }).finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sp.toString()]);
+
+  // Strings that are plainly not a bloodline -- the extractor picked up a page
+  // label or recorded that the seller never said.
+  const BL_JUNK = new Set(["unknown", "n/a", "na", "none", "more info", "tbd", "-", "?"]);
+  // A pedigree recital ("X x Y x Z", "Sire: ..., Dam: ...") is a description of
+  // one animal, not a category anything else can belong to.
+  const BL_PEDIGREE = /(\s[x×]\s|[,;:#(]|\bdonor\b|\bsire\b|\bdam\b)/i;
+
+  const [showAllBl, setShowAllBl] = useState(false);
+  const BL_VISIBLE = 12;
+
+  const usefulBloodlines = useMemo(() => {
+    const raw: Record<string, number> = stats?.bloodlines || {};
+    // Case and stray whitespace are noise from a dozen different sellers typing
+    // the same word; the API matches case-insensitively, so merging is safe.
+    const merged = new Map<string, { label: string; n: number }>();
+    for (const [k, v] of Object.entries(raw)) {
+      const label = String(k).replace(/\s+/g, " ").trim();
+      if (!label) continue;
+      const key = label.toLowerCase();
+      const cur = merged.get(key);
+      if (cur) cur.n += v as number;
+      else merged.set(key, { label, n: v as number });
+    }
+    return [...merged.entries()]
+      .filter(([key, { label, n }]) =>
+        n >= 2 &&                       // a chip that narrows nothing is not a filter
+        label.length <= 32 &&           // longer than this is a sentence, not a label
+        !BL_PEDIGREE.test(label) &&
+        !BL_JUNK.has(key))
+      .map(([, v]) => v)
+      .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stats]);
 
   function setParam(k: string, v: string) {
     const p = new URLSearchParams(sp.toString());
@@ -90,16 +124,42 @@ function RoundupInner() {
         <button type="submit" className="btn btn-gold">Search</button>
       </form>
 
-      {/* Bloodline facet */}
-      {stats?.bloodlines && Object.keys(stats.bloodlines).length > 0 && (
-        <div className="row wrap" style={{ gap: 8, marginTop: 12 }}>
-          <span className="faint" style={{ fontSize: "0.82rem", alignSelf: "center" }}>🩸 Bloodline:</span>
-          <button className={`pill ${bloodline === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("bloodline", "")}>All</button>
-          {Object.entries(stats.bloodlines).map(([bl, n]: any) => (
-            <button key={bl} className={`pill ${bloodline === bl ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("bloodline", bloodline === bl ? "" : bl)}>{bl} ({n})</button>
-          ))}
-        </div>
-      )}
+      {/* Bloodline facet — the ones that actually group listings. */}
+      {usefulBloodlines.length > 0 && (() => {
+        const shown = showAllBl ? usefulBloodlines : usefulBloodlines.slice(0, BL_VISIBLE);
+        const rest = usefulBloodlines.length - shown.length;
+        // A bloodline arrived at by URL or by search stays visible even when it
+        // is not one of the common ones, so the active filter is never a chip
+        // the reader cannot see.
+        const activeMissing = bloodline && !shown.some((b) => b.label.toLowerCase() === bloodline.toLowerCase());
+        return (
+          <div className="row wrap" style={{ gap: 8, marginTop: 12 }}>
+            <span className="faint" style={{ fontSize: "0.82rem", alignSelf: "center" }}>🩸 Bloodline:</span>
+            <button className={`pill ${bloodline === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("bloodline", "")}>All</button>
+            {activeMissing && (
+              <button className="pill" style={{ cursor: "pointer", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                title={bloodline} onClick={() => setParam("bloodline", "")}>{bloodline} ✕</button>
+            )}
+            {shown.map((b) => (
+              <button key={b.label} className={`pill ${bloodline.toLowerCase() === b.label.toLowerCase() ? "" : "pill-dim"}`}
+                style={{ cursor: "pointer" }}
+                onClick={() => setParam("bloodline", bloodline.toLowerCase() === b.label.toLowerCase() ? "" : b.label)}>
+                {b.label} ({b.n})
+              </button>
+            ))}
+            {rest > 0 && (
+              <button className="pill pill-dim" style={{ cursor: "pointer" }} onClick={() => setShowAllBl(true)}>
+                +{rest} more
+              </button>
+            )}
+            {showAllBl && (
+              <button className="pill pill-dim" style={{ cursor: "pointer" }} onClick={() => setShowAllBl(false)}>
+                show fewer
+              </button>
+            )}
+          </div>
+        );
+      })()}
 
       <div className="row wrap" style={{ gap: 8, margin: "16px 0 10px" }}>
         <button className={`pill ${source === "" ? "" : "pill-dim"}`} style={{ cursor: "pointer" }} onClick={() => setParam("source", "")}>All sources</button>
