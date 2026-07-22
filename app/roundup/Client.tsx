@@ -80,7 +80,7 @@ function RoundupInner() {
   function setParam(k: string, v: string) {
     const p = new URLSearchParams(sp.toString());
     if (v) p.set(k, v); else p.delete(k);
-    router.push(`/roundup?${p.toString()}`);
+    router.push(`/roundup?${p.toString()}`, { scroll: false });
   }
 
   // WagyuTank listings honor css/keyword/bloodline client-side; region/price-sort

@@ -62,13 +62,13 @@ function BrowseInner() {
   function setParam(key: string, val: string) {
     const p = new URLSearchParams(sp.toString());
     if (val) p.set(key, val); else p.delete(key);
-    router.push(`/browse?${p.toString()}`);
+    router.push(`/browse?${p.toString()}`, { scroll: false });
   }
 
   function setParams(updates: Record<string, string>) {
     const p = new URLSearchParams(sp.toString());
     for (const [k, v] of Object.entries(updates)) { if (v) p.set(k, v); else p.delete(k); }
-    router.push(`/browse?${p.toString()}`);
+    router.push(`/browse?${p.toString()}`, { scroll: false });
   }
 
   return (
