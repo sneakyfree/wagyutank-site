@@ -6,6 +6,8 @@ import { copy, products, TANK } from "../../lib/tank";
 import RoundupCard from "../../components/RoundupCard";
 import ListingCard from "../../components/ListingCard";
 import AdSlot from "../../components/AdSlot";
+import WorldStrip from "../../components/WorldStrip";
+import CountryTag from "../../components/CountryTag";
 
 type Row = { kind: "wt" | "web"; ts: string; l: any };
 
@@ -19,6 +21,7 @@ function RoundupInner() {
 
   const product = sp.get("product_type") || "";
   const region = sp.get("region") || "";
+  const country = sp.get("country") || "";
   const css = sp.get("css") || "";
   const sort = sp.get("sort") || "recent";
   const source = sp.get("source") || "";
@@ -31,7 +34,7 @@ function RoundupInner() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      api.roundup({ product_type: product, region, css, sort, q, bloodline, limit: 80 }).catch(() => []),
+      api.roundup({ product_type: product, region, country, css, sort, q, bloodline, limit: 80 }).catch(() => []),
       api.browse({ product_type: product, limit: 80 }).catch(() => []),
     ]).then(([web, wt]) => {
       setWebRows(web || []);
@@ -89,7 +92,7 @@ function RoundupInner() {
     natives = natives.filter((l) => `${l.title} ${l.animal_reg || ""} ${l.sire_reg || ""} ${l.dam_reg || ""}`.toLowerCase().includes(ql));
   }
   if (bloodline) natives = [];  // native listings don't carry a bloodline field
-  if (region || sort !== "recent") natives = [];
+  if (region || country || sort !== "recent") natives = [];
   if (source === "web") natives = [];
   const web = source === "wagyutank" ? [] : webRows;
 
@@ -115,6 +118,16 @@ function RoundupInner() {
             {stats.css_export_eligible ? `, ${stats.css_export_eligible} export-eligible` : ""}.</span>}
         </p>
       </div>
+
+      <WorldStrip />
+
+      {country && (
+        <div className="row" style={{ gap: 8, marginBottom: 16 }}>
+          <span className="faint" style={{ fontSize: "0.82rem", alignSelf: "center" }}>Showing listings from</span>
+          <CountryTag cc={country} />
+          <button className="pill pill-dim" style={{ cursor: "pointer" }} onClick={() => setParam("country", "")}>clear ✕</button>
+        </div>
+      )}
 
       {/* Search box — sire name, registration number, or keyword */}
       <form onSubmit={(e) => { e.preventDefault(); setParam("q", qInput.trim()); }} className="searchbar" style={{ maxWidth: 640, marginTop: 20 }}>

@@ -5,6 +5,7 @@ import { api, PRODUCT_LABEL } from "../../lib/api";
 import { hasFamily, featureOn } from "../../lib/tank";
 import ListingCard from "../../components/ListingCard";
 import RoundupCard from "../../components/RoundupCard";
+import WorldStrip from "../../components/WorldStrip";
 
 const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
 
@@ -137,6 +138,8 @@ function BrowseInner() {
           </form>
         </div>
       )}
+
+      {showWeb && <WorldStrip />}
 
       {loading ? (
         <div className="grid listings-grid">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="card"><div className="lc-media" /><div className="lc-body"><div className="skeleton" style={{ width: "70%" }} /></div></div>)}</div>

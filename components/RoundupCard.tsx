@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { api, PRODUCT_LABEL, money, countryFlag, freshness } from "../lib/api";
+import CountryTag from "./CountryTag";
 import ExportInfo from "./ExportInfo";
 import ProductBadge from "./ProductBadge";
 
@@ -80,7 +81,7 @@ export default function RoundupCard({ l }: { l: any }) {
         <div className="row wrap" style={{ gap: 6, marginBottom: 8 }}>
           <ProductBadge type={l.product_type} />
           <span className="pill roundup-pill">📡 Web listing</span>
-          {l.country && <span title={l.country} style={{ fontSize: "0.95rem" }}>{countryFlag(l.country)}</span>}
+          {l.country && <CountryTag cc={l.country} size="sm" />}
         </div>
         <div className="lc-title">{l.animal_name || l.title}</div>
         <p className="faint" style={{ fontSize: "0.82rem", margin: "4px 0 10px", lineHeight: 1.5 }}>

@@ -9,6 +9,7 @@ import ListingCard from "../components/ListingCard";
 import RoundupCard from "../components/RoundupCard";
 import AdSlot from "../components/AdSlot";
 import { thumbUrl } from "../lib/thumb";
+import WorldStrip from "../components/WorldStrip";
 
 export default function Home() {
   const router = useRouter();
@@ -131,6 +132,7 @@ export default function Home() {
             <p className="muted" style={{ maxWidth: "62ch", marginTop: -10, marginBottom: 20 }}>
               {t("home.roundup_sub")}
             </p>
+            <WorldStrip />
             <div className="grid listings-grid">
               {roundup.map((l) => <RoundupCard key={l.id} l={l} />)}
             </div>
