@@ -2,8 +2,9 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api, PRODUCT_LABEL } from "../../lib/api";
-import { hasFamily } from "../../lib/tank";
+import { hasFamily, featureOn } from "../../lib/tank";
 import ListingCard from "../../components/ListingCard";
+import RoundupCard from "../../components/RoundupCard";
 
 const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
 
@@ -12,6 +13,7 @@ function BrowseInner() {
   const router = useRouter();
   const [facets, setFacets] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
+  const [web, setWeb] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   // Location filters only exist where cattle stand in a pasture or beef ships
   // from a ranch — genetics tanks keep their exact browse UI.
@@ -35,9 +37,24 @@ function BrowseInner() {
 
   useEffect(() => { api.facets().then(setFacets).catch(() => {}); }, []);
 
+  // Web listings (the Roundup index) fill the same shelves: a buyer asking
+  // "what's for sale?" deserves the whole market, not just our own inventory.
+  // Cards keep the dashed 📡 treatment so provenance stays obvious. Auctions
+  // are a WagyuTank-native concept, so that filter shows native only.
+  const showWeb = !hasLocal && featureOn("roundup") && filters.sale_type !== "auction";
+
   useEffect(() => {
     setLoading(true);
     api.search(filters).then(setResults).catch(() => setResults([])).finally(() => setLoading(false));
+    if (showWeb) {
+      const sort = filters.sort === "price_asc" || filters.sort === "price_desc" ? filters.sort : "recent";
+      api.roundup({
+        product_type: filters.product_type, bloodline: filters.bloodline,
+        q: filters.q, export_to: filters.export, sort, limit: 60,
+      }).then((d: any) => setWeb(Array.isArray(d) ? d : [])).catch(() => setWeb([]));
+    } else {
+      setWeb([]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sp.toString()]);
 
@@ -125,8 +142,24 @@ function BrowseInner() {
         <div className="grid listings-grid">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="card"><div className="lc-media" /><div className="lc-body"><div className="skeleton" style={{ width: "70%" }} /></div></div>)}</div>
       ) : results.length ? (
         <div className="grid listings-grid">{results.map((l) => <ListingCard key={l.id} l={l} />)}</div>
+      ) : web.length ? (
+        <div className="adslot">No WagyuTank listings match those filters yet — here is what's for sale around the web. <a href="/sell">List yours →</a></div>
       ) : (
         <div className="adslot">No results match those filters. Try widening your search.</div>
+      )}
+
+      {web.length > 0 && (
+        <section style={{ marginTop: 34 }}>
+          <div className="section-head">
+            <h2 style={{ fontSize: "1.25rem" }}>📡 From around the web · {web.length}{web.length === 60 ? "+" : ""}</h2>
+            <div className="spacer" />
+            <a href={`/roundup${filters.product_type ? `?product_type=${encodeURIComponent(filters.product_type)}` : ""}`} className="nav-link">Full Roundup →</a>
+          </div>
+          <p className="muted" style={{ maxWidth: "68ch", marginTop: -6, marginBottom: 18, fontSize: "0.85rem" }}>
+            Indexed daily from public seller sites — these are not WagyuTank sellers. Each card links to the original listing.
+          </p>
+          <div className="grid listings-grid">{web.map((l) => <RoundupCard key={`w${l.id}`} l={l} />)}</div>
+        </section>
       )}
     </div>
   );
