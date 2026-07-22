@@ -174,10 +174,11 @@ function RoundupInner() {
         ))}
         <div className="spacer" />
         {(TANK as any).vocab?.export_program && (
-          <select className="select" style={{ width: "auto" }} value={css} onChange={(e) => setParam("css", e.target.value)}>
+          <select className="select" style={{ width: "auto" }} value={css} onChange={(e) => setParam("css", e.target.value)}
+            title="Whether the frozen genetics themselves are certified for export from their country of origin — not based on where you are.">
             <option value="">Any export status</option>
             <option value="css">✈ {(TANK as any).vocab.export_program} export-eligible</option>
-            <option value="domestic">Domestic only</option>
+            <option value="domestic">Not export-certified (domestic only)</option>
           </select>
         )}
         <select className="select" style={{ width: "auto" }} value={sort} onChange={(e) => setParam("sort", e.target.value)}>

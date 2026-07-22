@@ -65,7 +65,10 @@ input, select, textarea, button { font: inherit; }
 }
 
 .nav-overflow { position: relative; display: flex; align-items: center; gap: 4px; min-width: 0; flex: 1 1 auto; }
-.nav-row { display: flex; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
+/* No overflow clip here: a NavDropdown inside the row (Browse) opens a menu
+   that must escape vertically. nShown is measured before paint, so the row
+   never actually holds more than fits -- there is nothing to clip. */
+.nav-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
 /* The hidden ruler. Laid out at its natural width, off-screen and inert, so we
    can ask the browser how wide each link really is before deciding what fits. */
 .nav-measure {
@@ -539,3 +542,8 @@ select.fresh-green, select.fresh-amber { }
 .stars { color: var(--gold); letter-spacing: 2px; }
 .skeleton { background: linear-gradient(90deg, var(--bg-elev), var(--bg-card), var(--bg-elev)); border-radius: 8px; height: 1em; animation: pulse 1.4s infinite; }
 @keyframes pulse { 50% { opacity: 0.5; } }
+
+/* Breed-history recording player */
+.audio-embed { margin: 22px 0; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elev); }
+.audio-embed audio { width: 100%; display: block; }
+.audio-embed figcaption { margin-top: 9px; font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }

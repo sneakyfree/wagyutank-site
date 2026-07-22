@@ -8,6 +8,7 @@ import { copy, products } from "../lib/tank";
 import ListingCard from "../components/ListingCard";
 import RoundupCard from "../components/RoundupCard";
 import AdSlot from "../components/AdSlot";
+import { thumbUrl } from "../lib/thumb";
 
 export default function Home() {
   const router = useRouter();
@@ -185,9 +186,21 @@ export default function Home() {
           <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))" }}>
             {foundation.map((a) => (
               <Link key={a.id} href={`/animal?reg=${encodeURIComponent(a.registration_no || a.name)}`} className="card">
-                <div className="lc-media" style={{ aspectRatio: "1/1" }}>
+                <div className="lc-media" style={{ aspectRatio: "4/3" }}>
                   {a.photo_url ? (
-                    <img src={a.photo_url} alt={a.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    // Same pre-cut forward-half thumbnail the foundation gallery
+                    // uses — a square center-crop of the full photo cuts heads off.
+                    <img
+                      className="animal-thumb"
+                      src={thumbUrl(a.photo_url)}
+                      alt={a.name}
+                      loading="lazy"
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        if (img.src !== a.photo_url) img.src = a.photo_url;
+                      }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
                   ) : (
                     <span className="glyph">🐂</span>
                   )}

@@ -17,6 +17,18 @@ function renderMarkdown(md: string): string {
     else if (/^## /.test(line)) { closeList(); html += `<h2>${inline(line.slice(3))}</h2>`; }
     else if (/^# /.test(line)) { closeList(); html += `<h1>${inline(line.slice(2))}</h1>`; }
     else if (/^---\s*$/.test(line)) { closeList(); html += "<hr/>"; }
+    else if (/^!audio\[/.test(line)) {
+      // !audio[caption](src) -> a real player. The custom syntax lets the same
+      // markdown carry a recording without inline HTML (which this renderer
+      // escapes on purpose).
+      const m = line.match(/^!audio\[(.*?)\]\((.*?)\)\s*$/);
+      if (m) {
+        closeList();
+        const src = esc(m[2]);
+        const cap = inline(m[1]);
+        html += '<figure class="audio-embed"><audio controls preload="none" src="' + src + '"></audio><figcaption>' + cap + '</figcaption></figure>';
+      } else { closeList(); html += '<p>' + inline(line) + '</p>'; }
+    }
     else if (/^[-*] /.test(line)) { if (!inList) { html += "<ul>"; inList = true; } html += `<li>${inline(line.slice(2))}</li>`; }
     else if (line === "") { closeList(); }
     else { closeList(); html += `<p>${inline(line)}</p>`; }

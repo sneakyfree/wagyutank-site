@@ -1,5 +1,5 @@
 "use client";
-import { Children, Fragment, isValidElement, useCallback, useEffect, useRef, useState } from "react";
+import { Children, Fragment, isValidElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import NavDropdown from "./NavDropdown";
 
@@ -54,7 +54,7 @@ export default function NavOverflow({ children }: { children: React.ReactNode })
     setNShown(Math.max(1, n));
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     measure();
     const ro = new ResizeObserver(measure);
     if (hostRef.current) ro.observe(hostRef.current);

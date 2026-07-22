@@ -73,24 +73,28 @@ export default function Tickers() {
     // Deep-link each sire to his own profile — landing on the whole foundation
     // gallery after tapping one bull's price is a dead end.
     (genetics.sires || []).forEach((s: any, i: number) => {
-      const key = s.slug || s.registration_no;
+      // slug is only present when the API verified a real profile exists.
+      // The query-param route resolves ANY animal (legends included) — the
+      // static /animal/<reg>/ pages only exist for foundation animals, so
+      // linking there 404s on great-sire reference prices (J65 etc.).
+      const key = s.slug;
       const body = <><b>{s.sire}</b> {money(s.avg)}<span className="tk-unit">/straw</span> {arrow(s.trend)}</>;
       g.push(key
-        ? <Link key={`g${i + 1}`} href={`/animal/${encodeURIComponent(key)}/`} className="tk-item tk-link">{body}</Link>
+        ? <Link key={`g${i + 1}`} href={`/animal?reg=${encodeURIComponent(key)}`} className="tk-item tk-link">{body}</Link>
         : <span className="tk-item" key={`g${i + 1}`}>{body}</span>);
     });
   }
 
   // Band 2 — beef market
   const b = beef.map((it, i) => (
-    <span className={`tk-item ${it.wagyu ? "tk-market" : ""}`} key={`b${i}`}>
+    <Link href="/market" className={`tk-item tk-link ${it.wagyu ? "tk-market" : ""}`} key={`b${i}`}>
       <b>{it.label}</b> {it.value} {arrow(it.change)}
-    </span>
+    </Link>
   ));
 
   // Band 3 — Wagyu sale data
   const s = saleData.map((it, i) => (
-    <span className="tk-item" key={`s${i}`}><b>{it.label}</b> {it.value} <span className="tk-unit">avg</span></span>
+    <Link href="/sale-reports" className="tk-item tk-link" key={`s${i}`}><b>{it.label}</b> {it.value} <span className="tk-unit">avg</span></Link>
   ));
 
   return (
