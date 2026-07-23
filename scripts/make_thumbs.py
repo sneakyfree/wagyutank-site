@@ -23,15 +23,15 @@ BOXES = {
     "AF107":           (0.44, 0.99, 0.09),
     "AF11":            (0.45, 0.995, 0.00),
     "AF109":           (0.46, 0.98, 0.07),
-    "AF110":           (0.45, 0.99, 0.11),
-    "AF6808":          (0.28, 1.00, 0.12),
-    "EAF97014":        (0.42, 0.95, 0.20),
-    "FB103":           (0.400, 0.955, 0.130),
-    "FB104":           (0.30, 1.00, 0.10),
+    "AF110":           (0.45, 0.99, 0.02),
+    "AF6808":          (0.28, 1.00, 0.03),
+    "EAF97014":        (0.42, 0.95, 0.10),
+    "FB103":           (0.51, 0.97, 0.09),
+    "FB104":           (0.45, 0.98, 0.04),
     "FB1614":          (0.340, 0.990, 0.040),
     "FB1615":          (0.48, 0.95, 0.09),
     "FB2100":          (0.48, 0.98, 0.04),
-    "FB2101":          (0.50, 0.96, 0.12),
+    "FB2101":          (0.44, 0.96, 0.02),
     "FB2102":          (0.200, 0.960, 0.080),
     "FB2126":          (0.45, 0.96, 0.07),
     "FB2289":          (0.49, 0.99, 0.09),
@@ -40,7 +40,7 @@ BOXES = {
     "FB2501":          (0.46, 0.94, 0.12),
     "FB2892":          (0.350, 1.000, 0.010),
     "FB2907":          (0.46, 0.90, 0.11),
-    "FB3683":          (0.48, 0.99, 0.15),
+    "FB3683":          (0.40, 0.99, 0.02),
     "FB4697":          (0.350, 0.995, 0.030),
     "FB5200":          (0.50, 0.98, 0.02),
     "FB670":           (0.280, 0.970, 0.060),
@@ -70,7 +70,7 @@ SRC_OVERRIDE = {}
 # Bulls photographed facing LEFT. The box is measured on the mirrored image so
 # the (navel, nose, horntop) convention still applies; the crop is mirrored
 # back afterwards, so the published thumb keeps the true orientation.
-LEFT_FACING = {"AF11"}
+LEFT_FACING = set()  # AF11 (Big Al) source is now physically mirrored to face right, like the rest
 
 def crop_box(W, H, x0f, x1f, y0f):
     x1 = x1f * W
