@@ -21,6 +21,7 @@ OUT_W, OUT_H = 900, 675          # 4:3, generous for retina cards
 BOXES = {
     # name:            (x0_navel, x1_nose, y0_horntop)
     "AF107":           (0.44, 0.99, 0.09),
+    "AF11":            (0.45, 0.995, 0.00),
     "AF109":           (0.46, 0.98, 0.07),
     "AF110":           (0.45, 0.99, 0.11),
     "AF6808":          (0.28, 1.00, 0.12),
@@ -66,6 +67,11 @@ BOXES = {
 # Source files whose primary isn't the bare basename.jpg.
 SRC_OVERRIDE = {}
 
+# Bulls photographed facing LEFT. The box is measured on the mirrored image so
+# the (navel, nose, horntop) convention still applies; the crop is mirrored
+# back afterwards, so the published thumb keeps the true orientation.
+LEFT_FACING = {"AF11"}
+
 def crop_box(W, H, x0f, x1f, y0f):
     x1 = x1f * W
     x0 = x0f * W
@@ -100,8 +106,13 @@ for name, (x0f, x1f, y0f) in BOXES.items():
     if not os.path.exists(src):
         missing.append(name); continue
     im = Image.open(src).convert("RGB")
+    flipped = name in LEFT_FACING
+    if flipped:
+        im = ImageOps.mirror(im)
     box = crop_box(im.width, im.height, x0f, x1f, y0f)
     c = im.crop(box).resize((OUT_W, OUT_H), Image.LANCZOS)
+    if flipped:
+        c = ImageOps.mirror(c)
     c = brighten(c)
     c.save(os.path.join(OUT_DIR, name + ".jpg"), quality=88)
 print("rendered", len(BOXES) - len(missing), "missing:", missing)
