@@ -76,8 +76,8 @@ export default function AnimalCore({ a }: { a: any }) {
           <div className="kv"><span className="k">Breed</span><span>{a.breed || "—"}</span></div>
           {a.importer && <div className="kv"><span className="k">Importer</span><span>{a.importer}</span></div>}
           {a.import_year && (
-            <div className="kv"><span className="k">Imported</span>
-              <span>{a.import_year}{a.importer ? ` · ${a.importer}` : ""}</span></div>
+            <div className="kv"><span className="k">{a.semen_only ? "Semen imported" : "Imported"}</span>
+              <span>{a.import_year}{a.importer ? ` · ${a.importer}` : ""}{a.semen_only ? " — bull never left Japan" : ""}</span></div>
           )}
           {a.au_progeny != null && <div className="kv"><span className="k">AU progeny</span><span>{a.au_progeny.toLocaleString()}</span></div>}
           {a.marbling_note && <div className="kv"><span className="k">Carcass / marbling</span><span style={{ maxWidth: "60%", textAlign: "right" }}>{a.marbling_note}</span></div>}

@@ -26,6 +26,10 @@ export function originShort(a: any): string {
     return `Conceived in Japan · born in ${COUNTRY[cc]}`;
   }
   if (cc === "JP") {
+    // Semen-only sire: the bull stayed in Japan; only his straws were exported.
+    if (a?.semen_only) {
+      return a?.import_year ? `Born in Japan · semen imported ${a.import_year}` : "Born in Japan · semen exported";
+    }
     return a?.import_year ? `Born in Japan · imported ${a.import_year}` : "Born in Japan";
   }
   if (COUNTRY[cc]) return `Born in ${COUNTRY[cc]}`;
@@ -41,7 +45,10 @@ export function originLong(a: any): string {
     // inside an imported cow, so it is foundation stock that never stood in Japan.
     return `Conceived in Japan, born in ${COUNTRY[cc]} — carried in utero on the import`;
   }
-  if (cc === "JP") return "Japan — exported to America";
+  if (cc === "JP") {
+    if (a?.semen_only) return "Japan — only his semen was exported; the bull never left Japan";
+    return "Japan — exported to America";
+  }
   return `${COUNTRY[cc]} — bred from imported parents`;
 }
 
