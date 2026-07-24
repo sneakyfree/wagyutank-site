@@ -1,11 +1,12 @@
 "use client";
 // Whole-page machine translation. The hand-written dictionary in lib/i18n only
-// covers the nav and a few hero strings; everything else — headings, buttons,
-// body copy, market-data labels — stayed English. This walks the rendered DOM
-// when a non-English language is active and translates every visible string via
-// the cached /api/translate/batch endpoint, so a German or Japanese visitor
-// reads the whole site, not 15% of it. Results are cached (memory + localStorage
-// + the server's permanent cache), so it is a one-time cost per string per lang.
+// covers the nav; this walks the rendered DOM when a non-English language is
+// active and translates every visible string via the cached /api/translate/batch
+// endpoint, so a German or Japanese visitor reads the whole site.
+//
+// Critically it RESTORES to English before re-translating on every language
+// change — otherwise elements that persist across navigation (the ticker bars)
+// stay stuck in a previously-selected language.
 import { useEffect } from "react";
 import { useLang } from "../lib/i18n";
 import { api } from "../lib/api";
@@ -15,15 +16,13 @@ const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAR
 const ATTRS = ["placeholder", "title", "aria-label", "alt"];
 const HAS_LETTER = /\p{L}/u;
 
-// Per-node bookkeeping (WeakMaps so detached nodes are GC'd).
-const origText = new WeakMap<Text, string>();   // first English seen
-const lastOut = new WeakMap<Text, string>();    // last value WE set
-let touched = new Set<Text>();                  // nodes we translated (for restore)
+const origText = new WeakMap<Text, string>();
+const lastOut = new WeakMap<Text, string>();
+let touched = new Set<Text>();
 const origAttr = new WeakMap<Element, Record<string, string>>();
 const lastAttr = new WeakMap<Element, Record<string, string>>();
 let touchedEls = new Set<Element>();
 
-// lang -> { english : translated }
 const cacheByLang: Record<string, Record<string, string>> = {};
 function cacheFor(lang: string): Record<string, string> {
   if (!cacheByLang[lang]) {
@@ -40,7 +39,7 @@ function persist(lang: string) {
 function translatable(s: string): boolean {
   const t = s.trim();
   if (t.length < 2) return false;
-  if (!HAS_LETTER.test(t)) return false;                 // pure numbers / symbols / emoji
+  if (!HAS_LETTER.test(t)) return false;
   if (/^[\d\s.,:;$€£¥%+\-/()#·×→↗]+$/.test(t)) return false;
   return true;
 }
@@ -53,26 +52,36 @@ function skip(el: Element | null): boolean {
   return false;
 }
 
+// --- progress store for the on-screen status banner ---
+type Prog = { busy: boolean; lang: string; done: number; total: number };
+let prog: Prog = { busy: false, lang: "en", done: 0, total: 0 };
+const subs = new Set<() => void>();
+function emit(p: Partial<Prog>) { prog = { ...prog, ...p }; subs.forEach((s) => s()); }
+export function subscribeProgress(cb: () => void) { subs.add(cb); return () => { subs.delete(cb); }; }
+export function getProgress(): Prog { return prog; }
+
 export default function AutoTranslate() {
   const { lang } = useLang();
   useEffect(() => {
     if (typeof document === "undefined") return;
 
-    // --- switch back to English: restore every string we changed ---
-    if (lang === "en") {
-      touched.forEach((n) => { const o = origText.get(n); if (o != null) n.nodeValue = o; });
-      touchedEls.forEach((el) => { const o = origAttr.get(el); if (o) for (const a in o) el.setAttribute(a, o[a]); });
-      touched = new Set(); touchedEls = new Set();
-      return;
-    }
+    // Always restore prior translations to English first, so a lang→lang switch
+    // re-translates from a clean English baseline (fixes tickers stuck in an old lang).
+    touched.forEach((n) => { const o = origText.get(n); if (o != null) n.nodeValue = o; });
+    touched = new Set();
+    touchedEls.forEach((el) => { const o = origAttr.get(el); if (o) for (const a in o) el.setAttribute(a, o[a]); });
+    touchedEls = new Set();
+    if (lang === "en") { emit({ busy: false, lang: "en", done: 0, total: 0 }); return; }
 
     const cache = cacheFor(lang);
     let cancelled = false;
-    let flushing = false;
     let observer: MutationObserver | null = null;
+    const allKeys = new Set<string>();
+    const doneKeys = new Set<string>();
     const needNodes = new Map<string, Text[]>();
     const needAttrs = new Map<string, { el: Element; attr: string }[]>();
-    const push = <T,>(m: Map<string, T[]>, k: string, v: T) => { const a = m.get(k); if (a) a.push(v); else m.set(k, [v]); };
+    emit({ busy: true, lang, done: 0, total: 0 });
+    const bump = () => emit({ done: doneKeys.size, total: allKeys.size });
 
     function scan() {
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -80,76 +89,93 @@ export default function AutoTranslate() {
       while ((node = walker.nextNode())) {
         const tn = node as Text;
         const raw = tn.nodeValue || "";
-        if (lastOut.get(tn) === raw) continue;             // still our translation
+        if (lastOut.get(tn) === raw) continue;
         if (skip(tn.parentElement)) continue;
         if (!translatable(raw)) continue;
         origText.set(tn, raw);
         const key = raw.trim();
+        allKeys.add(key);
         const hit = cache[key];
-        if (hit) { tn.nodeValue = raw.replace(key, hit); lastOut.set(tn, tn.nodeValue); touched.add(tn); }
-        else push(needNodes, key, tn);
+        if (hit) { tn.nodeValue = raw.replace(key, hit); lastOut.set(tn, tn.nodeValue); touched.add(tn); doneKeys.add(key); }
+        else { const a = needNodes.get(key); if (a) a.push(tn); else needNodes.set(key, [tn]); }
       }
       for (const attr of ATTRS) {
         document.querySelectorAll("[" + attr + "]").forEach((el) => {
           if (skip(el)) return;
           const raw = el.getAttribute(attr) || "";
-          const last = lastAttr.get(el); if (last && last[attr] === raw) return;
+          const la = lastAttr.get(el); if (la && la[attr] === raw) return;
           if (!translatable(raw)) return;
           const store = origAttr.get(el) || {}; if (!(attr in store)) { store[attr] = raw; origAttr.set(el, store); }
-          const key = raw.trim();
+          const key = raw.trim(); allKeys.add(key);
           const hit = cache[key];
-          if (hit) { el.setAttribute(attr, hit); const lo = lastAttr.get(el) || {}; lo[attr] = hit; lastAttr.set(el, lo); touchedEls.add(el); }
-          else push(needAttrs, key, { el, attr });
+          if (hit) { el.setAttribute(attr, hit); const lo = lastAttr.get(el) || {}; lo[attr] = hit; lastAttr.set(el, lo); touchedEls.add(el); doneKeys.add(key); }
+          else { const a = needAttrs.get(key); if (a) a.push({ el, attr }); else needAttrs.set(key, [{ el, attr }]); }
         });
       }
+      bump();
     }
 
     function apply(keys: string[]) {
-      observer?.disconnect();
       for (const key of keys) {
-        const tr = cache[key]; if (!tr) { needNodes.delete(key); needAttrs.delete(key); continue; }
-        (needNodes.get(key) || []).forEach((tn) => {
-          const o = origText.get(tn) ?? tn.nodeValue ?? ""; tn.nodeValue = o.replace(key, tr);
-          lastOut.set(tn, tn.nodeValue); touched.add(tn);
-        });
-        (needAttrs.get(key) || []).forEach(({ el, attr }) => {
-          el.setAttribute(attr, tr); const lo = lastAttr.get(el) || {}; lo[attr] = tr; lastAttr.set(el, lo); touchedEls.add(el);
-        });
+        const tr = cache[key];
+        if (tr) {
+          (needNodes.get(key) || []).forEach((tn) => {
+            const o = origText.get(tn) ?? tn.nodeValue ?? ""; tn.nodeValue = o.replace(key, tr);
+            lastOut.set(tn, tn.nodeValue); touched.add(tn);
+          });
+          (needAttrs.get(key) || []).forEach(({ el, attr }) => {
+            el.setAttribute(attr, tr); const lo = lastAttr.get(el) || {}; lo[attr] = tr; lastAttr.set(el, lo); touchedEls.add(el);
+          });
+        }
+        doneKeys.add(key);
         needNodes.delete(key); needAttrs.delete(key);
       }
-      if (!cancelled) observer?.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+      bump();
     }
 
-    async function flush() {
-      if (flushing) return; flushing = true;
-      try {
-        const keys = Array.from(new Set([...needNodes.keys(), ...needAttrs.keys()]));
-        const short = keys.filter((k) => k.length <= 500);
-        const long = keys.filter((k) => k.length > 500);
-        for (let i = 0; i < short.length && !cancelled; i += 50) {
-          const group = short.slice(i, i + 50);
+    async function translateGroups() {
+      const keys = Array.from(new Set([...needNodes.keys(), ...needAttrs.keys()]));
+      const short = keys.filter((k) => k.length <= 500);
+      const long = keys.filter((k) => k.length > 500);
+      const groups: string[][] = [];
+      for (let i = 0; i < short.length; i += 30) groups.push(short.slice(i, i + 30));
+      let gi = 0;
+      const worker = async () => {
+        while (gi < groups.length && !cancelled) {
+          const g = groups[gi++];
           let res: any = null;
-          try { res = await api.translateBatch(group.map((text, id) => ({ id, text })), lang); } catch { /* ignore */ }
+          try { res = await api.translateBatch(g.map((text, id) => ({ id, text })), lang); } catch { /* ignore */ }
           if (cancelled) return;
           const tr = res?.translations || {};
-          group.forEach((key, id) => { if (tr[id] && tr[id] !== key) cache[key] = tr[id]; });
-          apply(group);
+          g.forEach((k, id) => { if (tr[id] && tr[id] !== k) cache[k] = tr[id]; });
+          apply(g);
         }
-        for (const key of long) {
-          if (cancelled) return;
-          try { const r: any = await api.translate(key, lang); if (r?.text && r.text !== key) cache[key] = r.text; } catch { /* ignore */ }
-          apply([key]);
-        }
-        persist(lang);
-      } finally { flushing = false; }
-      if (!cancelled && (needNodes.size || needAttrs.size)) schedule();
+      };
+      await Promise.all(Array.from({ length: Math.min(4, groups.length) }, worker));  // parallel for speed
+      for (const k of long) {
+        if (cancelled) return;
+        try { const r: any = await api.translate(k, lang); if (r?.text && r.text !== k) cache[k] = r.text; } catch { /* ignore */ }
+        apply([k]);
+      }
+      persist(lang);
+    }
+
+    let running = false, rerun = false;
+    async function flush() {
+      if (running) { rerun = true; return; }
+      running = true;
+      do { rerun = false; await translateGroups(); } while (rerun && !cancelled);
+      running = false;
+      if (!cancelled && (needNodes.size || needAttrs.size)) { flush(); return; }
+      if (!cancelled) emit({ busy: false, done: doneKeys.size, total: allKeys.size });
     }
 
     let timer: any;
-    const schedule = () => { clearTimeout(timer); timer = setTimeout(() => { if (!cancelled) { scan(); flush(); } }, 300); };
+    const kick = () => { scan(); if (needNodes.size || needAttrs.size) { emit({ busy: true }); flush(); } else emit({ busy: false }); };
+    const schedule = () => { clearTimeout(timer); timer = setTimeout(() => { if (!cancelled) kick(); }, 200); };
 
-    scan(); flush();
-    const fallbacks = [1200, 3500, 7000].map((ms) => setTimeout(() => { if (!cancelled) { scan(); flush(); } }, ms));
+    kick();
+    const fallbacks = [800, 2000, 4500, 8000].map((ms) => setTimeout(() => { if (!cancelled) kick(); }, ms));
     observer = new MutationObserver(schedule);
     observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
     return () => { cancelled = true; clearTimeout(timer); fallbacks.forEach(clearTimeout); observer?.disconnect(); };
