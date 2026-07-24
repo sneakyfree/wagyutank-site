@@ -6,6 +6,7 @@ import { brand, featureOn } from "../lib/tank";
 import Header from "../components/Header";
 import Tracker from "../components/Tracker";
 import Tickers from "../components/Tickers";
+import AutoTranslate from "../components/AutoTranslate";
 
 const NAME = brand.name || "WagyuTank";
 const DOMAIN = brand.domain || "wagyutank.com";
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSONLD) }} />
         <AuthProvider>
           <LangProvider>
+          <AutoTranslate />
           <Tracker />
           <Header />
           <Tickers />

@@ -28,7 +28,7 @@ export default function LanguageSwitcher() {
   }, [open]);
 
   return (
-    <div className="lang-switch" ref={ref}>
+    <div className="lang-switch" ref={ref} data-noloc>
       <button className="lang-switch-btn" onClick={() => setOpen((o) => !o)} aria-label="Change language" title="Language">
         <span className="lang-flag">{current.flag}</span>
         <span className="lang-code">{current.code.toUpperCase()}</span>

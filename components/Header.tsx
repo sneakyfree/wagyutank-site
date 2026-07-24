@@ -104,7 +104,7 @@ export default function Header() {
 
   const langToggle = <LanguageSwitcher />;
   return (
-    <header className="hdr">
+    <header className="hdr" data-noloc>
       <div className="container hdr-inner">
         <MobileNav sections={mobileSections} />
         <Link href="/" className="logo" aria-label={`${brand.name} home`}>

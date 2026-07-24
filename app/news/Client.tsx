@@ -25,9 +25,27 @@ function origin(a: any): string {
   if (a?.country) return `${countryFlag(a.country)} ${countryName(a.country)}`;
   return `${FLAG[a?.region] || "🌍"} ${REGION_NAME[a?.region] || a?.region || ""}`;
 }
-function translatedFrom(a: any): string {
-  const l = a?.language && a.language !== "en" ? LANG_NAME[a.language] || null : null;
-  return l ? `🌐 Translated from ${l}` : "🌐 Translated";
+// A publisher's country tells us the language it actually writes in — more
+// reliable than the feed's language field, which mislabels Japanese sources
+// surfaced through a Spanish or English Google-News feed.
+const CC_LANG: Record<string, [string, string]> = {
+  JP: ["ja", "Japanese"], CN: ["zh", "Chinese"], TW: ["zh", "Chinese"], KR: ["ko", "Korean"],
+  DE: ["de", "German"], AT: ["de", "German"], CH: ["de", "German"], FR: ["fr", "French"],
+  IT: ["it", "Italian"], ES: ["es", "Spanish"], MX: ["es", "Spanish"], CO: ["es", "Spanish"],
+  AR: ["es", "Spanish"], CL: ["es", "Spanish"], PE: ["es", "Spanish"], UY: ["es", "Spanish"],
+  BR: ["pt", "Portuguese"], NL: ["nl", "Dutch"], TH: ["th", "Thai"], VN: ["vi", "Vietnamese"],
+  ID: ["id", "Indonesian"], GR: ["el", "Greek"],
+};
+function sourceLang(a: any): [string, string] | null {
+  if (a?.country && CC_LANG[a.country]) return CC_LANG[a.country];
+  if (a?.language && a.language !== "en") return [a.language, LANG_NAME[a.language] || a.language];
+  return null;
+}
+// Show the badge unless the reader is already reading that language.
+function transLabel(a: any, cur: string): string | null {
+  const sl = sourceLang(a);
+  if (!sl || sl[0] === cur) return null;
+  return `🌐 Translated from ${sl[1]}`;
 }
 const WINDOWS = [
   { code: "", label: "Latest" }, { code: "day", label: "Today" }, { code: "week", label: "This week" },
@@ -164,7 +182,7 @@ function NewsInner() {
               <div className="row wrap" style={{ gap: 8, marginBottom: 6 }}>
                 {trending && <span className="news-rank">#{i + 1}</span>}
                 <span className="news-region">{origin(a)}</span>
-                {a.is_translated && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>{translatedFrom(a)}</span>}
+                {transLabel(a, lang) && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>{transLabel(a, lang)}</span>}
                 <span className="faint" style={{ fontSize: "0.76rem" }}>{a.source_name} · {timeAgo(a.published_at)}{a.clicks ? ` · ${a.clicks} reads` : ""}</span>
               </div>
               <div className="news-title">{translated[a.id] || a.title}</div>
@@ -211,7 +229,7 @@ function ArticleModal({ id, initialLang, onClose }: { id: number; initialLang: s
             <>
               <div className="row wrap" style={{ gap: 8, marginBottom: 8 }}>
                 <span className="news-region">{FLAG[a.region] || "🌍"} {a.region}</span>
-                {(a.translated || a.is_translated) && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>{translatedFrom(a)}</span>}
+                {transLabel(a, alang) && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>{transLabel(a, alang)}</span>}
                 <span className="faint" style={{ fontSize: "0.78rem" }}>{a.source_name} · {timeAgo(a.published_at)}</span>
               </div>
               <h2 style={{ fontSize: "1.5rem", lineHeight: 1.25, marginTop: 0 }}>{a.title}</h2>
