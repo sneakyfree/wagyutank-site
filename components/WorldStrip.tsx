@@ -11,7 +11,11 @@ import { countryName } from "./CountryTag";
 export default function WorldStrip({ compact = false }: { compact?: boolean }) {
   const [stats, setStats] = useState<any>(null);
   useEffect(() => { api.roundupStats().then(setStats).catch(() => {}); }, []);
-  const countries: string[] = stats?.countries || [];
+  const counts: Record<string, number> = stats?.country_counts || {};
+  // Biggest markets first — the most striking snapshot of the platform's reach.
+  const countries: string[] = [...(stats?.countries || [])].sort(
+    (a, b) => (counts[b] || 0) - (counts[a] || 0) || countryName(a).localeCompare(countryName(b))
+  );
   if (!countries.length) return null;
   return (
     <div className="world-strip">
@@ -28,6 +32,7 @@ export default function WorldStrip({ compact = false }: { compact?: boolean }) {
             <Link key={cc} href={`/roundup?country=${encodeURIComponent(cc)}`} className="country-tag country-tag-link" title={`See listings from ${countryName(cc)}`}>
               <span className="country-tag-flag" aria-hidden>{countryFlag(cc)}</span>
               <span className="country-tag-name">{countryName(cc)}</span>
+              {counts[cc] ? <span className="country-tag-count">{counts[cc]}</span> : null}
             </Link>
           ))}
         </div>

@@ -29,6 +29,26 @@ function renderMarkdown(md: string): string {
         html += '<figure class="audio-embed"><audio controls preload="none" src="' + src + '"></audio><figcaption>' + cap + '</figcaption></figure>';
       } else { closeList(); html += '<p>' + inline(line) + '</p>'; }
     }
+    else if (/^!gallery /.test(line)) {
+      // !gallery src "caption" | src "caption" | ... -> a clickable founder row.
+      // Each image links to its profile: the filename IS the registration number.
+      closeList();
+      const items = line.slice(9).split("|").map((s) => s.trim()).filter(Boolean);
+      let g = '<div class="history-gallery">';
+      for (const it of items) {
+        const m = it.match(/^(\S+)\s+"(.*)"$/);
+        if (!m) continue;
+        const src = esc(m[1]);
+        const capHtml = inline(m[2]);
+        const capPlain = esc(m[2]);
+        const reg = m[1].split("/").pop()!.replace(/\.jpg$/i, "");
+        g += '<figure class="hg-item"><a href="/animal?reg=' + esc(reg) +
+             '"><img loading="lazy" src="' + src + '" alt="' + capPlain + '"/></a>' +
+             '<figcaption>' + capHtml + '</figcaption></figure>';
+      }
+      g += '</div>';
+      html += g;
+    }
     else if (/^[-*] /.test(line)) { if (!inList) { html += "<ul>"; inList = true; } html += `<li>${inline(line.slice(2))}</li>`; }
     else if (line === "") { closeList(); }
     else { closeList(); html += `<p>${inline(line)}</p>`; }
