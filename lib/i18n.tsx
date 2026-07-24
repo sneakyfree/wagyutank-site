@@ -111,7 +111,16 @@ export function LangProvider({ children }: { children: ReactNode }) {
     if (saved && LANGUAGES.some((l) => l.code === saved)) setLangState(saved);
   }, []);
   function setLang(l: Lang) { setLangState(l); try { localStorage.setItem("wt_lang", l); } catch {} }
-  const t = (key: string) => { const row = K[key]; return (row && (row[lang] ?? row.en)) ?? key; };
+  // Only the nav uses the instant phrasebook — and the nav lives entirely inside
+  // the data-noloc <header>, so the whole-page auto-translator never touches it.
+  // Everything else returns English and is handled by the auto-translator, so the
+  // two systems never fight over (and get stuck on) the same DOM node.
+  const t = (key: string) => {
+    const row = K[key];
+    if (!row) return key;
+    if (key.startsWith("nav.")) return (row[lang] ?? row.en) ?? key;
+    return row.en ?? key;
+  };
   return <LangCtx.Provider value={{ lang, setLang, t }}>{children}</LangCtx.Provider>;
 }
 

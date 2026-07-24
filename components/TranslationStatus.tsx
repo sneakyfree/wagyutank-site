@@ -22,14 +22,22 @@ export default function TranslationStatus() {
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const drag = useRef<{ dx: number; dy: number } | null>(null);
 
-  // New language = fresh banner (undo a prior dismissal).
-  useEffect(() => { setDismissed(false); }, [p.lang]);
-
-  // Keep it up briefly after work settles so it doesn't flicker between batches.
+  const minRef = useRef(false);
+  // New language: fresh banner (undo any dismissal) and show it immediately for a
+  // minimum time, so the user always sees "translating to X" — even when the work
+  // is fast or fully cached.
   useEffect(() => {
-    if (p.busy && p.lang !== "en") { setShow(true); return; }
-    const t = setTimeout(() => setShow(false), 700);
+    setDismissed(false);
+    if (p.lang === "en") { setShow(false); return; }
+    setShow(true); minRef.current = false;
+    const t = setTimeout(() => { minRef.current = true; if (!getProgress().busy) setShow(false); }, 1500);
     return () => clearTimeout(t);
+  }, [p.lang]);
+  // While translating keep it up; after work settles (and the min time passed) fade out.
+  useEffect(() => {
+    if (p.lang === "en") return;
+    if (p.busy) { setShow(true); return; }
+    if (minRef.current) { const t = setTimeout(() => setShow(false), 700); return () => clearTimeout(t); }
   }, [p.busy, p.lang]);
 
   useEffect(() => {
