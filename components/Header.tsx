@@ -34,12 +34,12 @@ export default function Header() {
         { href: "/browse", label: t("nav.browseall"), desc: t("nav.browse_all_desc") },
         ...productItems,
         ...(featureOn("foundation") ? [{ href: "/foundation", label: t("nav.foundation"), desc: t("nav.foundation_desc") }] : []),
-        ...(featureOn("great_sires") ? [{ href: "/great-sires", label: "Great Sires", desc: "The encyclopedia of the breed's most influential bulls and dams" }] : []),
+        ...(featureOn("great_sires") ? [{ href: "/great-sires", label: t("nav.greatsires"), desc: t("nav.greatsires_desc") }] : []),
       ]} />
       {featureOn("roundup") && <Link href="/roundup" className="nav-link">{t("nav.roundup")}</Link>}
       {featureOn("directory") && <Link href="/directory" className="nav-link">{t("nav.directory")}</Link>}
       {featureOn("news") && <Link href="/news" className="nav-link">{t("nav.news")}</Link>}
-      <Link href="/newsletter" className="nav-link">Newsletter</Link>
+      <Link href="/newsletter" className="nav-link">{t("nav.newsletter")}</Link>
       {featureOn("videos") && <Link href="/videos" className="nav-link">{t("nav.videos")}</Link>}
       {featureOn("japan_hub") && <Link href="/japan" className="nav-link">{t("nav.japan")}</Link>}
       {featureOn("feeding") && <Link href="/feeding" className="nav-link">{t("nav.feeding")}</Link>}
@@ -55,18 +55,18 @@ export default function Header() {
   // links in a column is a list to be endured, not read.
   const mobileSections = [
     {
-      title: "Browse",
+      title: t("nav.browse"),
       links: [
         <Link key="browse" href="/browse" className="nav-sheet-link">{t("nav.browseall")}</Link>,
         ...productItems.map((pr) => (
           <Link key={pr.href} href={pr.href} className="nav-sheet-link">{pr.label}</Link>
         )),
         featureOn("foundation") && <Link key="foundation" href="/foundation" className="nav-sheet-link">{t("nav.foundation")}</Link>,
-        featureOn("great_sires") && <Link key="great" href="/great-sires" className="nav-sheet-link">Great Sires</Link>,
+        featureOn("great_sires") && <Link key="great" href="/great-sires" className="nav-sheet-link">{t("nav.greatsires")}</Link>,
       ].filter(Boolean),
     },
     {
-      title: "The market",
+      title: t("nav.sec_market"),
       links: [
         featureOn("roundup") && <Link key="roundup" href="/roundup" className="nav-sheet-link">{t("nav.roundup")}</Link>,
         featureOn("directory") && <Link key="directory" href="/directory" className="nav-sheet-link">{t("nav.directory")}</Link>,
@@ -77,10 +77,10 @@ export default function Header() {
       ].filter(Boolean),
     },
     {
-      title: "Read & watch",
+      title: t("nav.sec_read"),
       links: [
         featureOn("news") && <Link key="news" href="/news" className="nav-sheet-link">{t("nav.news")}</Link>,
-        <Link key="newsletter" href="/newsletter" className="nav-sheet-link">Newsletter</Link>,
+        <Link key="newsletter" href="/newsletter" className="nav-sheet-link">{t("nav.newsletter")}</Link>,
         featureOn("videos") && <Link key="videos" href="/videos" className="nav-sheet-link">{t("nav.videos")}</Link>,
         featureOn("japan_hub") && <Link key="japan" href="/japan" className="nav-sheet-link">{t("nav.japan")}</Link>,
         featureOn("feeding") && <Link key="feeding" href="/feeding" className="nav-sheet-link">{t("nav.feeding")}</Link>,
@@ -88,13 +88,13 @@ export default function Header() {
       ].filter(Boolean),
     },
     {
-      title: "Your account",
+      title: t("nav.sec_account"),
       links: [
         <Link key="sell" href="/sell" className="nav-sheet-link">{t("nav.sell")}</Link>,
         user && <Link key="dashboard" href="/dashboard" className="nav-sheet-link">{user.handle ? `@${user.handle}` : user.display_name}</Link>,
-        user && <Link key="feed" href="/feed" className="nav-sheet-link">Feed</Link>,
+        user && <Link key="feed" href="/feed" className="nav-sheet-link">{t("nav.feed")}</Link>,
         user && user.role && ["manager", "admin", "super_admin"].includes(user.role) &&
-          <Link key="admin" href="/admin" className="nav-sheet-link">{user.role === "super_admin" ? "Owner" : user.role === "manager" ? "Manager" : t("nav.admin")}</Link>,
+          <Link key="admin" href="/admin" className="nav-sheet-link">{user.role === "super_admin" ? t("nav.owner") : user.role === "manager" ? t("nav.manager") : t("nav.admin")}</Link>,
         !user && <Link key="login" href="/login" className="nav-sheet-link">{t("nav.signin")}</Link>,
         featureOn("help") && <Link key="help" href="/help" className="nav-sheet-link">{t("nav.help")}</Link>,
         featureOn("ads") && <Link key="ads" href="/advertise" className="nav-sheet-link">{t("nav.advertise")}</Link>,
@@ -121,9 +121,9 @@ export default function Header() {
           <div className="row" style={{ gap: 10 }}>
             {user.role && ["manager", "admin", "super_admin"].includes(user.role) &&
               <Link href="/admin" className="nav-link hide-sm" title="Control panel">
-                {user.role === "super_admin" ? "⚙ Owner" : user.role === "manager" ? "⚙ Manager" : t("nav.admin")}
+                {user.role === "super_admin" ? `⚙ ${t("nav.owner")}` : user.role === "manager" ? `⚙ ${t("nav.manager")}` : t("nav.admin")}
               </Link>}
-            <Link href="/feed" className="nav-link hide-sm" title="Your feed">Feed</Link>
+            <Link href="/feed" className="nav-link hide-sm" title="Your feed">{t("nav.feed")}</Link>
             <Link href="/dashboard" className="nav-link hide-sm">
               {user.handle ? `@${user.handle}` : user.display_name}
             </Link>

@@ -80,6 +80,7 @@ export default function AutoTranslate() {
     const doneKeys = new Set<string>();
     const needNodes = new Map<string, Text[]>();
     const needAttrs = new Map<string, { el: Element; attr: string }[]>();
+    const attempts = new Map<string, number>();
     emit({ busy: true, lang, done: 0, total: 0 });
     const bump = () => emit({ done: doneKeys.size, total: allKeys.size });
 
@@ -118,15 +119,14 @@ export default function AutoTranslate() {
     function apply(keys: string[]) {
       for (const key of keys) {
         const tr = cache[key];
-        if (tr) {
-          (needNodes.get(key) || []).forEach((tn) => {
-            const o = origText.get(tn) ?? tn.nodeValue ?? ""; tn.nodeValue = o.replace(key, tr);
-            lastOut.set(tn, tn.nodeValue); touched.add(tn);
-          });
-          (needAttrs.get(key) || []).forEach(({ el, attr }) => {
-            el.setAttribute(attr, tr); const lo = lastAttr.get(el) || {}; lo[attr] = tr; lastAttr.set(el, lo); touchedEls.add(el);
-          });
-        }
+        if (tr === undefined) continue;   // failed this round — leave queued for retry
+        (needNodes.get(key) || []).forEach((tn) => {
+          const o = origText.get(tn) ?? tn.nodeValue ?? ""; tn.nodeValue = o.replace(key, tr);
+          lastOut.set(tn, tn.nodeValue); if (tr !== key) touched.add(tn);
+        });
+        (needAttrs.get(key) || []).forEach(({ el, attr }) => {
+          el.setAttribute(attr, tr); const lo = lastAttr.get(el) || {}; lo[attr] = tr; lastAttr.set(el, lo); if (tr !== key) touchedEls.add(el);
+        });
         doneKeys.add(key);
         needNodes.delete(key); needAttrs.delete(key);
       }
@@ -146,8 +146,15 @@ export default function AutoTranslate() {
           let res: any = null;
           try { res = await api.translateBatch(g.map((text, id) => ({ id, text })), lang); } catch { /* ignore */ }
           if (cancelled) return;
-          const tr = res?.translations || {};
-          g.forEach((k, id) => { if (tr[id] && tr[id] !== k) cache[k] = tr[id]; });
+          if (res && res.translations) {
+            const tr = res.translations;
+            // Cache the translation OR the source itself when it translates to
+            // itself (sire names, prices). Not caching those made every scan
+            // re-request them forever — the endless spinner Grant saw.
+            g.forEach((k, id) => { cache[k] = (tr[id] && tr[id] !== k) ? tr[id] : k; });
+          } else {
+            g.forEach((k) => { const a = (attempts.get(k) || 0) + 1; attempts.set(k, a); if (a >= 3) cache[k] = k; });
+          }
           apply(g);
         }
       };

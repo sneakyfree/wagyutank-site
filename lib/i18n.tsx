@@ -88,6 +88,17 @@ const K: Record<string, Partial<Record<Lang, string>>> = {
     zh: "汇集全网在售的和牛遗传资源。非 WagyuTank 卖家——每条均链接至原始信息。",
   },
   "common.search": { en: "Search", es: "Buscar", pt: "Buscar", de: "Suchen", ja: "検索", zh: "搜索" },
+  "nav.newsletter": { en: "Newsletter", es: "Boletín", pt: "Boletim", de: "Newsletter", ja: "ニュースレター", zh: "订阅" },
+  "nav.greatsires": { en: "Great Sires", es: "Grandes Sementales", pt: "Grandes Touros", de: "Große Bullen", ja: "偉大な種牛", zh: "伟大种牛" },
+  "nav.greatsires_desc": { en: "The encyclopedia of the breed's most influential bulls and dams", es: "La enciclopedia de los toros y vacas más influyentes de la raza", pt: "A enciclopédia dos touros e matrizes mais influentes da raça", de: "Die Enzyklopädie der einflussreichsten Bullen und Kühe der Rasse", ja: "品種で最も影響力のある種牛と繁殖牛の百科事典", zh: "本品种最具影响力公牛与母牛的百科全书" },
+  "nav.feed": { en: "Feed", es: "Tu feed", pt: "Seu feed", de: "Feed", ja: "フィード", zh: "动态" },
+  "nav.owner": { en: "Owner", es: "Propietario", pt: "Proprietário", de: "Inhaber", ja: "オーナー", zh: "所有者" },
+  "nav.manager": { en: "Manager", es: "Gerente", pt: "Gerente", de: "Manager", ja: "マネージャー", zh: "管理员" },
+  "nav.more": { en: "More", es: "Más", pt: "Mais", de: "Mehr", ja: "その他", zh: "更多" },
+  "nav.livecattle": { en: "Live cattle", es: "Ganado en pie", pt: "Gado vivo", de: "Lebendvieh", ja: "生体牛", zh: "活牛" },
+  "nav.sec_market": { en: "The market", es: "El mercado", pt: "O mercado", de: "Der Markt", ja: "マーケット", zh: "市场" },
+  "nav.sec_read": { en: "Read & watch", es: "Leer y ver", pt: "Ler e assistir", de: "Lesen & ansehen", ja: "読む・観る", zh: "阅读与观看" },
+  "nav.sec_account": { en: "Your account", es: "Tu cuenta", pt: "Sua conta", de: "Ihr Konto", ja: "アカウント", zh: "您的账户" },
 };
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string };

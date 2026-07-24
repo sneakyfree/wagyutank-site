@@ -1,6 +1,7 @@
 "use client";
 import { Children, Fragment, isValidElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useLang } from "../lib/i18n";
 import NavDropdown from "./NavDropdown";
 
 /** The desktop nav, with everything that doesn't fit collected into a labelled
@@ -16,6 +17,7 @@ import NavDropdown from "./NavDropdown";
  *  the next measurement would think it fits and put it back, forever.
  */
 export default function NavOverflow({ children }: { children: React.ReactNode }) {
+  const { t } = useLang();
   // The nav is handed to us as a single fragment, and React counts a fragment as
   // ONE child however many links are inside it. Counting that way, nothing ever
   // overflowed and the More button never appeared -- while the row quietly
@@ -94,7 +96,7 @@ export default function NavOverflow({ children }: { children: React.ReactNode })
             aria-label={`${hidden.length} more navigation links`}
             onClick={() => setOpen((o) => !o)}
           >
-            More <span className="nav-more-count">{hidden.length}</span>
+            {t("nav.more")} <span className="nav-more-count">{hidden.length}</span>
           </button>
           {open && (
             <div

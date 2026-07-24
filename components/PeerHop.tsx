@@ -7,9 +7,11 @@ import { useState } from "react";
 import { api } from "../lib/api";
 import { networkPeers } from "../lib/tank";
 import { useAuth } from "../lib/auth";
+import { useLang } from "../lib/i18n";
 
 export default function PeerHop() {
   const { user } = useAuth();
+  const { t } = useLang();
   const peers = networkPeers();
   const [busy, setBusy] = useState("");
   if (!peers.length) return null;
@@ -41,7 +43,10 @@ export default function PeerHop() {
           onClick={() => hop(p.domain)}
           title={user ? `Continue on ${p.name || p.domain} — you'll stay signed in` : `Visit ${p.name || p.domain}`}
         >
-          {busy === p.domain ? "…" : (p as any).short || p.cta || `${p.name || p.domain} ↗`}
+          {busy === p.domain ? "…" : (() => {
+            const r = (p as any).short || p.cta || `${p.name || p.domain} ↗`;
+            return /live cattle/i.test(r) ? r.replace(/Live cattle/i, t("nav.livecattle")) : r;
+          })()}
         </button>
       ))}
     </>
