@@ -8,7 +8,7 @@
 // change — otherwise elements that persist across navigation (the ticker bars)
 // stay stuck in a previously-selected language.
 import { useEffect } from "react";
-import { useLang } from "../lib/i18n";
+import { useLang, K } from "../lib/i18n";
 import { api } from "../lib/api";
 
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA",
@@ -28,6 +28,13 @@ function cacheFor(lang: string): Record<string, string> {
   if (!cacheByLang[lang]) {
     let c: Record<string, string> = {};
     try { c = JSON.parse(localStorage.getItem("wt_tr_" + lang) || "{}"); } catch { /* ignore */ }
+    // Pre-seed the hand-crafted dictionary translations (hero, home copy, common
+    // labels) so the fixed parts of the site render INSTANTLY in every language,
+    // shipped with the bundle — no live LLM wait "before their eyes".
+    for (const key in K) {
+      const row = (K as any)[key];
+      if (row && row.en && row[lang]) c[row.en] = row[lang];
+    }
     cacheByLang[lang] = c;
   }
   return cacheByLang[lang];

@@ -13,7 +13,7 @@ export const LANGUAGES: { code: Lang; label: string; flag: string; english: stri
 ];
 
 // Each key maps lang→string. Missing langs fall back to English.
-const K: Record<string, Partial<Record<Lang, string>>> = {
+export const K: Record<string, Partial<Record<Lang, string>>> = {
   "nav.browse": { en: "Browse", es: "Explorar", pt: "Explorar", de: "Durchsuchen", ja: "見る", zh: "浏览" },
   "nav.semen": { en: "Semen", es: "Semen", pt: "Sêmen", de: "Sperma", ja: "精液", zh: "精液" },
   "nav.embryos": { en: "Embryos", es: "Embriones", pt: "Embriões", de: "Embryonen", ja: "受精卵", zh: "胚胎" },
