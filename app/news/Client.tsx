@@ -2,7 +2,8 @@
 import NewsletterSignup from "../../components/NewsletterSignup";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { api } from "../../lib/api";
+import { api, countryFlag } from "../../lib/api";
+import { countryName } from "../../components/CountryTag";
 import { useLang, LANGUAGES } from "../../lib/i18n";
 
 const REGIONS = [
@@ -17,6 +18,17 @@ const REGIONS = [
   { code: "AU", label: "🇦🇺 Oceania" },
 ];
 const FLAG: Record<string, string> = { US: "🇺🇸", AU: "🇦🇺", JP: "🇯🇵", AS: "🌏", EU: "🇪🇺", SA: "🌎", ME: "🕌", AF: "🦁", OTHER: "🌍" };
+const REGION_NAME: Record<string, string> = { US: "North America", SA: "South America", EU: "Europe", JP: "Japan", AS: "Asia", ME: "Middle East", AF: "Africa", AU: "Oceania" };
+const LANG_NAME: Record<string, string> = { ja: "Japanese", zh: "Chinese", ko: "Korean", de: "German", fr: "French", it: "Italian", es: "Spanish", pt: "Portuguese", nl: "Dutch", th: "Thai", vi: "Vietnamese", id: "Indonesian", en: "English" };
+// The publisher's country when we resolved it; otherwise the macro-region — never a wrong single-country flag.
+function origin(a: any): string {
+  if (a?.country) return `${countryFlag(a.country)} ${countryName(a.country)}`;
+  return `${FLAG[a?.region] || "🌍"} ${REGION_NAME[a?.region] || a?.region || ""}`;
+}
+function translatedFrom(a: any): string {
+  const l = a?.language && a.language !== "en" ? LANG_NAME[a.language] || null : null;
+  return l ? `🌐 Translated from ${l}` : "🌐 Translated";
+}
 const WINDOWS = [
   { code: "", label: "Latest" }, { code: "day", label: "Today" }, { code: "week", label: "This week" },
   { code: "month", label: "This month" }, { code: "year", label: "This year" },
@@ -151,8 +163,8 @@ function NewsInner() {
             <button key={a.id} onClick={() => setOpenId(a.id)} className="card card-pad news-item" style={{ textAlign: "left", cursor: "pointer", width: "100%" }}>
               <div className="row wrap" style={{ gap: 8, marginBottom: 6 }}>
                 {trending && <span className="news-rank">#{i + 1}</span>}
-                <span className="news-region">{FLAG[a.region] || "🌍"} {a.region}</span>
-                {a.is_translated && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>🌐 Translated</span>}
+                <span className="news-region">{origin(a)}</span>
+                {a.is_translated && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>{translatedFrom(a)}</span>}
                 <span className="faint" style={{ fontSize: "0.76rem" }}>{a.source_name} · {timeAgo(a.published_at)}{a.clicks ? ` · ${a.clicks} reads` : ""}</span>
               </div>
               <div className="news-title">{translated[a.id] || a.title}</div>
@@ -199,7 +211,7 @@ function ArticleModal({ id, initialLang, onClose }: { id: number; initialLang: s
             <>
               <div className="row wrap" style={{ gap: 8, marginBottom: 8 }}>
                 <span className="news-region">{FLAG[a.region] || "🌍"} {a.region}</span>
-                {a.translated && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>🌐 Translated</span>}
+                {(a.translated || a.is_translated) && <span className="pill roundup-pill" style={{ fontSize: "0.64rem" }}>{translatedFrom(a)}</span>}
                 <span className="faint" style={{ fontSize: "0.78rem" }}>{a.source_name} · {timeAgo(a.published_at)}</span>
               </div>
               <h2 style={{ fontSize: "1.5rem", lineHeight: 1.25, marginTop: 0 }}>{a.title}</h2>
