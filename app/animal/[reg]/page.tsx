@@ -34,10 +34,16 @@ export async function generateStaticParams() {
   if (animals.length === 0 && process.env.TANK_FOUNDATION) {
     try { animals = JSON.parse(readFileSync(process.env.TANK_FOUNDATION, "utf8")); } catch { /* keep [] */ }
   }
-  return animals
+  const params = animals
     .map(slugOf)
     .filter((s: string) => s && /^[A-Za-z0-9._-]+$/.test(s))
     .map((reg: string) => ({ reg }));
+  // A tank can legitimately have NO foundation animals — WagyuSale is a live-cattle
+  // tank with the foundation feature off. `output: export` still refuses an empty
+  // param set, which hard-failed the build. Emit one placeholder route so the
+  // export succeeds; nothing links to it, and tankify prunes the section anyway
+  // on tanks where the feature is disabled.
+  return params.length ? params : [{ reg: "none" }];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ reg: string }> }): Promise<Metadata> {
