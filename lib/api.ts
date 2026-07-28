@@ -245,8 +245,14 @@ export function freshness(l: any): { label: string; cls: string; title: string }
   }
   if (l?.first_seen_at) {
     const d = new Date(l.first_seen_at);
+    // Cite the actual link check rather than asserting "still confirmed live"
+    // with nothing behind it. last_checked_at is written by the nightly reaper.
+    const checked = l?.last_checked_at ? new Date(l.last_checked_at) : null;
+    const confirm = checked
+      ? ` Link last confirmed working ${checked.toLocaleDateString()}.`
+      : " We haven't re-checked this link recently.";
     return { label: `Indexed ${fmt(d)}`, cls: "fresh-neutral",
-      title: "The source doesn't publish its own update date — this is when WagyuTank first indexed it (still confirmed live)." };
+      title: `The source doesn't publish its own update date — this is when WagyuTank first indexed it.${confirm}` };
   }
   return null;
 }
