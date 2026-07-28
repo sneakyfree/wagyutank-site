@@ -434,6 +434,32 @@ select.fresh-green, select.fresh-amber { }
 .prose strong { color: var(--text); }
 .prose hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
 .prose em { color: var(--text-faint); }
+.prose h3 { margin-top: 1.4em; color: var(--text); font-size: 1.12rem; }
+.prose a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
+.prose img { max-width: 100%; height: auto; border-radius: 8px; display: block; }
+.prose figure { margin: 1.4em 0; }
+.prose figcaption { color: var(--text-faint); font-size: 0.88rem; margin-top: 6px; text-align: center; }
+.prose blockquote {
+  border-left: 3px solid var(--gold); margin: 1.4em 0; padding: 4px 0 4px 18px;
+  color: var(--text-dim); font-style: italic; font-size: 1.08rem;
+}
+/* Featured audio player — the primary-source recording */
+.bh-audio {
+  margin: 1.6em 0; padding: 20px; border: 1px solid var(--border); border-radius: 12px;
+  background: linear-gradient(160deg, rgba(138,109,43,0.10), rgba(138,109,43,0.02));
+}
+.bh-audio audio { width: 100%; }
+.bh-audio figcaption { text-align: left; color: var(--gold); font-style: normal; font-weight: 600; margin-top: 10px; }
+/* Founder photo gallery */
+.bh-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.4em 0; }
+.bh-gallery figure { margin: 0; }
+.bh-gallery img { aspect-ratio: 16/10; object-fit: cover; width: 100%; }
+/* Import roster / data tables */
+.bh-tablewrap { overflow-x: auto; margin: 1.4em 0; }
+.bh-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.bh-table th { text-align: left; color: var(--gold); border-bottom: 2px solid var(--border); padding: 8px 10px; white-space: nowrap; }
+.bh-table td { color: var(--text-dim); border-bottom: 1px solid var(--border); padding: 7px 10px; vertical-align: top; }
+.bh-table tbody tr:hover { background: rgba(138,109,43,0.06); }
 
 /* Footer */
 .footer { border-top: 1px solid var(--border-soft); padding: 40px 0; margin-top: 60px; color: var(--text-faint); font-size: 0.88rem; }
