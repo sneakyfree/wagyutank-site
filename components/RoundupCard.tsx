@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { api, PRODUCT_LABEL, money, countryFlag, freshness } from "../lib/api";
 import CountryTag from "./CountryTag";
 import ExportInfo from "./ExportInfo";
 import ProductBadge from "./ProductBadge";
+import { useLang } from "../lib/i18n";
 
 /** One seller photograph, loaded from the seller's own server.
  *  A hotlink that fails is expected and unremarkable -- sellers block hotlinking,
@@ -54,6 +56,7 @@ function ListingPhotos({ images, source }: { images: any[]; source: string }) {
 }
 
 export default function RoundupCard({ l }: { l: any }) {
+  const { lang } = useLang();
   const [showForm, setShowForm] = useState(false);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
@@ -108,9 +111,30 @@ export default function RoundupCard({ l }: { l: any }) {
           Listed on <strong style={{ color: "var(--text-dim)" }}>{l.source_site}</strong>
           {l.seller_name ? ` · ${l.seller_name}` : ""} · not a WagyuTank seller
         </div>
-        <a href={api.roundupGoUrl(l.id)} target="_blank" rel="noopener noreferrer" className="btn btn-block">
-          View original listing ↗
-        </a>
+        {/* Details first for a reader who is not browsing in English: the seller's
+            own terms, translated, before they leave for a site they cannot read.
+            The direct link-out stays right beside it for everyone else. */}
+        {lang !== "en" ? (
+          <>
+            <Link href={`/roundup/listing?id=${l.id}`} className="btn btn-gold btn-block">
+              Details in your language →
+            </Link>
+            <a href={api.roundupGoUrl(l.id)} target="_blank" rel="noopener noreferrer"
+               className="btn btn-block" style={{ marginTop: 6 }}>
+              View original listing ↗
+            </a>
+          </>
+        ) : (
+          <>
+            <a href={api.roundupGoUrl(l.id)} target="_blank" rel="noopener noreferrer" className="btn btn-block">
+              View original listing ↗
+            </a>
+            <Link href={`/roundup/listing?id=${l.id}`} className="faint"
+                  style={{ display: "block", textAlign: "center", marginTop: 6, fontSize: "0.76rem" }}>
+              Full details
+            </Link>
+          </>
+        )}
         {done ? (
           <p className="help" style={{ marginTop: 8 }}>{done}</p>
         ) : showForm ? (

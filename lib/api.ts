@@ -154,6 +154,11 @@ export const api = {
   saleEventChart: (series: string) => req(`/api/sale-events/chart?series=${series}`),
   saleTicker: () => req("/api/sale-events/ticker"),
   roundupGoUrl: (id: number) => `${API_BASE}/api/roundup/${id}/go`,
+  // The seller's own terms, translated into the reader's language. This is what
+  // lets a buyer understand a listing BEFORE clicking out to a site written in a
+  // language they cannot read — we can never translate the seller's site itself.
+  roundupDetail: (id: number | string) =>
+    req(`/api/roundup/${id}/detail?lang=${readerLang()}`),
   roundupFlag: (id: number, email: string) =>
     req(`/api/roundup/${id}/flag`, { method: "POST", body: JSON.stringify({ email }) }),
 
