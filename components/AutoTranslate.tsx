@@ -43,11 +43,15 @@ const origAttr = new WeakMap<Element, Record<string, string>>();
 const lastAttr = new WeakMap<Element, Record<string, string>>();
 let touchedEls = new Set<Element>();
 
+// Bump when the dictionary or the backend translation prompt changes, so a
+// returning visitor's browser drops its stale copies instead of serving the old
+// wording forever. Mirrors _PROMPT_VERSION in backend/app/services/translate.py.
+const CACHE_NS = "wt_tr_v3_";
 const cacheByLang: Record<string, Record<string, string>> = {};
 function cacheFor(lang: string): Record<string, string> {
   if (!cacheByLang[lang]) {
     let c: Record<string, string> = {};
-    try { c = JSON.parse(localStorage.getItem("wt_tr_" + lang) || "{}"); } catch { /* ignore */ }
+    try { c = JSON.parse(localStorage.getItem(CACHE_NS + lang) || "{}"); } catch { /* ignore */ }
     // Pre-seed the hand-crafted dictionary translations (hero, home copy, common
     // labels) so the fixed parts of the site render INSTANTLY in every language,
     // shipped with the bundle — no live LLM wait "before their eyes".
@@ -60,7 +64,7 @@ function cacheFor(lang: string): Record<string, string> {
   return cacheByLang[lang];
 }
 function persist(lang: string) {
-  try { localStorage.setItem("wt_tr_" + lang, JSON.stringify(cacheByLang[lang])); } catch { /* ignore */ }
+  try { localStorage.setItem(CACHE_NS + lang, JSON.stringify(cacheByLang[lang])); } catch { /* ignore */ }
 }
 
 function translatable(s: string): boolean {

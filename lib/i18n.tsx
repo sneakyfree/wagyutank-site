@@ -109,6 +109,11 @@ export const K: Record<string, Partial<Record<Lang, string>>> = {
   "term.embryos": { en: "Embryos", es: "Embriones", pt: "Embriões", de: "Embryonen", ja: "受精卵", zh: "胚胎" },
   "term.cloning_rights": { en: "Cloning Rights", es: "Derechos de clonación", pt: "Direitos de clonagem", de: "Klonrechte", ja: "クローン権", zh: "克隆权" },
   "term.per_straw": { en: "per straw", es: "por pajilla", pt: "por palheta", de: "pro Portion", ja: "1本あたり", zh: "每支" },
+  // The price tickers render the bare unit token, not the "per straw" phrase.
+  // Without these the German ticker read "/Strohhalm" — a drinking straw.
+  "term.straw": { en: "straw", es: "pajilla", pt: "palheta", de: "Portion", ja: "本", zh: "支" },
+  "term.slash_straw": { en: "/straw", es: "/pajilla", pt: "/palheta", de: "/Portion", ja: "/本", zh: "/支" },
+  "term.straws": { en: "straws", es: "pajillas", pt: "palhetas", de: "Portionen", ja: "本", zh: "支" },
   "term.per_embryo": { en: "per embryo", es: "por embrión", pt: "por embrião", de: "pro Embryo", ja: "1個あたり", zh: "每枚" },
   "term.rights_fee": { en: "rights fee", es: "tarifa de derechos", pt: "taxa de direitos", de: "Lizenzgebühr", ja: "権利料", zh: "权利费" },
   "term.in_stock": { en: "In stock", es: "Disponible", pt: "Disponível", de: "Auf Lager", ja: "在庫あり", zh: "有现货" },
