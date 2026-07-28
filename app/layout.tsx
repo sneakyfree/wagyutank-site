@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import Tracker from "../components/Tracker";
 import Tickers from "../components/Tickers";
 import AutoTranslate from "../components/AutoTranslate";
+import BrowserTranslateHint from "../components/BrowserTranslateHint";
 import TranslationStatus from "../components/TranslationStatus";
 
 const NAME = brand.name || "WagyuTank";
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <LangProvider>
           <AutoTranslate />
+          <BrowserTranslateHint />
           <TranslationStatus />
           <Tracker />
           <Header />
