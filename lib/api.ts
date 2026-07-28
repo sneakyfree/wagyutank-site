@@ -3,6 +3,14 @@ import { products } from "./tank";
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8100";
 
+// The viewer's chosen locale, read from the same store the language switcher
+// writes. Used to translate server-rendered strings (video titles) — the client
+// dictionary + AutoTranslate cover everything already in the DOM.
+export function readerLang(): string {
+  if (typeof window === "undefined") return "en";
+  try { return localStorage.getItem("wt_lang") || "en"; } catch { return "en"; }
+}
+
 function token(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("wt_token");
@@ -78,9 +86,12 @@ export const api = {
   feeding: (lang = "en") => req(`/api/feeding?lang=${lang}`),
   zenkyoEvent: (n: number | string) => req(`/api/zenkyo/event/${n}`),
   zenkyoInterest: (body: any) => req("/api/zenkyo/interest", { method: "POST", body: JSON.stringify(body) }),
-  videos: (params: Record<string, any> = {}) => req(`/api/videos?${new URLSearchParams(clean(params))}`),
-  videoCharts: () => req("/api/videos/charts"),
-  video: (id: number | string) => req(`/api/videos/${id}`),
+  // `reader` is the VIEWER's locale (translates titles); `lang` filters by the
+  // language spoken IN the video. Two different things — do not merge them.
+  videos: (params: Record<string, any> = {}) =>
+    req(`/api/videos?${new URLSearchParams(clean({ reader: readerLang(), ...params }))}`),
+  videoCharts: () => req(`/api/videos/charts?reader=${readerLang()}`),
+  video: (id: number | string) => req(`/api/videos/${id}?reader=${readerLang()}`),
   videoUploadIntent: (content_type: string, size: number) => req("/api/videos/upload-intent", { method: "POST", body: JSON.stringify({ content_type, size }) }),
   videoUploadComplete: (key: string, title: string, animal_reg?: string) => req("/api/videos/upload-complete", { method: "POST", body: JSON.stringify({ key, title, animal_reg: animal_reg ?? null, description: null }) }),
   claimChannel: (channel_id: string, channel: string, note?: string) => req("/api/videos/channels/claim", { method: "POST", body: JSON.stringify({ channel_id, channel, note: note ?? null }) }),

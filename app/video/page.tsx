@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { api } from "../../lib/api";
 import { VideoCard } from "../videos/Client";
 import Discussion from "../../components/Discussion";
+import YouTubePlayer from "../../components/YouTubePlayer";
 
 // The canonical WagyuTank page for a video — the embed is an implementation
 // detail (YouTube today, native player later); the URL, context, and community
@@ -28,6 +29,9 @@ function VideoInner() {
             <div style={{ aspectRatio: "16/9", background: "#000" }}>
               {v.source === "native" ? (
                 <video controls preload="metadata" style={{ width: "100%", height: "100%" }} src={v.embed_url} />
+              ) : v.video_id ? (
+                // Captions on, auto-translated into the reader's language.
+                <YouTubePlayer videoId={v.video_id} title={v.title} />
               ) : (
                 <iframe src={v.embed_url} title={v.title} style={{ width: "100%", height: "100%", border: 0 }}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
