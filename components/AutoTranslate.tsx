@@ -13,8 +13,28 @@ import { api } from "../lib/api";
 
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA",
   "SVG", "CANVAS", "INPUT", "SELECT", "OPTION"]);
+// Form controls are skipped for TEXT (we must never rewrite a user's typed value),
+// but their placeholder/title/aria-label ARE user-facing copy and must translate.
+// Without this split the homepage search box stayed English in all six languages
+// even though lib/i18n already had a correct translation for it.
+const SKIP_TAGS_ATTRS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "SVG", "CANVAS"]);
 const ATTRS = ["placeholder", "title", "aria-label", "alt"];
 const HAS_LETTER = /\p{L}/u;
+
+// Never machine-translate these — a wrong guess is worse than leaving English.
+// Country names are the sharp edge: the translator rendered "Czechia" as
+// クロアチア (Croatia) and "Hungary" as チェコ (Czech) on the live site.
+const DNT = new Set<string>([
+  "A5", "A4", "BMS", "EPD", "EBV", "IMF", "CSS", "USDA", "JMGA", "IVF", "ET", "SCD",
+  "Choice", "Prime", "Select", "Choice Boxed Beef Cutout", "CME Feeder Cattle Index",
+  "United States", "Australia", "Austria", "Germany", "Japan", "Brazil", "Canada",
+  "United Kingdom", "Denmark", "Netherlands", "Spain", "France", "Italy", "Colombia",
+  "Mexico", "South Africa", "Norway", "Thailand", "Czechia", "Hungary", "New Zealand",
+  "Türkiye", "Vietnam", "Ireland", "China", "South Korea", "Argentina", "Belgium",
+  "Poland", "Portugal", "Sweden", "Switzerland", "Paraguay", "Uruguay", "Ecuador",
+  "Peru", "Bolivia", "Venezuela", "Kenya", "India", "Pakistan", "Indonesia",
+  "Estonia", "Finland", "Bulgaria", "Romania", "Guatemala", "Panama", "United Nations",
+]);
 
 const origText = new WeakMap<Text, string>();
 const lastOut = new WeakMap<Text, string>();
@@ -48,16 +68,19 @@ function translatable(s: string): boolean {
   if (t.length < 2) return false;
   if (!HAS_LETTER.test(t)) return false;
   if (/^[\d\s.,:;$€£¥%+\-/()#·×→↗]+$/.test(t)) return false;
+  if (DNT.has(t)) return false;
   return true;
 }
-function skip(el: Element | null): boolean {
+function skipWith(el: Element | null, tags: Set<string>): boolean {
   for (let n: Element | null = el; n; n = n.parentElement) {
-    if (SKIP_TAGS.has(n.tagName)) return true;
+    if (tags.has(n.tagName)) return true;
     if (n.hasAttribute && n.hasAttribute("data-noloc")) return true;
     if ((n as HTMLElement).isContentEditable) return true;
   }
   return false;
 }
+function skip(el: Element | null): boolean { return skipWith(el, SKIP_TAGS); }
+function skipAttr(el: Element | null): boolean { return skipWith(el, SKIP_TAGS_ATTRS); }
 
 // --- progress store for the on-screen status banner ---
 type Prog = { busy: boolean; lang: string; done: number; total: number };
@@ -109,7 +132,7 @@ export default function AutoTranslate() {
       }
       for (const attr of ATTRS) {
         document.querySelectorAll("[" + attr + "]").forEach((el) => {
-          if (skip(el)) return;
+          if (skipAttr(el)) return;
           const raw = el.getAttribute(attr) || "";
           const la = lastAttr.get(el); if (la && la[attr] === raw) return;
           if (!translatable(raw)) return;

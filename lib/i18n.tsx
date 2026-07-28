@@ -99,6 +99,27 @@ export const K: Record<string, Partial<Record<Lang, string>>> = {
   "nav.sec_market": { en: "The market", es: "El mercado", pt: "O mercado", de: "Der Markt", ja: "マーケット", zh: "市场" },
   "nav.sec_read": { en: "Read & watch", es: "Leer y ver", pt: "Ler e assistir", de: "Lesen & ansehen", ja: "読む・観る", zh: "阅读与观看" },
   "nav.sec_account": { en: "Your account", es: "Tu cuenta", pt: "Sua conta", de: "Ihr Konto", ja: "アカウント", zh: "您的账户" },
+
+  // --- Trade terms of art. Pre-seeded into the auto-translator cache (see
+  // AutoTranslate.cacheFor) so the machine translator NEVER gets a vote on them.
+  // Every one of these was mistranslated on the live site: "Semen Straws" came
+  // out as 精液管 (seminal duct) in Japanese and "Sperma-Strohhalme" (sperm
+  // drinking-straws) in German; "Contact for price" as 僧価 (monk price).
+  "term.semen_straws": { en: "Semen Straws", es: "Pajillas de semen", pt: "Palhetas de sêmen", de: "Samenportionen", ja: "精液ストロー", zh: "冻精细管" },
+  "term.embryos": { en: "Embryos", es: "Embriones", pt: "Embriões", de: "Embryonen", ja: "受精卵", zh: "胚胎" },
+  "term.cloning_rights": { en: "Cloning Rights", es: "Derechos de clonación", pt: "Direitos de clonagem", de: "Klonrechte", ja: "クローン権", zh: "克隆权" },
+  "term.per_straw": { en: "per straw", es: "por pajilla", pt: "por palheta", de: "pro Portion", ja: "1本あたり", zh: "每支" },
+  "term.per_embryo": { en: "per embryo", es: "por embrión", pt: "por embrião", de: "pro Embryo", ja: "1個あたり", zh: "每枚" },
+  "term.rights_fee": { en: "rights fee", es: "tarifa de derechos", pt: "taxa de direitos", de: "Lizenzgebühr", ja: "権利料", zh: "权利费" },
+  "term.in_stock": { en: "In stock", es: "Disponible", pt: "Disponível", de: "Auf Lager", ja: "在庫あり", zh: "有现货" },
+  "term.contact_price": { en: "Contact for price", es: "Consultar precio", pt: "Consultar preço", de: "Preis auf Anfrage", ja: "価格はお問い合わせください", zh: "价格请咨询" },
+  "term.beef_market": { en: "Beef Market", es: "Mercado de la carne", pt: "Mercado da carne", de: "Rindfleischmarkt", ja: "牛肉市場", zh: "牛肉市场" },
+  "term.genetics_index": { en: "Genetics Index", es: "Índice genético", pt: "Índice genético", de: "Genetik-Index", ja: "遺伝資源指数", zh: "遗传资源指数" },
+  "term.sale_data": { en: "Sale Data", es: "Datos de ventas", pt: "Dados de vendas", de: "Verkaufsdaten", ja: "販売データ", zh: "成交数据" },
+  "term.fresh_listings": { en: "Fresh listings", es: "Publicaciones recientes", pt: "Anúncios recentes", de: "Neue Anzeigen", ja: "新着の出品", zh: "最新发布" },
+  "term.view_original": { en: "View original listing ↗", es: "Ver publicación original ↗", pt: "Ver anúncio original ↗", de: "Originalanzeige ansehen ↗", ja: "元の掲載を見る ↗", zh: "查看原始信息 ↗" },
+  "term.foundation_bulls": { en: "The foundation bulls", es: "Los toros fundadores", pt: "Os touros fundadores", de: "Die Gründerbullen", ja: "基礎種雄牛", zh: "基础种公牛" },
+  "term.progeny": { en: "progeny", es: "descendencia", pt: "progênie", de: "Nachkommen", ja: "産子数", zh: "后代" },
 };
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string };
