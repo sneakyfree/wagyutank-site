@@ -34,6 +34,17 @@ import { API_BASE } from "../lib/api";
 // setOption/captions is UNDOCUMENTED. Every call is wrapped: if YouTube changes
 // it, the video still plays and the viewer just sees no auto-translation. It must
 // never be able to break playback.
+//
+// FULLSCREEN (fixed 2026-07-29 — it was broken, and broken in the worst way):
+// our overlay is a SIBLING of the iframe, so when YouTube's own fullscreen button
+// promotes the IFRAME to document.fullscreenElement the overlay is outside the
+// fullscreen subtree and does not paint. Since we have also switched YouTube's
+// captions off, a fullscreen viewer of a TRANSCRIBED video got no subtitles at
+// all — strictly worse than an untranscribed one, which inverts the whole
+// "never worse off" invariant above. So when we are driving the subtitles we hide
+// YouTube's fullscreen button (`fs: 0`) and fullscreen the WRAPPER instead, which
+// contains both the iframe and the overlay. When YouTube is drawing its own
+// captions we leave its button alone — those live inside the iframe and are fine.
 
 declare global {
   interface Window { YT?: any; onYouTubeIframeAPIReady?: () => void; __ytApiLoading?: boolean; }
@@ -64,11 +75,13 @@ function loadApi(): Promise<void> {
 export default function YouTubePlayer({
   videoId, dbId, title,
 }: { videoId: string; dbId?: number | string; title?: string }) {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<any>(null);
   const cuesRef = useRef<Cue[] | null>(null);
   const [line, setLine] = useState("");
   const [mine, setMine] = useState(false);      // are we driving the subtitles?
+  const [full, setFull] = useState(false);
   const { lang } = useLang();
   const cc = YT_LANG[lang] || "en";
 
@@ -129,6 +142,8 @@ export default function YouTubePlayer({
         videoId,
         playerVars: {
           cc_load_policy: mine ? 0 : 1, cc_lang_pref: cc, hl: cc,
+          // Ours must fullscreen the wrapper, not the iframe — see the note above.
+          fs: mine ? 0 : 1,
           rel: 0, modestbranding: 1, playsinline: 1,
         },
         events: {
@@ -149,20 +164,79 @@ export default function YouTubePlayer({
     };
   }, [videoId, lang, cc, mine]);
 
+  // 3. Fullscreen, ours. Keep the button label honest, and if the iframe somehow
+  //    still becomes the fullscreen element (an embed build where `fs: 0` does not
+  //    also disable double-click, say) hand fullscreen back to the wrapper so the
+  //    subtitles survive. Every branch is guarded — failing here must leave the
+  //    viewer windowed with subtitles, never blocked.
+  useEffect(() => {
+    function onChange() {
+      const el = document.fullscreenElement;
+      setFull(!!el && el === wrapRef.current);
+      if (!mine || !el || el === wrapRef.current) return;
+      if (!wrapRef.current?.contains(el)) return;   // not our player — leave it be
+      (async () => {
+        try {
+          await document.exitFullscreen();
+          await wrapRef.current?.requestFullscreen();
+        } catch { /* windowed with subtitles beats fullscreen without them */ }
+      })();
+    }
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, [mine]);
+
+  async function toggleFull() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await wrapRef.current?.requestFullscreen();
+    } catch { /* ignore — never break playback */ }
+  }
+
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+    <div ref={wrapRef} style={{ position: "relative", width: "100%", height: "100%" }}>
       <div ref={hostRef} title={title} style={{ width: "100%", height: "100%" }} />
+      {/* data-noloc: this line is ALREADY in the reader's language, translated on
+          the durable tier by translate_transcripts. Without it the whole-page
+          AutoTranslate sweep picks the text node up like any other page copy and
+          re-translates it on the BULK tier — a target→target round trip that
+          spends tokens to overwrite better output with worse. Verified live on
+          2026-07-29: a Korean cue was POSTed back to /api/translate and rewritten
+          on screen. AutoTranslate was also the source of the 07-24 cache
+          poisoning; keep it out of the subtitle path. */}
       {mine && line && (
-        <div aria-live="polite" style={{
-          position: "absolute", left: 0, right: 0, bottom: "9%",
+        <div aria-live="polite" data-noloc style={{
+          position: "absolute", left: 0, right: 0, bottom: full ? "11%" : "9%",
           display: "flex", justifyContent: "center", pointerEvents: "none", padding: "0 6%",
         }}>
           <span style={{
             background: "rgba(0,0,0,0.78)", color: "#fff", padding: "0.28em 0.6em",
-            borderRadius: 4, fontSize: "clamp(0.85rem, 2vw, 1.15rem)", lineHeight: 1.35,
+            borderRadius: 4,
+            fontSize: full ? "clamp(1.1rem, 2.4vw, 2rem)" : "clamp(0.85rem, 2vw, 1.15rem)",
+            lineHeight: 1.35,
             textAlign: "center", textShadow: "0 1px 2px rgba(0,0,0,0.9)",
           }}>{line}</span>
         </div>
+      )}
+      {mine && (
+        <button
+          type="button" onClick={toggleFull} data-noloc
+          aria-label={full ? "Exit full screen" : "Full screen"}
+          title={full ? "Exit full screen" : "Full screen"}
+          style={{
+            position: "absolute", right: 6, bottom: 4, width: 38, height: 34,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "transparent", border: 0, borderRadius: 3, cursor: "pointer",
+            color: "#fff", opacity: 0.92, padding: 0, lineHeight: 0,
+          }}
+        >
+          {/* Matches YouTube's own corner-bracket glyph, in the slot `fs: 0` frees up. */}
+          <svg viewBox="0 0 36 36" width="24" height="24" aria-hidden="true" focusable="false">
+            <path fill="#fff" d={full
+              ? "M14 14H8v2h4v4h2v-6zm8 0v6h2v-4h4v-2h-6zM8 20v2h4v4h2v-6H8zm14 6h2v-4h4v-2h-6v6z"
+              : "M10 16h2v-4h4v-2h-6v6zm10-6v2h4v4h2v-6h-6zM8 20v6h6v-2h-4v-4H8zm16 4h-4v2h6v-6h-2v4z"} />
+          </svg>
+        </button>
       )}
     </div>
   );
