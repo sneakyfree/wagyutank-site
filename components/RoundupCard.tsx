@@ -7,6 +7,11 @@ import ExportInfo from "./ExportInfo";
 import ProductBadge from "./ProductBadge";
 import { useLang } from "../lib/i18n";
 
+/** Scripts an English reader cannot read. Mirrors AutoTranslate's copy and the
+ *  backend's `_FOREIGN_SCRIPT` in routers/aggregated.py — keep the three in step. */
+const FOREIGN_SCRIPT =
+  /[Ͱ-ϿЀ-ӿ֐-׿؀-ۿऀ-ॿ฀-๿　-ヿ㐀-䶿一-鿿가-힯＀-￯]/;
+
 /** One seller photograph, loaded from the seller's own server.
  *  A hotlink that fails is expected and unremarkable -- sellers block hotlinking,
  *  swap files, or take listings down -- so a failure hides the image silently
@@ -114,7 +119,12 @@ export default function RoundupCard({ l }: { l: any }) {
         {/* Details first for a reader who is not browsing in English: the seller's
             own terms, translated, before they leave for a site they cannot read.
             The direct link-out stays right beside it for everyone else. */}
-        {lang !== "en" ? (
+        {/* Also offer it to an English reader when the listing itself is in a
+            script they cannot read — a Japanese ad is just as unreadable to them
+            as an English ad is to a Japanese buyer, and only the second case was
+            being handled. */}
+        {(lang !== "en" || FOREIGN_SCRIPT.test(
+            `${l.animal_name || ""}${l.title || ""}${l.details || ""}`)) ? (
           <>
             <Link href={`/roundup/listing?id=${l.id}`} className="btn btn-gold btn-block">
               Details in your language →

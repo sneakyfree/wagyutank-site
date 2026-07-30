@@ -20,6 +20,11 @@ const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAR
 const SKIP_TAGS_ATTRS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "SVG", "CANVAS"]);
 const ATTRS = ["placeholder", "title", "aria-label", "alt"];
 const HAS_LETTER = /\p{L}/u;
+// Scripts an English reader cannot read: CJK, kana, Hangul, Cyrillic, Greek,
+// Thai, Hebrew, Arabic, Devanagari, fullwidth. Accented Latin is deliberately
+// excluded — ä/ö/ß/× do not need a round trip to the translator.
+const FOREIGN_SCRIPT =
+  /[Ͱ-ϿЀ-ӿ֐-׿؀-ۿऀ-ॿ฀-๿　-ヿ㐀-䶿一-鿿가-힯＀-￯]/;
 
 // Never machine-translate these — a wrong guess is worse than leaving English.
 // Country names are the sharp edge: the translator rendered "Czechia" as
@@ -105,7 +110,19 @@ export default function AutoTranslate() {
     touched = new Set();
     touchedEls.forEach((el) => { const o = origAttr.get(el); if (o) for (const a in o) el.setAttribute(a, o[a]); });
     touchedEls = new Set();
-    if (lang === "en") { emit({ busy: false, lang: "en", done: 0, total: 0 }); return; }
+    // English used to return here, which meant an English reader got NO
+    // translation of anything — including seller copy in a script they cannot
+    // read. Browsing the Roundup's Japan shelf in English showed 黒毛和牛 and
+    // アニマルジェネティックスジャパン株式会社 verbatim on every card. English was
+    // being treated as a source language only, never as a reader language; the
+    // biggest audience got the rawest page. (Same shape as the missing English
+    // video subtitles.) So English now runs the sweep too — but ONLY over text in
+    // a script an English reader cannot read, because translating a corpus that
+    // is already English into English would be thousands of pointless calls.
+    if (lang === "en" && !document.body.textContent?.match(FOREIGN_SCRIPT)) {
+      emit({ busy: false, lang: "en", done: 0, total: 0 });
+      return;
+    }
 
     const cache = cacheFor(lang);
     let cancelled = false;
@@ -127,6 +144,9 @@ export default function AutoTranslate() {
         if (lastOut.get(tn) === raw) continue;
         if (skip(tn.parentElement)) continue;
         if (!translatable(raw)) continue;
+        // For an English reader, only foreign-script text is worth sending —
+        // everything else on the page is already English.
+        if (lang === "en" && !FOREIGN_SCRIPT.test(raw)) continue;
         origText.set(tn, raw);
         const key = raw.trim();
         allKeys.add(key);
@@ -138,6 +158,7 @@ export default function AutoTranslate() {
         document.querySelectorAll("[" + attr + "]").forEach((el) => {
           if (skipAttr(el)) return;
           const raw = el.getAttribute(attr) || "";
+          if (lang === "en" && !FOREIGN_SCRIPT.test(raw)) return;
           const la = lastAttr.get(el); if (la && la[attr] === raw) return;
           if (!translatable(raw)) return;
           const store = origAttr.get(el) || {}; if (!(attr in store)) { store[attr] = raw; origAttr.set(el, store); }
