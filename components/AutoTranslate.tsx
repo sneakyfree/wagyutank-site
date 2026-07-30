@@ -50,8 +50,12 @@ let touchedEls = new Set<Element>();
 
 // Bump when the dictionary or the backend translation prompt changes, so a
 // returning visitor's browser drops its stale copies instead of serving the old
-// wording forever. Mirrors _PROMPT_VERSION in backend/app/services/translate.py.
-const CACHE_NS = "wt_tr_v3_";
+// wording forever. Mirrors the BULK entry of _PROMPT_VERSIONS in
+// backend/app/services/translate.py — this sweep is the bulk lane, so it tracks
+// that one, not the durable version. v4: the 2026-07-30 romaji rule, which
+// changes 福之姫 to "Fukunohime (福之姫)". Without this bump a returning visitor
+// keeps serving the old kanji-only strings out of localStorage forever.
+const CACHE_NS = "wt_tr_v4_";
 const cacheByLang: Record<string, Record<string, string>> = {};
 function cacheFor(lang: string): Record<string, string> {
   if (!cacheByLang[lang]) {
