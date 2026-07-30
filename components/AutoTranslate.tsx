@@ -116,13 +116,18 @@ export default function AutoTranslate() {
     // アニマルジェネティックスジャパン株式会社 verbatim on every card. English was
     // being treated as a source language only, never as a reader language; the
     // biggest audience got the rawest page. (Same shape as the missing English
-    // video subtitles.) So English now runs the sweep too — but ONLY over text in
-    // a script an English reader cannot read, because translating a corpus that
-    // is already English into English would be thousands of pointless calls.
-    if (lang === "en" && !document.body.textContent?.match(FOREIGN_SCRIPT)) {
-      emit({ busy: false, lang: "en", done: 0, total: 0 });
-      return;
-    }
+    // video subtitles.) English now runs the sweep too — but the per-node and
+    // per-attribute gates below skip anything already readable, so an all-English
+    // page walks its own DOM, finds nothing, and issues zero requests.
+    //
+    // Do NOT try to shortcut this by testing document.body for foreign text here:
+    // this effect runs on mount, BEFORE the client-side listing fetch has painted
+    // any cards, so the body is still all-English and the whole sweep — including
+    // the MutationObserver that would have caught the cards arriving — was
+    // skipped for good. That is precisely why the first attempt at this fix
+    // issued zero translate requests.
+    // (No early emit needed — the emit below covers it, and TranslationStatus
+    // renders nothing for English regardless, so no banner appears.)
 
     const cache = cacheFor(lang);
     let cancelled = false;
